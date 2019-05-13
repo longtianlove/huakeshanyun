@@ -1,0 +1,153 @@
+package com.stys.ipfs.web.app;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.entity.Dic;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.DateUtil;
+import com.stys.ipfs.util.UUIdUtils;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppBusinessController extends AppController  {
+	
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+	
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+	
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+	
+	
+
+	
+	/**
+	 * 推广收益
+	 * @api {post} /tbr/getEarningsForUser 推广收益
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述：推广收益
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/getEarningsForUser
+	 */
+	 @RequestMapping("/getEarningsForUser")
+	 public @ResponseBody AppResultInfo<?> getEarningsForUser(Integer userId){
+		Dic dic=idicService.getDicData("账变类型", "邀请奖励");
+		Map<String,Object> map =new HashMap<>();
+		//查询今日收益
+		
+		//今天
+		String today=DateUtil.getDay();
+		//昨天
+		String yesterday=DateUtil.getYesterday();
+		
+		Map<String,Object> map1=itbAssetsDetailService.selectMap((new EntityWrapper<TbAssetsDetail>().setSqlSelect("SUM(amount) as todayEarnings").eq("type", dic.getId()).eq("user_id", userId).like("create_time",today)));
+		if(map1!=null&&map1.size()>0) {
+			Double  todayEarnings=(Double) map1.get("todayEarnings");
+			map.put("todayEarnings", todayEarnings);
+		}
+		map.put("todayEarnings", "0.00");
+		//昨日收益
+		Map<String,Object> map2=itbAssetsDetailService.selectMap((new EntityWrapper<TbAssetsDetail>().setSqlSelect("SUM(amount) as yesterdayEarnings").eq("type", dic.getId()).eq("user_id", userId).like("create_time", yesterday)));
+		if(map2!=null&&map2.size()>0) {
+			Double  yesterdayEarnings=(Double)map2.get("yesterdayEarnings");
+			map.put("yesterdayEarnings", yesterdayEarnings);
+		}
+		map.put("yesterdayEarnings", "0.00");
+		TbUserAssets userassets=itbUserAssetsService.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+		
+		map.put("giftcoin", userassets.getGiftCoin().floatValue());
+		map.put("limitcoin", userassets.getLimitCoin().floatValue());
+		
+		return new AppResultInfo<>(JSONObject.toJSON(map));
+	} 
+	 
+	 	/**
+		 * 推广收益明细
+		 * @api {post} /tbr/getEarningsDetailForUser 推广收益明细
+		 * @apiGroup userBase
+		 * @apiDescription 详细描述：推广收益明细
+		 * @apiParam {Integer} userId 用户Id
+		 * @apiVersion 0.1.0
+		 * @apiSampleRequest http://127.0.0.1/tbr/getEarningsDetailForUser
+		 */
+	 @RequestMapping("/getEarningsDetailForUser")
+	 public @ResponseBody AppResultInfo<?> getEarningsDetailForUser(Integer userId){
+		 Dic dic=idicService.getDicData("账变类型", "邀请奖励");
+		 List<TbAssetsDetail> list=	itbAssetsDetailService.selectList(new EntityWrapper<TbAssetsDetail>().eq("type", dic.getId()).eq("user_id", userId));
+		 return new AppResultInfo<>(list);
+	 }
+	 
+	
+	 	/**
+		 *  个人推广礼包划转
+		 * @api {post} /tbr/getEarningsDetailForUser 个人推广礼包划转
+		 * @apiGroup userBase
+		 * @apiDescription 详细描述：个人推广礼包划转
+		 * @apiParam {Integer} userId 用户Id
+		 * @apiParam {Float} balance 划转金额
+		 * @apiVersion 0.1.0
+		 * @apiSampleRequest http://127.0.0.1/tbr/getEarningsDetailForUser
+		 */
+	@RequestMapping("/giftCoinTransfer")
+	 public @ResponseBody AppResultInfo<?> getGiftCoinTransfer(Integer userId,Float balance){
+		TbUserAssets userassets=itbUserAssetsService.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+		Float giftCoin=	userassets.getGiftCoin();
+		Float limitCoin=userassets.getLimitCoin();
+		if(giftCoin<balance) {
+			return new AppResultInfo<>(-1, "推广礼包金额不足");
+		}
+		if(limitCoin<balance) {
+			return new AppResultInfo<>(-1, "已超过剩余转出额度");
+		}
+		Float coin=userassets.getCoin();
+		String newCoin= BigDecimalUtils.add(coin.toString(), balance.toString());
+		String newgiftCoin= BigDecimalUtils.subtract(giftCoin.toString(), balance.toString());
+		String newlimitCoin= BigDecimalUtils.subtract(limitCoin.toString(), balance.toString());
+		userassets.setCoin(Float.parseFloat(newCoin));
+		userassets.setGiftCoin(Float.parseFloat(newgiftCoin));
+		userassets.setLimitCoin(Float.parseFloat(newlimitCoin));
+		itbUserAssetsService.updateById(userassets);
+		
+		Dic dic=idicService.getDicData("账变类型", "收益划转");
+		TbAssetsDetail entity = new TbAssetsDetail();
+		entity.setId(UUIdUtils.getUUID());
+		entity.setUserId(userId);
+		entity.setBeforeAmount(giftCoin);
+		entity.setAmount(balance);
+		entity.setAfterAmount(Float.parseFloat(newgiftCoin));
+		entity.setInOrOut(IncomeOrOut.expend.getCode());
+		entity.setType(dic.getId());
+		itbAssetsDetailService.insert(entity);
+		
+		TbAssetsDetail assetsdetail = new TbAssetsDetail();
+		assetsdetail.setId(UUIdUtils.getUUID());
+		assetsdetail.setUserId(userId);
+		assetsdetail.setBeforeAmount(coin);
+		assetsdetail.setAmount(balance);
+		assetsdetail.setAfterAmount(Float.parseFloat(newCoin));
+		assetsdetail.setInOrOut(IncomeOrOut.income.getCode());
+		assetsdetail.setType(dic.getId());
+		itbAssetsDetailService.insert(assetsdetail);
+		return new AppResultInfo<>("划转成功！");
+	 }
+	
+}

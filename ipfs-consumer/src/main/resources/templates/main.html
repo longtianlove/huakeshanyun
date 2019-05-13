@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="utf-8">
+	<title>HKICLOUD System</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+	<blockquote class="layui-elem-quote layui-bg-green">
+		<div id="nowTime"><shiro:principal property="userName" /></div>
+	</blockquote>
+	<blockquote class="layui-elem-quote main_btn">
+		<p></p>
+		<p class="layui-red">IPFS后台</p>
+		<p class="layui-blue">系统正在运行中</p>
+	</blockquote>
+		<div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg4">
+			<div class="panel_icon layui-bg-orange">
+				<i class="layui-anim seraph icon-icon10"></i>
+			</div>
+			<div class="panel_word coin">
+				<span></span>
+				<em>当前平台金币总和</em>
+			</div>
+		</div>
+	<script type="text/javascript" src="/static/layui/layui.js"></script>
+	<script type="text/javascript" src="/static/js/main.js"></script>
+</body>
+</html>

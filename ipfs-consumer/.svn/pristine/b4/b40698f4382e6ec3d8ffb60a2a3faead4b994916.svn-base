@@ -1,0 +1,72 @@
+package com.stys.ipfs.web;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.*;
+
+import com.stys.ipfs.dto.ResultInfo;
+import com.stys.ipfs.entity.TbWithdrawadLog;
+import com.stys.ipfs.service.ITbWithdrawadLogService;
+import org.springframework.stereotype.Controller;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-13
+ */
+@Controller
+@RequestMapping("/tbWithdrawadLog")
+public class TbWithdrawadLogController extends BaseController {
+
+    @Reference(version = "1.0.0")
+    private ITbWithdrawadLogService itbWithdrawadLogService;
+
+    @RequestMapping("/*")
+    public void toHtml(){
+
+    }
+
+    @RequestMapping("/listData")
+    @RequiresPermissions("tbWithdrawadLog:view")
+    public @ResponseBody
+        ResultInfo<List<TbWithdrawadLog>> listData(TbWithdrawadLog tbWithdrawadLog, Integer page, Integer limit){
+        EntityWrapper<TbWithdrawadLog> wrapper = new EntityWrapper<>(tbWithdrawadLog);
+        Page<TbWithdrawadLog> pageObj = itbWithdrawadLogService.selectPage(new Page<TbWithdrawadLog>(page,limit), wrapper);
+        return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
+    }
+
+    @RequestMapping("/add")
+    @RequiresPermissions("tbWithdrawadLog:add")
+    public @ResponseBody
+        ResultInfo<Boolean> add(TbWithdrawadLog tbWithdrawadLog){
+        boolean b = itbWithdrawadLogService.insert(tbWithdrawadLog);
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/delBatch")
+    @RequiresPermissions("tbWithdrawadLog:del")
+    public @ResponseBody
+        ResultInfo<Boolean> delBatch(Integer[] idArr){
+        boolean b = itbWithdrawadLogService.deleteBatchIds(Arrays.asList(idArr));
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/edit")
+    @RequiresPermissions("tbWithdrawadLog:edit")
+    public @ResponseBody
+        ResultInfo<Boolean> edit(TbWithdrawadLog tbWithdrawadLog){
+        boolean b = itbWithdrawadLogService.updateById(tbWithdrawadLog);
+        return new ResultInfo<>(b);
+    }
+
+}
+

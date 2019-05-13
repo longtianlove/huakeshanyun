@@ -1,0 +1,16 @@
+package com.stys.ipfs.config;
+
+import org.hibernate.services.ServicesManager;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ScheduledTasks implements CommandLineRunner {
+
+	@Override
+	public void run(String... args) throws Exception {
+		new ServicesManager();
+
+	}
+
+}

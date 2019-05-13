@@ -1,0 +1,172 @@
+package com.stys.ipfs.service.impl;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.SqlHelper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.stys.ipfs.dto.PerformanceData;
+import com.stys.ipfs.dto.TbInviterExpericence;
+import com.stys.ipfs.dto.UserExperienceVO;
+import com.stys.ipfs.entity.TbInvite;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbUserBuyLog;
+import com.stys.ipfs.entity.TbUserExperience;
+import com.stys.ipfs.mapper.TbUserExperienceMapper;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserBuyLogService;
+import com.stys.ipfs.service.ITbUserExperienceService;
+import com.stys.ipfs.util.DateUtil;
+import com.stys.ipfs.util.StringUtils;
+
+/**
+ * <p>
+ * 服务实现类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-01-13
+ */
+@Service(version = "1.0.0", timeout = 60000)
+public class TbUserExperienceServiceImpl extends ServiceImpl<TbUserExperienceMapper, TbUserExperience>
+		implements ITbUserExperienceService {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbInviteService itbInviteService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserBuyLogService itbUserBuyLogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserExperienceService itbUserExperienceService;
+
+	@Override
+	public Page<UserExperienceVO> selectPageUserExperienceVO(Page<UserExperienceVO> page,
+			EntityWrapper<UserExperienceVO> wrapper, String nickname) {
+		SqlHelper.fillWrapper(page, wrapper);
+		if (!StringUtils.isEmpty(nickname)) {
+			nickname = "%" + nickname + "%";
+		}
+		page.setRecords(this.baseMapper.selectPageListVO(page, wrapper, nickname));
+		return page;
+	}
+
+	@Override
+	public PerformanceData selectPerformanceData(Integer user_id) {
+		PerformanceData performanceData = new PerformanceData();
+		TbUserExperience tbUserExperience = this
+				.selectOne(new EntityWrapper<TbUserExperience>().eq("user_id", user_id));
+		if (null != tbUserExperience) {
+			Integer experience = tbUserExperience.getExperience();
+			// 总业绩
+			performanceData.setExpericence(experience);
+
+		}
+
+		BigDecimal yesterday_performance = new BigDecimal("0");
+		BigDecimal before_yesterday_performance = new BigDecimal("0");
+
+		getTotalPerformance(yesterday_performance, user_id, before_yesterday_performance);
+		String yesterday_performance_str = yesterday_performance.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+		// 昨日业绩
+		performanceData.setYesterday_performance(yesterday_performance_str);
+
+		String before_yesterday_performance_str = before_yesterday_performance.setScale(2, BigDecimal.ROUND_HALF_UP)
+				.toString();
+		// 前日业绩
+		performanceData.setBefore_yesterday_performance(before_yesterday_performance_str);
+
+		TbUserAssets tbUserAssets = itbUserAssetsService
+				.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", user_id));
+		performanceData.setStorage(tbUserAssets.getStorage());
+
+		return performanceData;
+	}
+
+	@Override
+	public List<TbInviterExpericence> selectPerformanceDataList(Integer user_id, Integer page, Integer limit) {
+
+		Page<TbInvite> pageObj = itbInviteService.selectPage(new Page<TbInvite>(page, limit),
+				new EntityWrapper<TbInvite>().eq("tb_iviter", user_id));
+		List<TbInvite> list = pageObj.getRecords();
+		List<TbInviterExpericence> tbInviterExpericenceList = new ArrayList<>();
+		for (TbInvite tbInvite : list) {
+
+			Integer inviter_user_id = tbInvite.getTbIvitee();
+			TbInviterExpericence tbInviterExpericence = itbUserExperienceService
+					.selectAllExperienceDatas(inviter_user_id);
+			tbInviterExpericenceList.add(tbInviterExpericence);
+			Collections.sort(tbInviterExpericenceList);
+
+		}
+
+		return tbInviterExpericenceList;
+	}
+
+	private void getTotalPerformance(BigDecimal yesterday_performance, Integer user_id,
+			BigDecimal before_yesterday_performance) {
+		List<TbInvite> list = itbInviteService.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", user_id)); // 分公司
+
+		for (TbInvite tbInvite : list) {
+
+			List<TbInvite> initeelist = itbInviteService
+					.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", tbInvite.getTbIvitee())); // 分公司
+			for (TbInvite tbInvite2 : initeelist) {
+
+				Integer ivitee_user_id = tbInvite2.getTbIvitee();
+				// 昨天购买记录
+				String yesterday = DateUtil.getYesterday();
+				String yersterday_start = yesterday + "00:00:00";
+				String yersterday_end = yesterday + "23:59:59";
+				List<TbUserBuyLog> userBuyLogs = itbUserBuyLogService
+						.selectList(new EntityWrapper<TbUserBuyLog>().eq("user_id", ivitee_user_id).eq("status", 1)
+								.between("create_time", yersterday_start, yersterday_end));
+				if (null != userBuyLogs && userBuyLogs.size() > 0) {
+					for (TbUserBuyLog tbUserBuyLog : userBuyLogs) {
+
+						Double price = tbUserBuyLog.getProductPrice();
+						// 添加
+						yesterday_performance = yesterday_performance.add(new BigDecimal(price));
+
+					}
+				}
+
+				String before_yesterday = DateUtil.getBeforeYesterday();
+				String before_yersterday_start = before_yesterday + "00:00:00";
+				String before_yersterday_end = before_yesterday + "23:59:59";
+				List<TbUserBuyLog> userBuyLogs2 = itbUserBuyLogService
+						.selectList(new EntityWrapper<TbUserBuyLog>().eq("user_id", ivitee_user_id).eq("status", 1)
+								.between("create_time", before_yersterday_start, before_yersterday_end));
+				if (null != userBuyLogs && userBuyLogs.size() > 0) {
+					for (TbUserBuyLog tbUserBuyLog : userBuyLogs2) {
+
+						Double price = tbUserBuyLog.getProductPrice();
+						// 添加
+						before_yesterday_performance = before_yesterday_performance.add(new BigDecimal(price));
+
+					}
+
+				}
+			}
+
+		}
+	}
+
+	@Override
+	public TbInviterExpericence selectAllExperienceDatas(Integer initer_user_id) {
+
+		return this.baseMapper.selectAllExperienceDatas(initer_user_id);
+
+	}
+
+}

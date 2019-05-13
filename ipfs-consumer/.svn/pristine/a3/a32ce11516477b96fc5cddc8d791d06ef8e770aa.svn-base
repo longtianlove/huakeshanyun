@@ -1,0 +1,74 @@
+/*
+*  @author dp
+*  @since 2018-10-29
+*/
+layui.use(['form','layer'],function(){
+    var form = layui.form
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery;
+   // form.render('select');//刷新select选择框渲染
+    form.on("submit(addApi)",function(data){   
+        //弹出loading
+        var index = top.layer.msg('数据保存中，请稍候...',{icon: 16,time:false,shade:0.8});
+        if ($("#id").val()==="") {
+            $.post("/api/add",data.field,function(res){
+                if (res.data){
+                    layer.close(index); 
+                    layer.msg("添加成功！");
+                    layer.closeAll("iframe");
+                    //刷新父页面
+                    parent.location.reload();
+                } else {
+                    layer.msg(data.msg);
+                }
+            })
+        } else {  
+            $.post("/api/edit",data.field,function(res){
+                if (res.data){
+                    layer.close(index);
+                    layer.msg("修改成功！");
+                    layer.closeAll("iframe");
+                    //刷新父页面
+                    parent.location.reload();
+                } else {
+                    layer.msg(data.msg);
+                }
+            })
+        }
+        return false;
+    });
+    
+  
+    $("#testId").on("click",function(){
+    	  $("form").children().unwrap();
+    	var url=$(".address").val();
+    	var param=$(".param").val();
+    	var objData=eval("("+param+")");
+    	   $(".state").hide();
+    	 $.ajax({
+             url: url,
+             type: "post",
+             data:objData,  
+             dataType:"json", // objData,
+             success: function(data){
+            	 
+                var jsondata=JSON.stringify(data);
+                console.info("返回结果:"+jsondata);
+                $(".remark").val("返回结果:"+jsondata);
+                $(".state").hide();
+             },
+             error: function (data) {
+            	  var jsondata=JSON.stringify(data);
+            	  console.info("错误返回:"+jsondata);
+            	 $(".remark").val("错误发送的"+jsondata); 
+            	   $(".state").hide();
+             }
+         });
+    	 
+    	 
+    	 
+    	 
+    	 
+    });
+
+})

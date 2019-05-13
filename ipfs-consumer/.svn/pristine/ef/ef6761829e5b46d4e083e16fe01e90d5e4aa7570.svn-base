@@ -1,0 +1,731 @@
+package com.stys.ipfs.service;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.activation.MimetypesFileTypeMap;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.NameValuePair;
+import org.apache.commons.httpclient.methods.PostMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.stys.ipfs.util.Configuration;
+import com.stys.ipfs.util.RSAUtil;
+
+//@Service
+public class FeimaService {
+	 protected Logger logger = LoggerFactory.getLogger(this.getClass());
+	public String publicKey;
+
+	public String privateKey;
+
+	public String feimaPublicKey;
+
+	/**
+	 * 取得应用ID
+	 */
+	/*
+	 * public String getMerchantNo() { return
+	 * Configuration.getInstance().getValue("merchantNo"); }
+	 * 
+	 *//**
+		 * 取得商户公钥
+		 */
+	/*
+	 * public String getPublicKey() { return
+	 * Configuration.getInstance().getValue("publicKey"); }
+	 * 
+	 *//**
+		 * 取得商户私钥
+		 */
+	/*
+	 * public String getPrivateKey() { return
+	 * Configuration.getInstance().getValue("privateKey"); }
+	 * 
+	 *//**
+		 * 取得飞马公钥
+		 *//*
+			 * public String getFeimaPublicKey() { return
+			 * Configuration.getInstance().getValue("feimaPublicKey"); }
+			 */
+
+	/**
+	 * 用户注册
+	 * 
+	 * @param userId
+	 * @param mobile
+	 * @param name
+	 * @return
+	 */
+	public String userRegister(String merchantNo, String userId, String mobile, String nickName, String name,
+			String idCardNo) {
+		String requestUrl = Configuration.getInstance().getValue("userRegisterRequestURL");
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("mchUserId", userId);
+			params.put("mobile", mobile);
+			params.put("nickName", nickName);
+			params.put("name", name);
+			params.put("idCardNo", idCardNo);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+			
+			logger.error("参数：params"+params.toString());
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 创建付款订单
+	 * 
+	 * @param mchOrderNo
+	 * @param userId
+	 * @param productName
+	 * @param productDesc
+	 * @param amount
+	 * @param attach
+	 * @param notifyUrl
+	 * @return
+	 */
+	public String createPayOrder(String merchantNo, String mchOrderNo, String userId, String productName,
+			String productDesc, int amount, String attach, String notifyUrl) {
+		String requestUrl = Configuration.getInstance().getValue("orderCreateRequestURL");
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("mchOrderNo", mchOrderNo);
+			params.put("mchUserId", userId);
+			params.put("productName", productName);
+			params.put("productDesc", productDesc);
+			params.put("amount", String.valueOf(amount));
+			params.put("attach", attach);
+			params.put("notifyUrl", notifyUrl);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 付款订单查询
+	 * 
+	 * @param mchOrderNo
+	 * @return
+	 */
+	public String orderquery(String merchantNo, String mchOrderNo) {
+		String requestUrl = Configuration.getInstance().getValue("orderQueryRequestURL");
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("mchOrderNo", mchOrderNo);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 订单退款
+	 * 
+	 * @param mchOrderNo
+	 * @param paymentOrderNo
+	 * @param amount
+	 * @param reason
+	 * @param notifyUrl
+	 * @return
+	 */
+	public String refund(String merchantNo, String mchOrderNo, String paymentOrderNo, int amount, String reason,
+			String notifyUrl) {
+		String requestUrl = Configuration.getInstance().getValue("orderRefundRequestURL");
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("mchOrderNo", mchOrderNo);
+			params.put("paymentOrderNo", paymentOrderNo);
+			params.put("amount", String.valueOf(amount));
+			params.put("reason", reason);
+			params.put("notifyUrl", notifyUrl);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 订单退款查询
+	 * 
+	 * @param mchOrderNo
+	 * @param paymentOrderNo
+	 * @param amount
+	 * @param reason
+	 * @param notifyUrl
+	 * @return
+	 */
+	public String refundquery(String merchantNo, String mchOrderNo) {
+		String requestUrl = Configuration.getInstance().getValue("orderRefundQueryRequestURL");
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("mchOrderNo", mchOrderNo);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 对账单下载
+	 * 
+	 * @param merchantNo
+	 * @param type
+	 * @param tradeDate  格式yyyyMMdd
+	 * @return
+	 */
+	public String billDownload(String merchantNo, String type, String tradeDate) {
+
+		String requestUrl = "";
+
+		if (type.equals("PAYMENT")) {
+			requestUrl = Configuration.getInstance().getValue("downloadbillPaymentRequestURL");
+		} else if (type.equals("REFUND")) {
+			requestUrl = Configuration.getInstance().getValue("downloadbillRefundRequestURL");
+		}
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("tradeDate", tradeDate);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 通用方法
+	 * 
+	 * @param requestUrl
+	 * @param            Map<String, String>
+	 * 
+	 * @return
+	 */
+	public String commonRequest(String requestUrl, Map<String, String> params) {
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+//			Map<String, String> params = new HashMap<String, String>();
+//			params.put("merchantNo", merchantNo);
+//			params.put("tradeDate", tradeDate);
+//			params.put("timestamp", String.valueOf(System.currentTimeMillis()/1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 上传图片
+	 * 
+	 * @param urlStr
+	 * @param textMap
+	 * @param fileMap
+	 * @param contentType 没有传入文件类型默认采用application/octet-stream
+	 *                    contentType非空采用filename匹配默认的图片类型
+	 * @return 返回response数据
+	 */
+	@SuppressWarnings("rawtypes")
+	public String commonRequest(String requestUrl, Map<String, String> textMap, Map<String, String> fileMap,
+			String contentType) {
+		String res = "";
+		HttpURLConnection conn = null;
+		// boundary就是request头和上传文件内容的分隔符
+		String BOUNDARY = "---------------------------123821742118716";
+		try {
+			URL url = new URL(requestUrl);
+			conn = (HttpURLConnection) url.openConnection();
+			conn.setConnectTimeout(5000);
+			conn.setReadTimeout(30000);
+			conn.setDoOutput(true);
+			conn.setDoInput(true);
+			conn.setUseCaches(false);
+			conn.setRequestMethod("POST");
+			conn.setRequestProperty("Connection", "Keep-Alive");
+			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; zh-CN; rv:1.9.2.6)");
+			conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+			OutputStream out = new DataOutputStream(conn.getOutputStream());
+			// text
+
+			String sign = RSAUtil.rsa256Sign(textMap, privateKey);
+			textMap.put("sign", sign);
+			if (textMap != null) {
+				StringBuffer strBuf = new StringBuffer();
+				Iterator iter = textMap.entrySet().iterator();
+				while (iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					String inputName = (String) entry.getKey();
+					String inputValue = (String) entry.getValue();
+					if (inputValue == null) {
+						continue;
+					}
+					strBuf.append("\r\n").append("--").append(BOUNDARY).append("\r\n");
+					strBuf.append("Content-Disposition: form-data; name=\"" + inputName + "\"\r\n\r\n");
+					strBuf.append(inputValue);
+				}
+				out.write(strBuf.toString().getBytes());
+			}
+			// file
+			if (fileMap != null) {
+				Iterator iter = fileMap.entrySet().iterator();
+				while (iter.hasNext()) {
+					Map.Entry entry = (Map.Entry) iter.next();
+					String inputName = (String) entry.getKey();
+					String inputValue = (String) entry.getValue();
+					if (inputValue == null) {
+						continue;
+					}
+					File file = new File(inputValue);
+					String filename = file.getName();
+
+					// 没有传入文件类型，同时根据文件获取不到类型，默认采用application/octet-stream
+					contentType = new MimetypesFileTypeMap().getContentType(file);
+					// contentType非空采用filename匹配默认的图片类型
+					if (!"".equals(contentType)) {
+						if (filename.endsWith(".png")) {
+							contentType = "image/png";
+						} else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")
+								|| filename.endsWith(".jpe")) {
+							contentType = "image/jpeg";
+						} else if (filename.endsWith(".gif")) {
+							contentType = "image/gif";
+						} else if (filename.endsWith(".ico")) {
+							contentType = "image/image/x-icon";
+						}
+					}
+					if (contentType == null || "".equals(contentType)) {
+						contentType = "application/octet-stream";
+					}
+					StringBuffer strBuf = new StringBuffer();
+					strBuf.append("\r\n").append("--").append(BOUNDARY).append("\r\n");
+					strBuf.append("Content-Disposition: form-data; name=\"" + inputName + "\"; filename=\"" + filename
+							+ "\"\r\n");
+					strBuf.append("Content-Type:" + contentType + "\r\n\r\n");
+					out.write(strBuf.toString().getBytes());
+					DataInputStream in = new DataInputStream(new FileInputStream(file));
+					int bytes = 0;
+					byte[] bufferOut = new byte[1024];
+					while ((bytes = in.read(bufferOut)) != -1) {
+						out.write(bufferOut, 0, bytes);
+					}
+					in.close();
+				}
+			}
+			byte[] endData = ("\r\n--" + BOUNDARY + "--\r\n").getBytes();
+			out.write(endData);
+			out.flush();
+			out.close();
+
+			// 读取返回数据
+			if (conn.getResponseCode() == 200) {
+				StringBuffer strBuf = new StringBuffer();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					strBuf.append(line).append("\n");
+				}
+				res = strBuf.toString();
+				reader.close();
+				reader = null;
+			} else {
+				System.out.println("请求失败, code:" + conn.getResponseCode() + ", msg:" + conn.getResponseMessage());
+			}
+		} catch (Exception e) {
+			System.out.println("发送POST请求出错。" + requestUrl);
+			e.printStackTrace();
+		} finally {
+			if (conn != null) {
+				conn.disconnect();
+				conn = null;
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * 商户转账付款(单笔),商户或子商户转账付款，收款方可以是商户和个人用户。
+	 * 
+	 * @param merchantNo        商户编号
+	 * @param batchNo           商户转账付款批次号(唯一性，格式为15-20位的纯数字串)
+	 * @param mchOrderNo        商户转账付款订单编号(唯一性)
+	 * @param relatedMerchantNo 关联的商户编号(主商户或子商户号，为空时默认为主商户号)
+	 * @param subAccount        关联付款的商户账号(2008开头的交易账户，不支持accountType=2的手续费帐号)
+	 * @param accountName       收款账户名称
+	 * @param accountNumber     收款账户帐号(2008开头的交易账户)
+	 * @param amount            付款金额(单位：分)
+	 * @param comments          付款备注
+	 * @return
+	 */
+	public String transferSingle(String merchantNo, String batchNo, String mchOrderNo, String relatedMerchantNo,
+			String subAccount, String accountName, String accountNumber, String amount, String comments) {
+		String requestUrl = Configuration.getInstance().getValue("withdrawURL");
+
+		HttpClient httpClient = new HttpClient();
+		PostMethod postMethod = new PostMethod(requestUrl);
+		postMethod.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");// 必须设置
+
+		try {
+			// 把请求参数打包成数组
+			Map<String, String> params = new HashMap<String, String>();
+			params.put("merchantNo", merchantNo);
+			params.put("batchNo", batchNo);
+			params.put("mchOrderNo", mchOrderNo);
+			params.put("relatedMerchantNo", relatedMerchantNo);
+			params.put("subAccount", subAccount);
+			params.put("accountName", accountName);
+			params.put("accountNumber", accountNumber);
+			params.put("amount", amount);
+			params.put("comments", comments);
+			params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+			// 获取请求参数签名
+			String sign = RSAUtil.rsa256Sign(params, privateKey);
+			params.put("sign", sign);
+
+			NameValuePair[] datas = new NameValuePair[params.size()];
+			int idx = 0;
+			for (Map.Entry<String, String> entry : params.entrySet()) {
+				datas[idx] = new NameValuePair(entry.getKey(), entry.getValue());
+				idx++;
+			}
+
+			postMethod.setRequestBody(datas);
+
+			int statusCode = httpClient.executeMethod(postMethod);
+			byte[] responseByte = postMethod.getResponseBody();
+			String responseBody = new String(responseByte, "UTF-8");
+
+			// System.out.println("responseBody : " + responseBody);
+
+			if (statusCode == 200) {
+				return responseBody;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			postMethod.releaseConnection();
+		}
+
+		return "";
+	}
+
+	/**
+	 * 商户的账号
+	 * 
+	 * @param merchantNo        商户编号
+	 * @param relatedMerchantNo 关联的商户(主商户或子商户号)
+	 * @return
+	 * @throws Exception
+	 */
+	public String accounts(String requestUrl, String merchantNo, String relatedMerchantNo) throws Exception {
+
+		// String requestUrl =
+		// "https://openapi.fm.fmwallet.com/api/merchant/account/query";
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("merchantNo", merchantNo);
+		params.put("relatedMerchantNo", relatedMerchantNo);
+		params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+		String result = this.commonRequest(requestUrl, params);
+
+		return result;
+	}
+
+	/**
+	 * 用户资金交易账户查询
+	 * 
+	 * @param merchantNo 商户编号
+	 * @param account    用户账号
+	 * @return
+	 * @throws Exception
+	 */
+	public String queryAccounts(String requestUrl, String merchantNo, String account) throws Exception {
+
+		// String requestUrl = "https://openapi.fm.fmwallet.com/api/user/account/query";
+
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("merchantNo", merchantNo);
+		params.put("account", account);
+		params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+
+		String result = this.commonRequest(requestUrl, params);
+
+		return result;
+	}
+
+//	public static void main(String[] args) {
+//
+//		FeimaService feimaService = new FeimaService();
+//		feimaService.feimaPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyA5NuHSaioyoOagpDYMeOSiz7LcabEWVa9ZNjS0ZMXI4QC27btr7Qnaj/DFGw0L+LTii9rS2/xeaaSYGltKN87pqLfdtBhhDD0tPp+NsN3V9lWuGt2pIuy5Fwcpk3wVJF0ntRhSZq6i/HaTWq3O5DcNdLSp8QrFkpXG3FqvN0dgal3KkQz0wyacPeMIbr9wKtvbDX0ab+ccwTwK5g3pJx1fR6lyhm6bilzQ3VcNkI2rWg2khiY/7+qyPsrJHaye0DxTOE8EpwG6fsQx6artkGhfOFvmy/IvF0rEWeeCQhJVt82KPjCXgzSHy7RiKgRLVOIJu648nDbL05bt/bKZEqQIDAQAB";
+//		feimaService.privateKey = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCLRI3l3keJ98SArk6AzYQDvRCBxxvun49yHnAj+GljF8rajPtlbEGQLGPFTunluffusqHtl9lQqm57ft9IsYlOP8fhdqMZG1NAszUT34vLh5x+4Gbcek7BakrByZKrLMrafeofvVfpoYt0jrnBt3O0y2VclXB/GyUVt0XwuI4VceogokWJkfyvdQTYlFP1F3p1OKD8A6K1Nmk6kgy/zxg0XYiCDjf7cZFNtJWVG6zJ9Y+gkbB+dcJIkPJICeaq4riOI/MfNOKAAUZctA0ZaGoSDbojNffY+xmoMaY1jZh15apbL4lRI92rZOSCP7fqvBCqPqo13LuuE3qE5hg5yTthAgMBAAECggEBAIptILHL58WuHYZeOy9xl3dz1FV6iDv+I0GmGYbXYkEZpArpuPPNz7kzNhQnZPtvho2exq73kQzJ6rkbmWqS9MxvPwjOuDy7WVvlBKv1NemeqKHAAN3DQEallRrbdcpo4lScdTsJI7nYVVoMh3ySERMyXFTTQRdF7u2P1pf3iVqsAVBTcuviEEEGAtwTnhhB92RaDkg2c0g9xTJwkVfqlcktelsCD2FChZ/X1gA2e/1tiMalE5VXfXE08Pxw1Yu3DZIsIHdzbSPra9mrkYp9naQsjjnm/pmSIHoNAqeJgj0Nbdi5egLNgYBUROVkZm7gbZ4JVhzJGckZ0CrvAYFdbCUCgYEAvm9ENKKCw91eblUffghtOKG+xl0Rst3BwQVGbNeLyKfKHJyDPBjTz447DW6ow7Y0wKAD8o3eXAcdP4bLhLBYw93uQ3TRDE4DMXswixVqXWuBF/FvduMF0qBoe8X2YyoiYCAg+mn89XKrNbb0z3kAqeofBLhKoM3wszqdDdP0hNsCgYEAuzd9P8UKv8g+IaULLrvR1DwPx1DjxHvdSDPzyZgZsaInc8U0rFKIiiBJcx3yTnE+icuXK0HYszqFnze3XKjINXTrgZGv09sJWX9LinLyFxDUbJCRi78Izh0Jd/KkQKW3awN8fcp4Ij9sPxZFTPePB8sksiH0iCyUIOrUlUS7t3MCgYBEXd22p8EaYBbOtXCg5pWPh0HeJPt9o28zxJkL6jYcy2Ab9XSH1sHz+bPplpiv6nH11XyVT6lMkKFHdTULZeP4LWykewOxzzAGS5uZ0w5ki3vFBMBnhglJHJ1mEiPqZe4BZIdyXyqZU5lzp0MsWNyMI6kPILpqEIUhUyGfHUDjkQKBgQCJNr0snN0o/LlU7WMJyIyccbzax5V4L5RaVAFsknbac09ZEYNufTsniUxr+9nY1jUQx0+vW55Ylh7TOAHC/s1mKKBnIYDt1E7A8oRKH78BWstmGnsiIkxwzGVhLUxnOU36N97pTxjHeRZ8EnWOWK7S9neZuzs/BvU2Pwa5tFukswKBgDZItf+mE3ZMnoWLX4HDcwOvsVBdczNWume8bdJ5B+pJZ03er4sfhf54/cFoPf2o3KIZXn01xcFsVKJkmxV63hd6yvbt19fEIODS+dcNs7KQJLECFjY2POHf3stJk0KWODzjXjvcKOuDkDFZa1D115YW9J8SSyiMB1kSBCDjhRPS";
+//		feimaService.publicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi0SN5d5HiffEgK5OgM2EA70Qgccb7p+Pch5wI/hpYxfK2oz7ZWxBkCxjxU7p5bn37rKh7ZfZUKpue37fSLGJTj/H4XajGRtTQLM1E9+Ly4ecfuBm3HpOwWpKwcmSqyzK2n3qH71X6aGLdI65wbdztMtlXJVwfxslFbdF8LiOFXHqIKJFiZH8r3UE2JRT9Rd6dTig/AOitTZpOpIMv88YNF2Igg43+3GRTbSVlRusyfWPoJGwfnXCSJDySAnmquK4jiPzHzTigAFGXLQNGWhqEg26IzX32PsZqDGmNY2YdeWqWy+JUSPdq2Tkgj+36rwQqj6qNdy7rhN6hOYYOck7YQIDAQAB";
+//
+//		String merchantNo = "8002000008";
+//		String result = null;
+//		try {
+//			// result = feimaService.accounts(merchantNo, "");
+//			result = feimaService.queryAccounts(merchantNo, "201904170000003");
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println(result);
+//
+//	}
+}

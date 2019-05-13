@@ -1,0 +1,19 @@
+<?Mapper version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stys.ipfs.mapper.TbVipminerMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap"
+		type="com.stys.ipfs.entity.TbVipminer">
+		<id column="id" property="id" />
+		<result column="limit_coin" property="limitCoin" />
+		<result column="create_time" property="createTime" />
+		<result column="end_time" property="endTime" />
+		<result column="vip_sort" property="vipSort" />
+		<result column="gift_coin" property="giftCoin" />
+		<result column="status" property="status" />
+		<result column="user_id" property="userId" />
+
+	</resultMap>
+ 
+</mapper>

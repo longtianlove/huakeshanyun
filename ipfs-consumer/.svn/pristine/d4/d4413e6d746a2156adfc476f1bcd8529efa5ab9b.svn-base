@@ -1,0 +1,61 @@
+package com.stys.ipfs.web;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.stys.ipfs.dto.ResultInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.*;
+import com.stys.ipfs.entity.Userinfo;
+import com.stys.ipfs.service.IUserinfoService;
+import org.springframework.stereotype.Controller;
+
+/**
+ * <p>
+ * app用户个人信息表 前端控制器
+ * </p>
+ *
+ * @author dp
+ * @since 2018-10-29
+ */
+@Controller
+@RequestMapping("/userinfo")
+public class UserinfoController extends BaseController {
+
+    @Reference(version = "1.0.0")
+    private IUserinfoService iuserinfoService;
+
+    @RequestMapping("/*")
+    public void toHtml(){
+
+    }
+
+    @RequestMapping("/listData")
+    @RequiresPermissions("userinfo:view")
+    public @ResponseBody
+        ResultInfo<List<Userinfo>> listData(Userinfo userinfo, Integer page, Integer limit){
+        EntityWrapper<Userinfo> wrapper = new EntityWrapper<>(userinfo);
+        Page<Userinfo> pageObj = iuserinfoService.selectPage(new Page<Userinfo>(page,limit), wrapper);
+        return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
+    }
+
+    @RequestMapping("/add")
+    @RequiresPermissions("userinfo:add")
+    public @ResponseBody
+        ResultInfo<Boolean> add(Userinfo userinfo){
+        boolean b = iuserinfoService.insert(userinfo);
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/edit")
+    @RequiresPermissions("userinfo:edit")
+    public @ResponseBody
+        ResultInfo<Boolean> edit(Userinfo userinfo){
+        boolean b = iuserinfoService.updateById(userinfo);
+        return new ResultInfo<>(b);
+    }
+
+}
+

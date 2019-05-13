@@ -1,0 +1,6 @@
+com\stys\ipfs\tools\generator\DefaultGenerator.class
+com\stys\ipfs\tools\generator\WebGenerator.class
+com\stys\ipfs\tools\message\EmailUtil.class
+com\stys\ipfs\tools\generator\TyqxCmsGenerator.class
+com\stys\ipfs\tools\message\SMSUtil.class
+com\stys\ipfs\tools\generator\AutoGenerator.class

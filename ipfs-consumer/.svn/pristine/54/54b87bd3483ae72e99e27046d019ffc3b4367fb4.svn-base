@@ -1,0 +1,143 @@
+package com.stys.ipfs.web.app;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.entity.TbUserbankInfo;
+import com.stys.ipfs.entity.Userinfo;
+import com.stys.ipfs.service.ITbUserbankInfoService;
+import com.stys.ipfs.service.IUserinfoService;
+import com.stys.ipfs.util.AppConstant;
+import com.stys.ipfs.util.StringUtils;
+
+@RestController
+@RequestMapping("/tbr")
+public class BindUserBankController extends AppController {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserbankInfoService itbUserbankInfoService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IUserinfoService iuserinfoService;
+
+	/**
+	 * 
+	 * 
+	 * 
+	 * @api {post} /tbr/identityAuthentication 身份认证
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：身份认证
+	 * @apiParam {Integer} userId             用户id
+	 * @apiParam {String} name               用户真实姓名
+	 * @apiParam {String} identityNumber     身份证号码
+	 * @apiParam {String} identityImgFront   身份证照片正面
+	 * @apiParam {String} identityImgReverse 身份证照片反面
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/identityAuthentication
+	 * @return
+	 */
+	@RequestMapping(value = "/identityAuthentication", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<Boolean> identityAuthentication(Integer userId, String name,
+			String identityNumber, String identityImgFront, String identityImgReverse) {
+		TbUserbankInfo entity = itbUserbankInfoService
+				.selectOne(new EntityWrapper<TbUserbankInfo>().eq("user_id", userId));
+		if (!StringUtils.isEmpty(entity)) {
+			if (entity.getVerifyState() == 0) {
+				return new AppResultInfo<>("正在审核请勿重复提交!");
+			}
+			if (entity.getVerifyState() == 1) {
+				return new AppResultInfo<>("当前审核已通过!");
+			}
+			entity.setIdentityNumber(identityNumber);
+			entity.setIdentityImgFront(identityImgFront);
+			entity.setIdentityImgReverse(identityImgReverse);
+			entity.setVerifyState(0);
+			itbUserbankInfoService.updateById(entity);
+
+			Userinfo Userinfo = iuserinfoService.selectOne(new EntityWrapper<Userinfo>().eq("user_id", userId));
+			Userinfo.setName(name);
+			iuserinfoService.updateById(Userinfo);
+			return new AppResultInfo<>("提交成功正在审核");
+		}
+
+		return new AppResultInfo<>(AppConstant.STATUE_1, "参数错误!");
+	}
+
+	/**
+	 * 
+	 * @api {post} /tbr/bindBankInfo 绑定银行卡
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：绑定银行卡
+	 * @apiParam {Integer} userId   用户 id
+	 * @apiParam {String} bankCode 银行卡号
+	 * @apiParam {String} bank     开户银行
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/bindBankInfo
+	 * @return
+	 */
+	@RequestMapping(value = "/bindBankInfo", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<TbUserbankInfo> bindBankInfo(Integer userId, String bankCode, String bank,
+			String bankOwnerName) {
+		TbUserbankInfo entity = itbUserbankInfoService
+				.selectOne(new EntityWrapper<TbUserbankInfo>().eq("user_id", userId));
+		if (!StringUtils.isEmpty(entity) && !StringUtils.isEmpty(entity.getBankCode())) {
+			new AppResultInfo<>(AppConstant.STATUE_1, "当前用户已绑定" + entity.getBankCode() + "号码的银行卡!如需重新绑定，请先解除绑定");
+		} else if (!StringUtils.isEmpty(entity) && StringUtils.isEmpty(entity.getBankCode())) {
+			entity.setBank(bank);
+			entity.setBankOwnerName(bankOwnerName);
+			entity.setBankCode(bankCode);
+			itbUserbankInfoService.updateById(entity);
+			return new AppResultInfo<>("绑定成功");
+		}
+		return new AppResultInfo<>(AppConstant.STATUE_1, "参数错误!");
+	}
+
+	/**
+	 * 
+	 * @api {post} /tbr/dischargeBankBind 解除绑定银行卡
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：解除绑定银行卡
+	 * @apiParam {Integer} userId   用户Id
+	 * @apiParam {String} bankCode 银行卡号
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/bindBankInfo
+	 */
+	@RequestMapping(value = "/dischargeBankBind", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<TbUserbankInfo> dischargeBankBind(Integer userId, String bankCode) {
+		TbUserbankInfo tbuserbankinfo = itbUserbankInfoService
+				.selectOne(new EntityWrapper<TbUserbankInfo>().eq("user_id", userId).eq("bank_code", bankCode));
+		if (StringUtils.isEmpty(tbuserbankinfo)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "参数错误!");
+		} else {
+			tbuserbankinfo.setBank(null);
+			tbuserbankinfo.setBankCode(null);
+			tbuserbankinfo.setBankOwnerName(null);
+			itbUserbankInfoService.updateById(tbuserbankinfo);
+		}
+		return new AppResultInfo<>("解绑成功");
+	}
+
+	/**
+	 * 
+	 * @api {post} /tbr/dischargeBankBind 我的银行卡
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：我的银行卡
+	 * @apiParam {Integer} userId
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/bindBankInfo
+	 */
+	@RequestMapping(value = "/getMyBankCode", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<TbUserbankInfo> getMyBankCode(Integer userId) {
+		TbUserbankInfo entity = itbUserbankInfoService
+				.selectOne(new EntityWrapper<TbUserbankInfo>().eq("user_id", userId));
+		if (!StringUtils.isEmpty(entity)) {
+			return new AppResultInfo<>(entity);
+		}
+		return new AppResultInfo<>("参数错误");
+	}
+}

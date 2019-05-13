@@ -1,0 +1,75 @@
+package com.stys.ipfs.dto;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserInfoVo implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private Integer id; //主键ID
+	 
+	private Integer userId ; //用户id
+	
+	private String name;  //真实姓名
+	 
+	private String nickname; //昵称
+ 
+	private String email; //* 邮件
+ 
+	private String avater;  //头像图片地址
+ 
+	private String userGradeId;//用户等级
+	
+	private String state;//用户状态
+	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime; //创建时间
+	
+	private String lv;//用户等级
+	
+	private String invitationCode;//被邀请码
+ 
+	private String remark; //备注
+	 
+	private Integer totalHashrate;   //总算力 
+	
+	private Integer temporaryHashrate;  //临时算力	
+	 
+	private String codePath; //我的邀请二维码
+	 
+	private String code; //我的邀请码
+
+	private Float balance;//余额
+	
+	private Integer ipfsStorenum;//ipfs 存储
+	
+	private String walletAddress;//钱包地址
+	
+	private String walletPassword;//钱包密码
+	
+	private String tonickname;//邀请人昵称
+	
+	private Integer toUserId; //邀请人id
+	
+	private String phone;//手机
+	
+	private Integer verifyState;//认证审核状态 0正在审核 1通过 2未通过 
+	
+
+
+}

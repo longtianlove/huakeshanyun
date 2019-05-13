@@ -1,0 +1,104 @@
+package com.stys.ipfs.web;
+
+import java.util.List;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.stys.ipfs.dto.ResultInfo;
+import com.stys.ipfs.dto.UserInfoVo;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.service.ITbUserBuyLogService;
+
+/**
+ * <p>
+ * APP用户管理 前端控制器
+ * </p>
+ *
+ * @author dp
+ * @since 2018-11-01
+ */
+@Controller
+@RequestMapping("/appUser")
+public class AppUserController extends BaseController {
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbProductService itbProductService;
+	
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserBuyLogService itbUserBuyLogService;
+
+	@RequestMapping("/*")
+	public void toHtml() {
+
+	}
+
+	@RequestMapping("/checkMobile")
+	public @ResponseBody ResultInfo<Integer> checkMobile(AppUser appUser) {
+		EntityWrapper<AppUser> wrapper = new EntityWrapper<>(appUser);
+		return new ResultInfo<>(iappUserService.selectCount(wrapper));
+	}
+
+	@RequestMapping("/listData")
+	@RequiresPermissions("appUser:view")
+	public @ResponseBody ResultInfo<List<UserInfoVo>> listData(UserInfoVo userInfoVo, Integer page, Integer limit) {
+		EntityWrapper<UserInfoVo> wrapper = new EntityWrapper<>(userInfoVo);
+		Page<UserInfoVo> pageObj = iappUserService.selectPageAppUser(new Page<UserInfoVo>(page, limit), wrapper,
+				userInfoVo.getPhone(), userInfoVo.getNickname());
+		return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
+	}
+
+	@RequestMapping("/add")
+	@RequiresPermissions("appUser:add")
+	public @ResponseBody ResultInfo<Boolean> add(AppUser appUser) {
+		boolean b = iappUserService.insert(appUser);
+		return new ResultInfo<>(b);
+	}
+
+	@RequestMapping("/edit")
+	@RequiresPermissions("appUser:edit")
+	public @ResponseBody ResultInfo<Boolean> edit(AppUser appUser) {
+		boolean b = iappUserService.updateById(appUser);
+		return new ResultInfo<>(b);
+	}
+
+	/**
+	 * 禁止用户登陆
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping("/stop")
+	public @ResponseBody ResultInfo<Boolean> stop(Integer userId) {
+		AppUser appUser = iappUserService.selectById(userId);
+		appUser.setState(0);
+		boolean b = iappUserService.updateById(appUser);
+		return new ResultInfo<>(b);
+	}
+
+	/**
+	 * 用户解禁
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	@RequestMapping("/start")
+	public @ResponseBody ResultInfo<Boolean> start(Integer userId) {
+		AppUser appUser = iappUserService.selectById(userId);
+		appUser.setState(1);
+		boolean b = iappUserService.updateById(appUser);
+		return new ResultInfo<>(b);
+	}
+
+
+}

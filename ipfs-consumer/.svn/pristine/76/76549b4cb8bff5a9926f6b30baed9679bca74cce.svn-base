@@ -1,0 +1,88 @@
+package com.stys.ipfs.web;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.plugins.Page;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.*;
+
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.dto.AppUserInfoVo;
+import com.stys.ipfs.dto.ResultInfo;
+import com.stys.ipfs.entity.AppUserinfo;
+import com.stys.ipfs.service.IAppUserinfoService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+
+import org.springframework.stereotype.Controller;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-11
+ */
+@Controller
+@RequestMapping("/appUserinfo")
+public class AppUserinfoController extends BaseController {
+
+    @Reference(version = "1.0.0", check = false)
+    private IAppUserinfoService iappUserinfoService;
+    
+    @Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+    
+    @Reference(version = "1.0.0", check = false)
+    private ITbProductService itbProductService;
+    
+    @RequestMapping("/*")
+    public void toHtml(){
+
+    }
+
+    @RequestMapping("/listData")
+    @RequiresPermissions("appUserinfo:view")
+    public @ResponseBody
+        ResultInfo<List<AppUserInfoVo>> listData(String phone,String nickname, Integer page, Integer limit){
+        Page<AppUserInfoVo> pageObj = iappUserinfoService.selectPageAppUserInfoVo(new Page<AppUserInfoVo>(page,limit), phone, nickname);
+        return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
+    }
+
+    @RequestMapping("/add")
+    @RequiresPermissions("appUserinfo:add")
+    public @ResponseBody
+        ResultInfo<Boolean> add(AppUserinfo appUserinfo){
+        boolean b = iappUserinfoService.insert(appUserinfo);
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/delBatch")
+    @RequiresPermissions("appUserinfo:del")
+    public @ResponseBody
+        ResultInfo<Boolean> delBatch(Integer[] idArr){
+        boolean b = iappUserinfoService.deleteBatchIds(Arrays.asList(idArr));
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/edit")
+    @RequiresPermissions("appUserinfo:edit")
+    public @ResponseBody
+        ResultInfo<Boolean> edit(AppUserinfo appUserinfo){
+        boolean b = iappUserinfoService.updateById(appUserinfo);
+        return new ResultInfo<>(b);
+    }
+    
+    @RequestMapping("/personBuy")
+	public @ResponseBody ResultInfo<Boolean> personBuy(Integer userId,Integer tbProductId) {
+//    	AppResultInfo<?> appresultinfo=itbUserAssetsService.buyProduct(userId, tbProductId);
+    	
+    	itbProductService.buyProduct(userId, tbProductId);
+    	
+		return new ResultInfo<>(true);
+	}
+    
+}
+

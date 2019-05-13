@@ -1,0 +1,114 @@
+package com.stys.ipfs.web.app;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ResourceBundle;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.aliyun.oss.OSSClient;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.ex.TokenException;
+import com.stys.ipfs.service.IAppLoginLogService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.util.AliyunOSSClientUtil;
+import com.stys.ipfs.util.ComUtil;
+import com.stys.ipfs.util.JWTUtil;
+import com.stys.ipfs.util.ReduceImgUtil;
+import com.stys.ipfs.util.UUIdUtils;
+
+
+@RestController
+@RequestMapping("/tbr")
+public class UserBaseinfoController extends AppController {
+
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbInviteService itbInviteService;
+
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+	
+	@Reference(version = "1.0.0" , check = false)
+	private IAppLoginLogService iappLoginLogService;
+
+	private String getPhoneBytoken(HttpServletRequest request) {
+		
+		if (ComUtil.isEmpty(request.getHeader("token"))) {
+
+			throw new TokenException("-4", "您无权操作！");
+		}
+		String token = (String) request.getHeader("token");
+		String phone = JWTUtil.getUsername(token);
+		return phone;
+	}
+
+
+
+	 /**
+	 *	单个文件上传
+	 * @api {post} /tbr/uploadImgAndVideo 单个文件上传
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：单个文件上传（包含视频上传）视频不能大于20M 
+	 * @apiParam {MultipartFile}  file
+	 * @apiParam request
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/uploadImgAndVideo
+	 * @return
+	 */
+	@RequestMapping("/uploadImg")
+	 public @ResponseBody AppResultInfo<?> upImgForOss(@RequestParam("file") MultipartFile file,
+				HttpServletRequest request) throws  IOException{
+			if (file.isEmpty()) {
+				return new AppResultInfo<>(-1, "文件为空");
+			}
+			// 获取文件名
+			String fileName = file.getOriginalFilename();
+			logger.info("上传的文件名为：" + fileName);
+			// 获取文件的后缀名
+			String suffixName = fileName.substring(fileName.lastIndexOf("."));
+			logger.info("上传的后缀名为：" + suffixName);
+			String phone = getPhoneBytoken(request);
+
+			if (ResourceBundle.getBundle("config/thirdParty").getString("suffix_name").indexOf(suffixName.toLowerCase().trim()) == -1) {
+				return new AppResultInfo<>(-1, "上传文件格式错误");  
+			}
+
+			// 初始化OSSClient
+			String imagePath = ResourceBundle.getBundle("config/thirdParty").getString("uploadimg_path");
+			String src_dest_path=imagePath + phone + File.separator + fileName;
+			//图片原路径
+			File dest = new File(src_dest_path); 
+			//压缩后路劲
+			File temp = new File(imagePath + phone + File.separator + UUIdUtils.getUUID() + ".png"); 
+			// 检测是否存在目录
+			if (!dest.getParentFile().exists()) {
+				dest.getParentFile().mkdirs();
+			}
+			if (!temp.getParentFile().exists()) {
+				temp.getParentFile().mkdirs();
+			}
+			file.transferTo(dest);
+			
+			int[] arr=ReduceImgUtil.getImgWidthHeight(dest);
+			ReduceImgUtil.reduceImg(src_dest_path,temp.getCanonicalPath(), arr[0], arr[1], null); 
+			
+			OSSClient ossClient = AliyunOSSClientUtil.getOSSClient();
+			String[] s =AliyunOSSClientUtil.uploadObject2OSS(ossClient,temp,"ipfsuser",phone);
+			dest.delete(); 
+			temp.delete(); 
+	        logger.info("文件路径:"+ s[1]); 
+	        String url = AliyunOSSClientUtil.getUrl(ossClient,"ipfsuser", s[1]); 
+	        logger.info("访问网址路径:" + url); //
+			return new AppResultInfo<>(url);
+	 }
+}

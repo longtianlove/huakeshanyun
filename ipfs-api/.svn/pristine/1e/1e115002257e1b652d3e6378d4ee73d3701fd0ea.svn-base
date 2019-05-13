@@ -1,0 +1,26 @@
+package com.stys.ipfs.service;
+
+import com.stys.ipfs.dto.UserAssetDetailVO;
+import com.stys.ipfs.entity.TbAssetsDetail;
+
+import java.util.List;
+
+import com.baomidou.mybatisplus.service.IService;
+
+/**
+ * <p>
+ *  服务类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-12
+ */
+public interface ITbAssetsDetailService extends IService<TbAssetsDetail> {
+	
+	/**
+	 * 获取当前用户的账户明细
+	 * @param userId
+	 * @return
+	 */
+	public List<UserAssetDetailVO>  getAessetForUser(Integer userId);
+}

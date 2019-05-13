@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stys.ipfs.mapper.AppUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.stys.ipfs.entity.AppUser">
+        <id column="id" property="id" />
+        <result column="state" property="state" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="phone" property="phone" />
+        <result column="openID" property="openID" />
+        <result column="weixin_name" property="weixinName" />
+    </resultMap>
+</mapper>

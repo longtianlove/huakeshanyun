@@ -1,0 +1,91 @@
+package com.stys.ipfs.entity;
+
+import com.baomidou.mybatisplus.enums.IdType;
+import java.util.Date;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-21
+ */
+@Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@TableName("tb_offline_payment")
+public class TbOfflinePayment extends Model<TbOfflinePayment> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 充值金额
+     */
+	private Float price;
+    /**
+     * 用户id
+     */
+    @TableField("user_id")
+	private Integer userId;
+    /**
+     * 账户平台账户
+     */
+	private String phone;
+    /**
+     * 创建时间
+     */
+	@TableField(value = "create_time", fill = FieldFill.INSERT)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime;
+    /**
+     * 打款凭证
+     */
+    @TableField("voucher_path")
+	private String voucherPath;
+    /**
+     * 状态（0待充值，1已充值）
+     */
+    @TableField("status")
+    private Integer status;
+    /**
+     * 	备注
+     */
+    @TableField("remark")
+    private String remark;
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "TbOfflinePayment{" +
+			", id=" + id +
+			", price=" + price +
+			", userId=" + userId +
+			", status=" + status +
+			", phone=" + phone +
+			", createTime=" + createTime +
+			", voucherPath=" + voucherPath +
+			", remark=" + remark +
+			"}";
+	}
+}

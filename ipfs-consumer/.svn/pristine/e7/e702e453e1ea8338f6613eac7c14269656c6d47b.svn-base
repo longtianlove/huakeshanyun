@@ -1,0 +1,386 @@
+package com.stys.ipfs.util;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.codec.binary.Base64;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class CoinUsdtService {
+
+	private static Logger log = LoggerFactory.getLogger(HttpUtil.class);
+	private String mainAddress = "n2qnt1Qr3N5amBx4WvfcALf4nTb3Qj6WhQ";
+	private String url = "http://127.0.0.1:18332";
+	private String username = "u";
+	private String password = "p";
+	// 正式网络usdt=31，测试网络可以用2
+	private static final int propertyid = 31;
+	private static final int SKIP_COUNT = 100;
+	private final static String RESULT = "result";
+	private final static String METHOD_SEND_TO_ADDRESS = "omni_send";
+	// 可以指定手续费地址
+	private final static String METHOD_OMNI_FUNDED_SEND = "omni_funded_send";
+	private final static String METHOD_GET_TRANSACTION = "omni_gettransaction";
+	private final static String METHOD_GET_BLOCK_COUNT = "getblockcount";
+	private final static String METHOD_NEW_ADDRESS = "getnewaddress";
+	private final static String METHOD_GET_BALANCE = "omni_getbalance";
+	private final static String METHOD_GET_LISTBLOCKTRANSACTIONS = "omni_listblocktransactions";
+	private final static String METHOD_GET_LISTTRANSACTIONS = "omni_listtransactions";
+
+	// 前四个参数在USDT钱包conf文件中设置
+	// 钱包密码PASSWORD打开钱包后设置的密码
+
+	/***
+	 * 取得钱包相关信息 若获取失败，result为空，error信息为错误信息的编码
+	 */
+	public JSONObject getInfo() throws Exception {
+		return doRequest("omni_getinfo");
+	}
+
+	/**
+	 * USDT产生地址
+	 * 
+	 * @return
+	 */
+	public String getNewAddress() {
+		JSONObject json = doRequest(METHOD_NEW_ADDRESS);
+		if (isError(json)) {
+			log.error("获取USDT地址失败:{}", json.get("error"));
+			return "";
+		}
+		return json.getString(RESULT);
+	}
+
+	/**
+	 * USDT查询余额
+	 * 
+	 * @return
+	 */
+	public double getBalance() {
+		JSONObject json = doRequest(METHOD_GET_BALANCE, mainAddress, propertyid);
+		if (isError(json)) {
+			log.error("获取USDT余额:{}", json.get("error"));
+			return 0;
+		}
+		return json.getJSONObject(RESULT).getDouble("balance");
+	}
+
+	/**
+	 * USDT转账
+	 * 
+	 * @param toAddr
+	 * @param value
+	 * @return
+	 */
+	public String send(String toAddr, double value) {
+		if (vailedAddress(toAddr)) {
+			JSONObject json = doRequest(METHOD_SEND_TO_ADDRESS, mainAddress, toAddr, propertyid, value);
+			if (isError(json)) {
+				log.error("USDT 转账给{} value:{}  失败 ：", toAddr, "amt", json.get("error"));
+				return "";
+			} else {
+				log.info("USDT 转币给{} value:{} 成功", toAddr, value);
+				return json.getString(RESULT);
+			}
+		} else {
+			log.error("USDT接受地址不正确");
+			return "";
+		}
+	}
+
+	/**
+	 * 验证地址的有效性
+	 * 
+	 * @param address
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean vailedAddress(String address) {
+		JSONObject json = doRequest("validateaddress", address);
+		if (isError(json)) {
+			log.error("USDT验证地址失败:", json.get("error"));
+			return false;
+		} else {
+			return json.getJSONObject(RESULT).getBoolean("isvalid");
+		}
+	}
+
+	/**
+	 * 区块高度
+	 * 
+	 * @return
+	 */
+	public int getBlockCount() {
+		JSONObject json = null;
+		try {
+			json = doRequest(METHOD_GET_BLOCK_COUNT);
+			if (!isError(json)) {
+				return json.getInteger("result");
+			} else {
+				log.error(json.toString());
+				return 0;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	/************************** 第一种方式*********start ******************/
+
+	/* 扫描区块数据 **/
+	public boolean parseBlock(int index) {
+		// doRequest("omni_listblocktransactions",279007);
+		// {"result":["63d7e22de0cf4c0b7fd60b4b2c9f4b4b781f7fdb8be4bcaed870a8b407b90cf1","6fb25ab84189d136b95d7f733b0659fa5fbd63f476fb1bca340fb4f93de6c912","d54213046d8be80c44258230dd3689da11fdcda5b167f7d10c4f169bd23d1c01"],"id":"1521454868826"}
+		JSONObject jsonBlock = doRequest(METHOD_GET_LISTBLOCKTRANSACTIONS, index);
+		if (isError(jsonBlock)) {
+			log.error("访问USDT出错");
+			return false;
+		}
+		JSONArray jsonArrayTx = jsonBlock.getJSONArray(RESULT);
+		if (jsonArrayTx == null || jsonArrayTx.size() == 0) {
+			// 没有交易
+			return true;
+		}
+		Iterator<Object> iteratorTxs = jsonArrayTx.iterator();
+		while (iteratorTxs.hasNext()) {
+			String txid = (String) iteratorTxs.next();
+		/*	if (!parseTx(txid, null)) {
+				return false;
+			}*/
+		}
+		return true;
+	}
+
+	/**
+	 * 过滤数据
+	 * 
+	 * @param txid
+	 * @param userList 用户地址列表
+	 * @return
+	 *//*
+	public boolean parseTx(String txid, List<UserCoinAddressEntity> userList) {
+		*//**
+		 * {"result":{"amount":"50.00000000","divisible":true,"fee":"0.00000257",
+		 * "txid":"f76d51044f156e6ed84c11e6531db1d6d70799196522c07bd2a8870a21f90220","ismine":true,
+		 * "type":"Simple
+		 * Send","confirmations":565,"version":0,"sendingaddress":"mh8tV2mfDa6yHK76t68N3paoGdSmangJDi",
+		 * "valid":true,"blockhash":"000000000000014cdef6ee8a095b58755efebf913b1ab13bb23adaa33b6f7b05",
+		 * "blocktime":1523528971,"positioninblock":189,"referenceaddress":"mg5yVUSwGNEJNhYKfyETV2udWok6Q4pgLx",
+		 * "block":1292526,"propertyid":2,"type_int":0},"id":"1523860978684"}
+		 *//*
+		JSONObject jsonTransaction = doRequest(METHOD_GET_TRANSACTION, txid);
+		if (isError(jsonTransaction)) {
+			log.error("处理USDT tx出错");
+			return true;
+		}
+		JSONObject jsonTResult = jsonTransaction.getJSONObject(RESULT);
+		if (!jsonTResult.getBoolean("valid")) {
+			log.info("不是有效数据");
+			return true;
+		}
+		int propertyidResult = jsonTResult.getIntValue("propertyid");
+		if (propertyidResult != propertyid) {
+			log.info("非USDT数据");
+			return true;
+		}
+		int coinfirm = jsonTResult.getIntValue("confirmations");
+		if (coinfirm <= 0) {
+			log.info("交易未确认，txid:{}", txid);
+			return false;
+		}
+		double value = jsonTResult.getDouble("amount");
+		if (value > 0) {
+			String address = jsonTResult.getString("referenceaddress");
+			for (UserCoinAddressEntity addressModel : userList) {
+				// 如果有地址是分配给用记的地址， 则说明用户在充值
+				if (address.equals(addressModel.getAddress())) {
+					// 添加充值记录
+					log.info("添加用户充值记录");
+					// 归集
+					collUsdt(address, value);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+*/
+	/************************** 第一种方式*********end ******************/
+
+	/********** 推荐****************第二种方式*********start ******************/
+
+	/**
+	 * 
+	 * @param block
+	 * @param skip
+	 * @return
+	 */
+	public int parseBlockCount(int block, int skip) {
+		// omni_listtransactions "*" 1000(最多显示几条数据) 0(跳过几条事务) 543530(开始搜索块高度)
+		// 543530(结束搜索块高度)
+		// 详细描述请参考https://blog.csdn.net/wm609972715/article/details/82891064
+
+		JSONObject jsonResult = doRequest(METHOD_GET_LISTTRANSACTIONS, "*", SKIP_COUNT, skip, block, block);
+		if (isError(jsonResult)) {
+			log.error("访问USDT出错");
+			return -1;
+		}
+		JSONArray jsonArrayTx = jsonResult.getJSONArray(RESULT);
+		// 获取用户分配地址列表。请根据自己系统来！
+		/*
+		List<UserCoinAddressEntity> userList = userCoinService.getAllUserCoinAddress(CoinConstant.COIN_USDT);
+		if (userList == null || userList.size() == 0) {
+			return 0;
+		}
+		Iterator<Object> iteratorTxs = jsonArrayTx.iterator();
+		while (iteratorTxs.hasNext()) {
+			JSONObject tx = (JSONObject) iteratorTxs.next();
+			if (!parseTx(tx, userList)) {
+				return -1;
+			}
+		}
+		*/
+		return jsonArrayTx.size();
+	}
+
+/*	public boolean parseBlock(int index) {
+		int skip = 0;
+		do {
+			int res = parseBlockCount(index, skip);
+			if (res < 0) {
+				return false;
+			}
+			if (res < SKIP_COUNT) {
+				return true;
+			}
+			skip = skip + 100;
+		} while (true);
+
+	}*/
+
+	/**
+	 * 过滤数据
+	 * 
+	 * @param userList 用户地址列表
+	 * @return
+	 */
+	/*
+	public boolean parseTx(JSONObject jsonTResult, List<UserCoinAddressEntity> userList) {
+
+		if (!jsonTResult.getBoolean("valid")) {
+			log.info("不是有效数据");
+			return true;
+		}
+
+		int propertyidResult = jsonTResult.getIntValue("propertyid");
+		if (propertyidResult != propertyid) {
+			log.info("非USDT数据");
+			return true;
+		}
+		String txid = jsonTResult.getString("txid");
+
+		int coinfirm = jsonTResult.getIntValue("confirmations");
+		if (coinfirm < 6) {
+			log.info("交易确认不够，当前确认数:{}", coinfirm);
+			return false;
+		}
+		double value = jsonTResult.getDouble("amount");
+		if (value > 0) {
+			String address = jsonTResult.getString("referenceaddress");
+
+			for (UserCoinAddressEntity addressModel : userList) {
+				// 如果有地址是分配给用记的地址， 则说明用户在充值
+				if (address.equals(addressModel.getAddress())) {
+					try {
+						// 添加充值记录
+						if (rechargeParse(record)) {
+							// 归集
+							collUsdt(address, value);
+							return true;
+						}
+					} catch (DuplicateKeyException e) {
+						log.error("这个用户{}的充值已经处理了 币：{}", addressModel.getUserId(), CoinConstant.COIN_USDT);
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+*/
+	/************************** 第二种方式*********end ******************/
+
+	/**
+	 * 归集USDT
+	 */
+	private void collUsdt(String fromAddress, double value) {
+		if (vailedAddress(fromAddress)) {
+			JSONObject json = doRequest(METHOD_OMNI_FUNDED_SEND, fromAddress, mainAddress, propertyid, value,
+					mainAddress);
+			if (isError(json)) {
+				log.error("USDT 归集 value:{}  失败 ：", value, json.get("error"));
+			} else {
+				log.info("USDT 归集 value:{} 成功", value);
+			}
+		} else {
+			log.error("USDT接受地址不正确");
+		}
+	}
+
+	private boolean isError(JSONObject json) {
+		if (json == null || (StringUtils.isNotEmpty(json.getString("error")) && json.get("error") != "null")) {
+			return true;
+		}
+		return false;
+	}
+
+	private JSONObject doRequest(String method, Object... params) {
+		JSONObject param = new JSONObject();
+		param.put("id", System.currentTimeMillis() + "");
+		param.put("jsonrpc", "2.0");
+		param.put("method", method);
+		if (params != null) {
+			param.put("params", params);
+		}
+		String creb = Base64.encodeBase64String((username + ":" + password).getBytes());
+		Map<String, String> headers = new HashMap<>(2);
+		headers.put("Authorization", "Basic " + creb);
+		String resp = "";
+		if (METHOD_GET_TRANSACTION.equals(method)) {
+		/*	try {
+				resp = HttpUtil.jsonPost(url, headers, param.toJSONString());
+			} catch (Exception e) {
+				if (e instanceof IOException) {
+					resp = "{}";
+				}
+			}*/
+		} else {
+			//resp = HttpUtil.jsonPost(url, headers, param.toJSONString());
+		}
+		return JSON.parseObject(resp);
+	}
+
+	public static void main(String args[]) throws Exception {
+		CoinUsdtService usdtUtils = new CoinUsdtService();
+		System.out.println(usdtUtils.getInfo());
+	}
+}

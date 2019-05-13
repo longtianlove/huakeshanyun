@@ -1,0 +1,123 @@
+package com.stys.ipfs.entity;
+
+import com.baomidou.mybatisplus.enums.IdType;
+import java.util.Date;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-11
+ */
+@TableName("sys_app_user")
+public class AppUser extends Model<AppUser> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 状态（1,冻结、0,启用）
+     */
+	private Integer state;
+    /**
+     * 创建时间
+     */
+	@TableField(value = "create_time", fill = FieldFill.INSERT)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime;
+    /**
+     * 电子邮件
+     */
+	private String email;
+    /**
+     * 等级
+     */
+    @TableField("dic_id")
+	private Integer dicId;
+    /**
+     * 密码
+     */
+	private String password;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Integer getDicId() {
+		return dicId;
+	}
+
+	public void setDicId(Integer dicId) {
+		this.dicId = dicId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "AppUser{" +
+			", id=" + id +
+			", state=" + state +
+			", createTime=" + createTime +
+			", email=" + email +
+			", dicId=" + dicId +
+			", password=" + password +
+			"}";
+	}
+}

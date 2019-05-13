@@ -1,0 +1,812 @@
+package com.stys.ipfs.web.app;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.dto.UserAssetDetailVO;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.Dic;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbFeimaOrder;
+import com.stys.ipfs.entity.TbFeimaWithdrawadLog;
+import com.stys.ipfs.entity.TbFeimauser;
+import com.stys.ipfs.entity.TbOfflinePayment;
+import com.stys.ipfs.entity.TbUsdtWithdraw;
+import com.stys.ipfs.entity.TbUsdtlog;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.service.FeimaService;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IAppUserinfoService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbBackfillService;
+import com.stys.ipfs.service.ITbFeimaOrderService;
+import com.stys.ipfs.service.ITbFeimaWithdrawadLogService;
+import com.stys.ipfs.service.ITbFeimauserService;
+import com.stys.ipfs.service.ITbOfflinePaymentService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.service.ITbUsdtWithdrawService;
+import com.stys.ipfs.service.ITbUsdtlogService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserExperienceService;
+import com.stys.ipfs.service.ITbWithdrawadLogService;
+import com.stys.ipfs.util.AppConstant;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.ParamUtils;
+import com.stys.ipfs.util.RSAUtil;
+import com.stys.ipfs.util.RandomUtil;
+import com.stys.ipfs.util.SMSUtil;
+import com.stys.ipfs.util.SecuritySHA1Utils;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.UUIdUtils;
+import com.stys.ipfs.util.usdt.CoinUtils;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppFundsActionController extends AppController {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbOfflinePaymentService itbOfflinePaymentService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUsdtlogService itbUsdtlogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbWithdrawadLogService itbWithdrawadLogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbBackfillService itbBackfillService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbProductService itbProductService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbFeimaOrderService itbFeimaOrderService;
+
+	@Reference(version = "1.0.0")
+	private ITbFeimauserService itbFeimauserService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserExperienceService itbUserExperienceService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUsdtWithdrawService itbUsdtWithdrawService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserinfoService iappUserinfoService;
+
+	@Reference(version = "1.0.0")
+	private ITbFeimaWithdrawadLogService itbFeimaWithdrawadLogService;
+
+	@Value("${feimaNotifyUrl}")
+	private String feimaNotifyUrl;
+
+	@Value("${merchantNo}")
+	private String merchantNo;
+
+	@Value("${cbs.imagesPath}")
+	private String localImagesPath;
+
+	@Value("${publicKey}")
+	private String publicKey;
+
+	@Value("${privateKey}")
+	private String privateKey;
+
+	@Value("${feimaPublicKey}")
+	private String feimaPublicKey;
+
+	/**
+	 * 
+	 * 飞码通提现接口
+	 * 
+	 * @api {post} /tbr/submitFeimaWithdraw 飞码通提现接口
+	 * @apiParam {Integer} userId 用户id
+	 * @apiParam {String} coin_number 金币数量
+	 * @apiParam {String} arrival_amount 到账金额
+	 * @apiParam {String} handler_fee 手续费(单位：分)
+	 * @apiGroup feima
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/submitFeimaWithdraw
+	 * @return
+	 */
+	@RequestMapping(value = "/submitFeimaWithdraw", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> submitFeimaWithdraw(Integer userId, double coin_number, double handler_fee,
+			Integer arrival_amount) {
+		// 查询个人资产
+		TbUserAssets tbUserAssets = itbUserAssetsService
+				.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+
+		Float coin = tbUserAssets.getCoin();
+
+		String feima_handler_fee = idicService.getDicData("飞码通提现", "手续费").getValue1();
+		if (coin <= coin_number) {
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "费用不足");
+		}
+
+		Double actualFee = 1 - Double.valueOf(feima_handler_fee);
+
+		String arrival_amount_str = BigDecimalUtils.multiply(String.valueOf(coin_number), String.valueOf(actualFee));
+
+		/*
+		 * if (!arrival_amount_str.equals(String.valueOf(arrival_amount))) {
+		 * 
+		 * return new AppResultInfo<>(AppConstant.STATUE_1, "费用错误"); }
+		 */
+
+		String mchOrderNo = RandomUtil.getOrderIdByTime();
+		// 商户账号
+		String subAccount = "";
+		subAccount = getSubAccount(subAccount);
+		String batchNo = RandomUtil.getNumber(20);
+		String relatedMerchantNo = "";
+		// 个人账户
+		JSONObject account_jsonObject = null;
+		account_jsonObject = getAccountData(userId, account_jsonObject);
+		String accountNumber = account_jsonObject.getString("subAccount");
+		String accountName = account_jsonObject.getString("accountName");
+
+		String comments = "金币划转";
+
+		// 转账到个人账户
+		String feima_result = getFeimaServiceFactory().transferSingle(merchantNo, batchNo, mchOrderNo,
+				relatedMerchantNo, subAccount, accountName, accountNumber, String.valueOf(arrival_amount), comments);
+		JSONObject feima_result_jsonObject = JSON.parseObject(feima_result);
+		String pay_msg = feima_result_jsonObject.getString("msg");
+		if (pay_msg.equals("success")) {
+			// 减去用户账户余额
+
+			synchronized (tbUserAssets) {
+				// 分 和元 互减
+				String new_coin = BigDecimalUtils.subtract(String.valueOf(coin), String.valueOf(coin_number / 100));
+				tbUserAssets.setCoin(Float.valueOf(new_coin));
+
+				if (itbUserAssetsService.updateById(tbUserAssets)) {
+					// 增加系统转账日志
+					TbFeimaWithdrawadLog tbFeimaWithdrawadLog = new TbFeimaWithdrawadLog();
+					tbFeimaWithdrawadLog.setActualAmount(new BigDecimal(arrival_amount));
+					tbFeimaWithdrawadLog.setBeforeAmount(new BigDecimal(coin));
+					tbFeimaWithdrawadLog.setAfterAmount(new BigDecimal(new_coin));
+					tbFeimaWithdrawadLog.setCashNumber(new BigDecimal(coin_number / 100));
+					tbFeimaWithdrawadLog.setCashStatus(1);
+					tbFeimaWithdrawadLog.setHandfree(new BigDecimal(handler_fee));
+					tbFeimaWithdrawadLog.setUserId(userId);
+					tbFeimaWithdrawadLog.setUserName(accountName);
+
+					if (itbFeimaWithdrawadLogService.insert(tbFeimaWithdrawadLog)) {
+						return new AppResultInfo<>("划转成功");
+					}
+					return new AppResultInfo<>(AppConstant.STATUE_1, accountNumber + "划转成功,但是日志增加失败:" + accountName);
+
+				}
+
+				return new AppResultInfo<>(AppConstant.STATUE_1, "划转成功,但是日志增加失败");
+
+			}
+
+		}
+
+		return new AppResultInfo<>(AppConstant.STATUE_1, pay_msg);
+	}
+
+	private JSONObject getAccountData(Integer userId, JSONObject account_jsonObject) {
+		String account_result;
+		try {
+
+			TbFeimauser tbFeimauser = itbFeimauserService
+					.selectOne(new EntityWrapper<TbFeimauser>().eq("user_id", userId));
+			String feima_account = tbFeimauser.getAccount();
+			account_result = getFeimaServiceFactory().queryAccounts(merchantNo, feima_account);
+			JSONObject account_result_jsonObject = JSON.parseObject(account_result);
+			String account_result_msg = account_result_jsonObject.getString("msg");
+			if (account_result_msg.equals("success")) {
+
+				String authMsgObject = account_result_jsonObject.getString("obj");
+				account_jsonObject = JSON.parseObject(authMsgObject);
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return account_jsonObject;
+	}
+
+	private String getSubAccount(String subAccount) {
+		String mch_result;
+		try {
+			mch_result = getFeimaServiceFactory().accounts(merchantNo, "");
+			JSONObject jsonObject = JSON.parseObject(mch_result);
+			String msg = jsonObject.getString("msg");
+			if (msg.equals("success")) {
+
+				String authMsgObject = jsonObject.getString("obj");
+				JSONArray jsonArray = JSONArray.parseArray(authMsgObject);
+				for (Object object : jsonArray) {
+
+					JSONObject jsonsubAccount = (JSONObject) object;
+					String accountType = jsonsubAccount.getString("accountType");
+					System.out.println("accountType------>>>" + accountType);
+					if (accountType.equals("1")) {
+						subAccount = jsonsubAccount.getString("subAccount");
+					}
+					System.out.println("subAccount------>>>" + subAccount);
+				}
+			}
+			// 查询转账的飞码通账号
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return subAccount;
+	}
+
+	private FeimaService getFeimaServiceFactory() {
+		FeimaService feimaService = new FeimaService();
+		feimaService.feimaPublicKey = feimaPublicKey;
+		feimaService.privateKey = privateKey;
+		feimaService.publicKey = publicKey;
+		return feimaService;
+	}
+
+	/**
+	 * 
+	 * usdt 最小转出额度50个,后台自动设置
+	 * 
+	 * @api {post} /tbr/submitUSDTWithdraw 提交usdt提现申请
+	 * @apiParam {Integer} userId 用户id
+	 * @apiParam {String} coin_number 金币数量
+	 * @apiParam {String} arrival_amount 到账金额
+	 * @apiParam {String} usdt_fee 手续费
+	 * @apiParam {String} out_address 转出地址
+	 * @apiGroup USDT
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/submitUSDTWithdraw
+	 * @return
+	 */
+	@RequestMapping(value = "/submitUSDTWithdraw", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> submitUSDTWithdraw(Integer userId, Float coin_number, double usdt_fee,
+			double arrival_amount, String out_address) {
+
+		if (coin_number <= 0) {
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "金币错误");
+		}
+
+		// 查询数据库，如果没有币 则不能提现，重新提交
+		TbUserAssets tbUserAssets = itbUserAssetsService
+				.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+		Float coin = tbUserAssets.getCoin();
+		if (coin_number > coin) {
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "金币不足");
+		}
+		Double usdt_number = coin_number / 6.72;
+		String mainUSDT_num_str = idicService.getDicData("USDT提现", "额度").getValue1();
+		Double mainUSDT_num = Double.valueOf(mainUSDT_num_str);
+		if (usdt_number < mainUSDT_num) {
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "USDT提现超出额度");
+		}
+
+		String usdt_handlerfee = idicService.getDicData("USDT提现", "手续费").getValue1();
+
+		double usdt_handlerfee_1 = usdt_number * Double.valueOf(usdt_handlerfee);
+
+		if (usdt_handlerfee_1 != usdt_fee) {
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "USDT手续费计算错误");
+		}
+
+		if (usdt_number - usdt_fee > 0) {
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "转出余额不足");
+		}
+
+		String txid = "";
+		try {
+
+			String mainUSDT_address = idicService.getDicData("系统账号", "USDT").getValue1();
+
+			// Double new_arrival_amount = usdt_number - Double.valueOf(usdt_handlerfee);
+
+			// if (new_arrival_amount != arrival_amount || new_arrival_amount <= 0) { return
+			// new AppResultInfo<>(AppConstant.STATUE_1, "计算错误"); }
+
+			// 发送usdt
+			txid = CoinUtils.getInstance().send(mainUSDT_address, out_address, 31, arrival_amount, mainUSDT_address);
+
+			if (!StringUtils.strIsNull(txid)) {
+
+				AppUser appuser = iappUserService.selectOne(new EntityWrapper<AppUser>().eq("id", userId));
+				synchronized (tbUserAssets) {
+
+					String newcoin = BigDecimalUtils.subtract(String.valueOf(coin_number), String.valueOf(coin));
+					tbUserAssets.setCoin(Float.valueOf(newcoin));
+
+					TbUsdtWithdraw tbUsdtWithdraw = new TbUsdtWithdraw();
+					tbUsdtWithdraw.setArrivalAmount(new BigDecimal(arrival_amount));
+					tbUsdtWithdraw.setMainOutAddress(mainUSDT_address);
+					tbUsdtWithdraw.setOutAddress(out_address);
+					tbUsdtWithdraw.setStatus(1);
+					tbUsdtWithdraw.setTxid(txid);
+					tbUsdtWithdraw.setUsdtFee(new BigDecimal(usdt_fee));
+					tbUsdtWithdraw.setUsdtNumber(new BigDecimal(usdt_number));
+
+					if (itbUsdtWithdrawService.insert(tbUsdtWithdraw)) {
+
+						TbAssetsDetail tbAssetsDetail = new TbAssetsDetail();
+						// 支出
+						tbAssetsDetail.setAccountType(1);
+						tbAssetsDetail.setAmount(Float.valueOf(String.valueOf(usdt_number)));
+						tbAssetsDetail.setBeforeAmount(coin);
+						tbAssetsDetail.setAfterAmount(Float.valueOf(newcoin));
+						tbAssetsDetail.setInOrOut(1);
+						tbAssetsDetail.setUserId(userId);
+						//
+						tbAssetsDetail.setType(idicService.getDicData("账变类型", "USDT提现").getId());
+						if (itbAssetsDetailService.insert(tbAssetsDetail)) {
+
+							if (itbUserAssetsService.updateById(tbUserAssets)) {
+
+								SMSUtil.doGetStr(appuser.getPhone(), arrival_amount + "个USDT提现已经转出");
+								return new AppResultInfo<>("提现成功,请等待到账！");
+							}
+						}
+					}
+					logger.error("系统错误 USDT转出错误：" + userId);
+					return new AppResultInfo<>(AppConstant.STATUE_1, "转出失败");
+				}
+			}
+			return new AppResultInfo<>(AppConstant.STATUE_1, "转出失败");
+		} catch (Throwable e) {
+			logger.error("系统错误 USDT转出错误：" + userId);
+		}
+		return new AppResultInfo<>(AppConstant.STATUE_1, "转出失败");
+	}
+
+	/**
+	 * 
+	 * 
+	 * @api {post} /tbr/getPerformanceDatas 我的矿机
+	 * @apiParam {Integer} userId 用户id
+	 * @apiGroup my machine
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/getPerformanceDatas
+	 * @return
+	 */
+	@RequestMapping(value = "/getPerformanceDatas", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> getPerformanceDatas(Integer userId) {
+
+		return new AppResultInfo<>(itbUserExperienceService.selectPerformanceData(userId));
+	}
+
+	/**
+	 * 
+	 * 
+	 * @api {post} /tbr/getPerformanceDatasList 我的矿机明细
+	 * @apiParam {Integer} userId 用户id
+	 * @apiParam {Integer} page 页数
+	 * @apiParam {Integer} limit 大小
+	 * @apiGroup my machine
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/getPerformanceDatasList
+	 * @return
+	 */
+	@RequestMapping(value = "/getPerformanceDatasList", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> getPerformanceDatasToList(Integer userId, Integer page, Integer limit) {
+
+		return new AppResultInfo<>(itbUserExperienceService.selectPerformanceDataList(userId, page, limit));
+	}
+
+	/**
+	 * 
+	 * @param usdtAddress
+	 * @return
+	 */
+	@RequestMapping(value = "/rechargeByUsdt", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> rechargeByUsdt(String usdtAddress) {
+
+		return new AppResultInfo<>(AppConstant.STATUE_1, "参数错误");
+	}
+
+	/**
+	 * 
+	 * 
+	 * @api {post} /tbr/feimaNotifyUrl 通知
+	 * @apiGroup feima
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/feimaNotifyUrl
+	 * @return
+	 */
+	@RequestMapping(value = "/feimaNotifyUrl")
+	@ResponseBody
+	public AppResultInfo<?> feimaNotifyUrl(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		getFeimaServiceFactory();
+		logger.error("接收到的参数：=================================================================================");
+		String merchantNo = ParamUtils.getParameter(request, "merchantNo", "");
+		String mchOrderNo = ParamUtils.getParameter(request, "mchOrderNo", "");
+		String payOrderNo = ParamUtils.getParameter(request, "payOrderNo", "");
+		String payTradeNo = ParamUtils.getParameter(request, "payTradeNo", "");
+		String payAmount = ParamUtils.getParameter(request, "payAmount", "");
+		String payTime = ParamUtils.getParameter(request, "payTime", "");
+		String attach = ParamUtils.getParameter(request, "attach", "");
+		String timestamp = ParamUtils.getParameter(request, "timestamp", "");
+		String sign = ParamUtils.getParameter(request, "sign", "");
+
+		Map<String, String> params = new HashMap<String, String>();
+
+		params.put("merchantNo", merchantNo);
+		params.put("mchOrderNo", mchOrderNo);
+		params.put("payOrderNo", payOrderNo);
+		params.put("payTradeNo", payTradeNo);
+		params.put("payAmount", payAmount);
+		params.put("payTime", payTime);
+		params.put("attach", attach);
+		params.put("timestamp", timestamp);
+		logger.error("接收到的参数：================================================================================="
+				+ params.toString());
+		logger.debug("接收到的参数：" + JSON.toJSONString(params));
+		logger.debug("参数签名：" + sign);
+		boolean checkSign = RSAUtil.rsa256CheckContent(params, sign, feimaPublicKey);
+		if (checkSign) {
+			logger.debug("=======>>签名校验成功");
+			TbFeimaOrder tbFeimaOrder = itbFeimaOrderService
+					.selectOne(new EntityWrapper<TbFeimaOrder>().eq("mchOrderNo", mchOrderNo));
+			Integer user_id = tbFeimaOrder.getUserId();
+			Float amount = Integer.valueOf(payAmount) / 100f;
+
+			// 用户资产信息表
+			TbUserAssets tbUserAssets = itbUserAssetsService
+					.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", user_id));
+			synchronized (tbUserAssets) {
+
+				Float beforeCoin = tbUserAssets.getCoin();
+				String afterCoin = BigDecimalUtils.add(String.valueOf(beforeCoin), String.valueOf(amount));
+				tbUserAssets.setCoin(Float.valueOf(afterCoin));
+
+				Dic dic = idicService.getDicData("账变类型", "飞码通充值");
+				TbAssetsDetail entity = new TbAssetsDetail();
+				entity.setId(UUIdUtils.getUUID());
+				entity.setUserId(user_id);
+				entity.setBeforeAmount(beforeCoin);
+				entity.setAmount(amount);
+				entity.setAfterAmount(Float.parseFloat(afterCoin));
+				entity.setInOrOut(IncomeOrOut.expend.getCode());
+				entity.setType(dic.getId());
+				entity.setAccountType(1);// 金币类型
+				// 增加充值日志
+				if (itbAssetsDetailService.insert(entity)) {
+					logger.debug("===增加充值日志成功========");
+				}
+				// 增加充值
+				if (itbUserAssetsService.updateById(tbUserAssets)) {
+					// 修改订单状态
+					tbFeimaOrder.setStatus(1);
+					itbFeimaOrderService.updateById(tbFeimaOrder);
+					logger.debug("===增加充值成功========");
+				}
+
+			}
+
+			tbFeimaOrder.setStatus(1);
+			itbFeimaOrderService.updateById(tbFeimaOrder);
+
+			response.getWriter().write("success");
+		} else {
+			logger.error("=======>>签名校验失败");
+			return new AppResultInfo<>(AppConstant.STATUE_1, "充值回调失败，验证错误!");
+		}
+
+		return new AppResultInfo<>("购买成功!");
+
+	}
+
+	/**
+	 * 创建金币支付订单
+	 * 
+	 * @api {post} /tbr/createPayOrder 创建金币支付订单
+	 * @apiGroup feima
+	 * @apiDescription 详细描述： 创建支付订单
+	 * @apiParam {String} userId 用户编号
+	 * @apiParam {String} productName 填写:金币
+	 * @apiParam {String} productDesc 填写：平台等值货币，用于购买平台商品。
+	 * @apiParam {String} amount 订单金额(单位：分)
+	 * @apiParam {String} attach 附加信息
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/createPayOrder
+	 * @return
+	 */
+	@RequestMapping(value = "/createPayOrder", method = RequestMethod.POST)
+	@ResponseBody
+	public AppResultInfo<?> createPayOrder(String userId, String productName, String productDesc, Integer amount,
+			String attach) throws Exception {
+
+		String mchOrderNo = RandomUtil.getOrderIdByTime();
+		userId = (String) StringUtils.isEmptyBack(userId);
+		productName = (String) StringUtils.isEmptyBack(productName);
+		productDesc = (String) StringUtils.isEmptyBack(productDesc);
+		if (null == amount) {
+			amount = 0;
+		}
+		attach = (String) StringUtils.isEmptyBack(attach);
+
+		FeimaService feimaService = new FeimaService();
+		feimaService.feimaPublicKey = feimaPublicKey;
+		feimaService.privateKey = privateKey;
+		feimaService.publicKey = publicKey;
+		String result = feimaService.createPayOrder(merchantNo, mchOrderNo, userId, productName, productDesc, amount,
+				attach, feimaNotifyUrl);
+		System.out.println(result);
+		JSONObject jsonObject = JSON.parseObject(result);
+		String msg = jsonObject.getString("msg");
+		if (msg.equals("success")) {
+			TbFeimaOrder tbFeimaOrder = new TbFeimaOrder();
+			tbFeimaOrder.setAmount(amount);
+			tbFeimaOrder.setAttach(attach);
+			tbFeimaOrder.setMchOrderNo(mchOrderNo);
+			tbFeimaOrder.setProductName(productName);
+			tbFeimaOrder.setProductDesc(productDesc);
+			tbFeimaOrder.setStatus(0);
+			tbFeimaOrder.setUserId(Integer.valueOf(userId));
+			String authMsgObject = jsonObject.getString("obj");
+			JSONObject authjsonObject2 = JSON.parseObject(authMsgObject);
+			tbFeimaOrder.setOrderToken(authjsonObject2.getString("orderToken"));
+			if (itbFeimaOrderService.insert(tbFeimaOrder)) {
+
+				return new AppResultInfo<>(AppConstant.STATUE_200, "创建订单成功", authjsonObject2);
+			}
+		}
+		return new AppResultInfo<>(AppConstant.STATUE_1, "创建订单失败");
+
+	}
+
+	/**
+	 * 
+	 * @param mchOrderNo
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/fiemaOrderquery", method = RequestMethod.POST)
+	@ResponseBody
+	public AppResultInfo<?> fiemaOrderquery(String mchOrderNo) throws Exception {
+
+		FeimaService feimaService = new FeimaService();
+		feimaService.feimaPublicKey = feimaPublicKey;
+		feimaService.privateKey = privateKey;
+		feimaService.publicKey = publicKey;
+		String result = feimaService.orderquery(merchantNo, mchOrderNo);
+		return new AppResultInfo<>(AppConstant.STATUE_200, result);
+
+	}
+
+	/**
+	 * 购买产品
+	 * 
+	 * @api {post} /tbr/buyProduct 购买产品
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 购买产品
+	 * @apiParam {Integer} userId 用户id
+	 * @apiParam {String} productId 产品编号
+	 * @apiParam {String} paymentCode 支付密码
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/buyProduct
+	 * @return
+	 */
+	@RequestMapping(value = "/buyProduct", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> buyProduct(String paymentCode, Integer userId, Integer productId) {
+		if (null == userId || null == productId || null == paymentCode) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "参数错误");
+		}
+		AppUser appuser = iappUserService.selectById(userId);
+		if (StringUtils.strIsNull(appuser.getPaymentCode())) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "请先设置支付密码！");
+		}
+		String temp_newWord = null;
+		try {
+
+			temp_newWord = SecuritySHA1Utils.shaEncode(paymentCode.trim());
+		} catch (Exception e) {
+			logger.info("=======密码解密异常========");
+			return new AppResultInfo<>(AppConstant.STATUE_1, "支付密码错误请重新输入！");
+		}
+		if (!appuser.getPaymentCode().equals(temp_newWord)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "支付密码错误请重新输入！");
+		}
+		return itbProductService.buyProduct(userId, productId);
+	}
+
+	/**
+	 * 查询usdt充值消费记录
+	 * 
+	 * @api {post} /tbr/queryUSDTLog 查询usdt充值消费记录
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} userId 用户id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/query
+	 * @return
+	 */
+	@RequestMapping(value = "/withdrawUSDT", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> withdrawUSDT(Integer userId) {
+		if (null == userId) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "参数传递错误");
+		}
+		List<TbUsdtlog> tbUsdtlogs = itbUsdtlogService.selectUsdtlog(userId);
+		return new AppResultInfo<>(tbUsdtlogs);
+	}
+
+	/**
+	 * 查询usdt充值消费记录
+	 * 
+	 * @api {post} /tbr/queryUSDTLog 查询usdt充值消费记录
+	 * @apiGroup USDT
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} userId 用户id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/queryUSDTLog
+	 * @return
+	 */
+	@RequestMapping(value = "/queryUSDTLog", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryUSDTLog(Integer userId) {
+		if (null == userId) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "参数传递错误");
+		}
+		List<TbUsdtlog> tbUsdtlogs = itbUsdtlogService.selectUsdtlog(userId);
+		return new AppResultInfo<>(tbUsdtlogs);
+	}
+
+	/**
+	 * 查询usdt充值消费记录
+	 * 
+	 * @api {post} /tbr/queryUSDTLog 查询usdt充值消费记录
+	 * @apiGroup USDT
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} userId 用户id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/queryUSDTLog
+	 * @return
+	 */
+	@RequestMapping(value = "/queryOfflinePayDetail", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryOfflinePayDetail(Integer userId, Integer page, Integer limit) {
+		if (null == userId || limit == null || null == page) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "参数传递错误");
+		}
+		Page<TbOfflinePayment> pageObj = itbOfflinePaymentService.selectPage(new Page<TbOfflinePayment>(page, limit),
+				new EntityWrapper<TbOfflinePayment>().eq("user_id", userId));
+		return new AppResultInfo<>(pageObj);
+	}
+
+	/**
+	 * 金币划转
+	 * 
+	 * @api {post} /tbr/transfer 金币划转
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} ownerUserId 用户id
+	 * @apiParam {String} phone 对方账号
+	 * @apiParam {Float} balance 划转金额
+	 * @apiParam {String} paymentCode 支付密码
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/transfer
+	 * @return
+	 */
+	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> transfer(String paymentCode, Integer ownerUserId, String phone,
+			Float balance) {
+		AppUser appuser = iappUserService.selectById(ownerUserId);
+		if (StringUtils.isEmpty(appuser.getPaymentCode())) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "请先设置支付密码！");
+		}
+		String temp_newWord = null;
+		try {
+
+			temp_newWord = SecuritySHA1Utils.shaEncode(paymentCode.trim());
+		} catch (Exception e) {
+			logger.info("=======密码解密异常========");
+			return new AppResultInfo<>(AppConstant.STATUE_1, "支付密码错误请重新输入！");
+		}
+		if (!appuser.getPaymentCode().equals(temp_newWord)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "支付密码错误请重新输入！");
+		}
+		if (appuser.getPhone().equals(phone)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "不能转入当前账户！");
+		}
+		return itbUserAssetsService.transfer(ownerUserId, phone, balance);
+
+	}
+
+	/**
+	 * 获取当前用户的账户明细
+	 * 
+	 * @api {post} /tbr/queryBalance 获取当前用户的账户明细（分页）
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述： 获取当前用户的账户明细 inOrOut 0表示减少 1表示增加
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiParam {Integer} page 当前页
+	 * @apiParam {Integer} limit 每页多少条
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/queryBalance
+	 * @return
+	 */
+	@RequestMapping(value = "/queryBalance", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryBalance(Integer userId, Integer page, Integer limit) {
+		Page<UserAssetDetailVO> pageObj = itbAssetsDetailService
+				.getAessetForUser(new Page<UserAssetDetailVO>(page, limit), userId);
+		return new AppResultInfo<>(pageObj);
+	}
+
+	/**
+	 * 提现申请
+	 * 
+	 * @api {post} /tbr/withdrawCash 提现申请
+	 * @apiGroup Business
+	 * @apiDescription 详细描述： 提现申请
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiParam {Float} cashNumber 提现金额
+	 * @apiParam {String} paymentCode 支付密码
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/withdrawCash
+	 * @return
+	 */
+	@RequestMapping(value = "/withdrawCash", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> withdraw_cash(String paymentCode, Integer userId, Float cashNumber) {
+		AppUser appuser = iappUserService.selectById(userId);
+		if (StringUtils.isEmpty(appuser.getPaymentCode())) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "请先设置支付密码！");
+		}
+		String temp_newWord = null;
+		try {
+
+			temp_newWord = SecuritySHA1Utils.shaEncode(paymentCode.trim());
+		} catch (Exception e) {
+			logger.info("=======密码解密异常========");
+			return new AppResultInfo<>(AppConstant.STATUE_1, "支付密码错误请重新输入！");
+		}
+		if (!appuser.getPaymentCode().equals(temp_newWord)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "支付密码错误请重新输入！");
+		}
+		return itbWithdrawadLogService.withdraw_cash(userId, cashNumber);
+	}
+
+	@RequestMapping(value = "/callBackFMwallet", method = RequestMethod.POST)
+	public @ResponseBody void callBackFMwallet(String code, String msg, Object obj) {
+
+		System.out.println("code:" + code);
+		System.out.println("msg:" + msg);
+		System.out.println("obj:" + obj.toString());
+
+	}
+
+}

@@ -1,0 +1,191 @@
+package com.stys.ipfs.web.app;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.dto.UserAssetDetailVO;
+import com.stys.ipfs.entity.TbBackfill;
+import com.stys.ipfs.entity.TbUsdtlog;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbBackfillService;
+import com.stys.ipfs.service.ITbUsdtlogService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbWithdrawadLogService;
+import com.stys.ipfs.util.AppConstant;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppFundsActionController extends AppController {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUsdtlogService itbUsdtlogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbWithdrawadLogService itbWithdrawadLogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+	
+    @Reference(version = "1.0.0", check = false)
+    private ITbBackfillService itbBackfillService;
+
+    /** 
+	 *    购买产品
+	 * 
+	 * @api {post} /tbr/buyProduct 购买产品
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} userId 用户id
+	 * @apiParam {String} productId 产品编号
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/buyProduct 
+	 * @return
+	 */
+	@RequestMapping(value = "/buyProduct", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> buyProduct(Integer userId, Integer productId) {
+		if(null==userId||null==productId) { 
+			return new AppResultInfo<>(AppConstant.STATUE_1,"参数错误"); 	
+		}
+		return	itbUserAssetsService.buyProduct(userId, productId); 
+	}
+	
+	/**
+	 *   复购  需要加密和时间戳验证
+	 * 
+	 * @api {post} /tbr/reBuy 复购
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} userId 用户id
+	 * @apiParam {String} productId 产品编号
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/reBuy 
+	 * @return
+	 */
+	@RequestMapping(value = "/reBuy", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> reBuy(Integer userId, Integer productId) {
+		
+		Map<String,Object>  resultMap=itbUserAssetsService.reBuyProduct(userId, productId);
+		AppResultInfo<?>   apprsult=new AppResultInfo<Object>(); 
+		int status=(int) resultMap.get("status");
+		String msg=(String) resultMap.get("msg");
+		apprsult.setState(status); 
+		apprsult.setMsg(msg);
+		
+		return apprsult;
+
+	}
+
+	/**
+	 * 	填写回填单
+	 * 
+	 * @api {post} /tbr/backfill 填写回填单
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {TbBackfill} tbBackfill 回填单属性
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/backfill
+	 * @return
+	 */
+	@RequestMapping(value = "/backfill", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> backfill(TbBackfill  tbBackfill) {
+		 
+		Integer flag=itbBackfillService.insertNewData(tbBackfill);
+		if(flag>0) { 
+			return new AppResultInfo<>("操作成功");	 
+		}
+		
+		return new AppResultInfo<>(AppConstant.STATUE_1,"操作失败");	
+		
+		
+	}
+
+	/**
+	 * 查询usdt充值消费记录
+	 * 
+	 * @api {post} /tbr/transfer 查询usdt充值消费记录
+	 * @apiGroup Finance
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} userId 用户id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/queryUSDTLog
+	 * @return
+	 */
+	@RequestMapping(value = "/queryUSDTLog", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryUSDTLog(Integer userId) {
+		if (null == userId) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "参数传递错误");
+		}
+		List<TbUsdtlog> tbUsdtlogs = itbUsdtlogService.selectUsdtlog(userId);
+		return new AppResultInfo<>(tbUsdtlogs);
+	}
+
+	/**
+	 * 金币划转
+	 * 
+	 * @api {post} /tbr/transfer 金币划转
+	 * @apiGroup Finance 
+	 * @apiDescription 详细描述： 金币划转
+	 * @apiParam {Integer} ownerUserId 用户id
+	 * @apiParam {String} phone 对方账号
+	 * @apiParam {Float} balance 划转金额
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/transfer
+	 * @return
+	 */
+	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> transfer(Integer ownerUserId, String phone, Float balance) {
+
+		return itbUserAssetsService.transfer(ownerUserId, phone, balance);
+
+	}
+
+	
+	/**
+	 * 	获取当前用户的账户明细
+	 * @api {post} /tbr/withdraw_cash 获取当前用户的账户明细
+	 * @apiGroup 用户基础信息
+	 * @apiDescription 详细描述： 获取当前用户的账户明细
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/withdraw_cash
+	 * @return
+	 */
+	@RequestMapping(value = "/queryBalance", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryBalance(Integer userId) {
+		List<UserAssetDetailVO> list=itbAssetsDetailService.getAessetForUser(userId);
+		return new AppResultInfo<>(list);
+	}
+
+	/**
+	 * 提现申请
+	 * 
+	 * @api {post} /tbr/withdrawCash 提现申请
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述： 提现申请
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiParam {Float} cashNumber 提现金额
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/withdrawCash
+	 * @return
+	 */
+	@RequestMapping(value = "/withdrawCash", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> withdraw_cash(Integer userId, Float cashNumber) {
+		return itbWithdrawadLogService.withdraw_cash(userId, cashNumber);
+	}
+
+
+}

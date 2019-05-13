@@ -1,0 +1,89 @@
+package com.stys.ipfs.dto;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class AppUserUnfoVo implements Serializable {
+	  
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	@TableField("phone")
+	private String email;
+	
+	  
+	@TableField("phone")
+	private String phone;
+   
+    @TableField("dic_id")
+	private Integer dicId;
+    
+    /**
+     * 昵称
+     */
+    @TableField("nickname")
+	private String nickname;
+    /**
+     * 头像路径
+     */
+    @TableField("avater")
+	private String avater;
+	
+	/**
+     * 邀请人邀请码
+     */
+    @TableField("invitation_code")
+	private String invitationCode;
+    /**
+     * 外键
+     */
+    @TableField("user_id")
+	private Integer userId;
+    /**
+     * 邀请码
+     */
+    @TableField("code")
+	private String code;
+	 /**
+     * 邀请码图像路径
+     */
+    @TableField("code_path")
+	private String codePath;
+    
+    /**
+     * 金币
+     */
+    @TableField("coin")
+	private Float coin;
+    /**
+     * 存储
+     */
+	 @TableField("storage")
+	private Integer storage;
+    /**
+     * 推广金币
+     */
+    @TableField("gift_coin")
+	private Float giftCoin;
+    
+    @TableField("limit_coin")
+    private Float limitCoin;
+    
+    /**
+     * 认证状态
+     */
+    @TableField("personal_status")
+	private Integer personalStatus;
+    
+}

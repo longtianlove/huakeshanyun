@@ -1,0 +1,41 @@
+package com.stys.ipfs.util.usdt;
+
+public class Main {
+	public static void main(String[] args) throws Throwable {
+		
+		// 设置一个主usdt账号，过滤这个主账号
+		//转账到这个主账号。
+		
+		
+//        System.out.println(CoinUtils.getInstance().getNewaddress());
+		// String result1 =
+		// CoinUtils.getInstance().sendtoaddress("1AKCjiDRLcNgLm46mrLBQmexMSPiRK3mQY",
+		// 0.02);
+		//1AKCjiDRLcNgLm46mrLBQmexMSPiRK3mQY
+
+//		
+		 
+		//System.out.println(result1);
+		
+	//	String balance = CoinUtils.getInstance().getBalance("1C1BtSbD8RZfY1Neg6UJ3mvVPSoH55kGcU");
+		/*
+		 * String addr[]=CoinUtils.getInstance().getAddresses(); for (String string :
+		 * addr) { System.out.println(string);
+		 * 
+		 * }
+		 */
+		
+	 /*	String result1 = CoinUtils.getInstance().send("1C1BtSbD8RZfY1Neg6UJ3mvVPSoH55kGcU",
+ 	 			"1AKCjiDRLcNgLm46mrLBQmexMSPiRK3mQY",31, 3, "1C1BtSbD8RZfY1Neg6UJ3mvVPSoH55kGcU");*/
+	//	LinkedHashMap result1=CoinUtils.getInstance().gettransaction("fad6569ee2f7d498fbc9dd9a9688449ff1d6f7bd16a986eebeb771001986cdaa");
+//		
+	//	String result1 =CoinUtils.getInstance().sendtoaddress("1C1BtSbD8RZfY1Neg6UJ3mvVPSoH55kGcU", 0.00998779 );
+				
+	//	String result1= CoinUtils.getInstance().getwalletaddressbalances();	
+		
+		//result1=result1.replaceAll("=", ":");
+		 
+		//Object confirmations= result1.get("confirmations");
+		//System.out.println(confirmations);
+	}
+}

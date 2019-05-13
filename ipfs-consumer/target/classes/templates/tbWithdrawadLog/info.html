@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> </title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form linksAdd">
+	<input type="hidden" value="" id="id" name="id">
+	<input type="hidden" value="" id="permissionIds">
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 主键</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input id" name="id" lay-verify="required" placeholder="请输入主键">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 提现金额</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input cashNumber" name="cashNumber" lay-verify="required" placeholder="请输入提现金额">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 用户外键</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input userId" name="userId" lay-verify="required" placeholder="请输入用户外键">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 用户银行账户</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input userAccount" name="userAccount" lay-verify="required" placeholder="请输入用户银行账户">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 审核状态（1、通过 2、不通过）</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input cashStatus" name="cashStatus" lay-verify="required" placeholder="请输入审核状态（1、通过 2、不通过）">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 实际扣除</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input actualAmount" name="actualAmount" lay-verify="required" placeholder="请输入实际扣除">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 提现发起时间</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input createTime" name="createTime" lay-verify="required" placeholder="请输入提现发起时间">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 用户姓名</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input userName" name="userName" lay-verify="required" placeholder="请输入用户姓名">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 手续费</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input handfree" name="handfree" lay-verify="required" placeholder="请输入手续费">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<button class="layui-btn layui-block" lay-filter="addTbWithdrawadLog" lay-submit>保存</button>
+	</div>
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/tbWithdrawadLog/info.js"></script>
+</body>
+</html>

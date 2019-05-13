@@ -1,0 +1,370 @@
+package com.stys.ipfs.web.app;
+
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SessionKey;
+import org.apache.shiro.web.session.mgt.WebSessionKey;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.dto.AppUserInfo;
+import com.stys.ipfs.entity.AppLoginLog;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.AppUserinfo;
+import com.stys.ipfs.entity.TbInvite;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbUserExperience;
+import com.stys.ipfs.service.IAppLoginLogService;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IAppUserinfoService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.ITbUsdtService;
+import com.stys.ipfs.service.ITbUsdtUserService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserExperienceService;
+import com.stys.ipfs.util.AppConstant;
+import com.stys.ipfs.util.ComUtil;
+import com.stys.ipfs.util.JWTUtil;
+import com.stys.ipfs.util.RandomNumUtil;
+import com.stys.ipfs.util.RandomUtil;
+import com.stys.ipfs.util.SMSUtil;
+import com.stys.ipfs.util.SecuritySHA1Utils;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.TwoDimensionCode;
+import com.stys.ipfs.util.VerifyUtils;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppUserInfoController extends AppController {
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	@Reference(version = "1.0.0", check = false)
+    private IAppUserinfoService iappUserinfoService;
+	
+	@Reference(version = "1.0.0",check=false)
+	private ITbInviteService itbInviteService;
+	 
+    @Reference(version = "1.0.0",check=false)
+    private ITbUserAssetsService itbUserAssetsService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUsdtUserService itbUsdtUserService;
+	
+    @Reference(version = "1.0.0", check = false)
+    private ITbUsdtService itbUsdtService;
+    
+    @Reference(version = "1.0.0", check = false)
+    private ITbUserExperienceService itbUserExperienceService;
+    
+    @Reference(version = "1.0.0", check = false)
+    private IAppLoginLogService iappLoginLogService;
+
+	/**
+	 * 验证用户是否存在
+	 * 
+	 * @api {post} /tbr/verifyUser 验证用户是否存在
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述：验证用户是否存在  true 表示用户可用  false 表示用户已经存在
+	 * @apiParam {String} phone 手机号码
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/verifyUser
+	 * @return 
+	 */
+	@RequestMapping("/verifyUser")
+	public @ResponseBody AppResultInfo<?> verifyUser(String phone) {
+		AppUser appuser = iappUserService.selectOne(new EntityWrapper<AppUser>().eq("phone", phone));
+		if (appuser != null) {
+			return new AppResultInfo<>(false);
+		}
+		return new AppResultInfo<>(true);
+	}
+
+	/**
+	 * 发送证码
+	 * 
+	 * @api {post} /tbr/sendMessage 发送证码
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述：发送证码
+	 * @apiParam {String} phone 手机号
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/sendMessage
+	 * @return sessionId
+	 */
+	@RequestMapping("/sendMessage")
+	public @ResponseBody AppResultInfo<AppUserInfo> sendMessage(String phone) {
+		
+			// 验证手机格式
+			if (!VerifyUtils.isPhone(phone)) {
+			return new AppResultInfo<>(AppConstant.STATUE_3, "手机格式错误");
+			}
+			String numStr = idicService.getDicValue1("系统验证码", "位数");
+			int num = 6;
+			if (!numStr.equals("")) {
+				num = Integer.valueOf(numStr);
+			}
+			int randomNum4 = RandomNumUtil.getRandom(num);
+			String romNum4 = String.valueOf(randomNum4);
+			System.out.println("验证码====》》》》》》"+romNum4+"《《《《《《==========");
+			if (SMSUtil.doGetStr(phone, null, romNum4)) {
+				Session session = SecurityUtils.getSubject().getSession();
+				session.setAttribute(phone, romNum4);
+				session.setTimeout(300000);// 5分钟后过期
+				return new AppResultInfo<>(new AppUserInfo(SecurityUtils.getSubject().getSession().getId().toString(),
+						idicService.getDicValue1("网站地址", "App下载地址")));
+			}
+
+			return new AppResultInfo<>(AppConstant.STATUE_1, "发送失败");
+			}
+
+	/**
+	 * 用户注册
+	 * 
+	 * @api {post} /tbr/register 用户注册
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述： 用户注册
+	 * @apiParam {String} phone 手机号码
+	 * @apiParam {String} sessionId 会话Id
+	 * @apiParam {String} invitationCode 邀请码
+	 * @apiParam {String} request
+	 * @apiParam {String} response
+	 * @apiParam {String} code 验证码
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/register
+	 */
+
+	 @RequestMapping("/register")
+	 public @ResponseBody AppResultInfo<?> registerForUser(String phone,String sessionId,String invitationCode,
+			 ServletRequest request, ServletResponse response ,String code){
+		 Map<String, Object> result= this.returnMap();
+		if(StringUtils.isEmpty(phone)) {
+			result.put("state", AppConstant.STATUE_2);
+			result.put("msg", "账号不能为空！");
+			return new AppResultInfo<>(result);
+		}
+		if(StringUtils.isEmpty(invitationCode)) {
+			result.put("state", AppConstant.STATUE_2);
+			result.put("msg", "邀请码不能为空！");
+			return new AppResultInfo<>(result);
+		}
+		AppUser user=iappUserService.selectOne(new EntityWrapper<AppUser>().eq("phone", phone));
+		if(user!=null) {
+			result.put("state", AppConstant.STATUE_2);
+			result.put("msg", "当前用户已注册！");
+			return new AppResultInfo<>(result);
+		}
+		// 验证邀请码
+		if (verifyInvite(invitationCode, result) != AppConstant.STATUE_200) {
+			return new AppResultInfo<>(result);
+		}
+		//验证验证码
+		if( verifySession(phone, sessionId, request, response, code,result)!=AppConstant.STATUE_200) {
+			return new AppResultInfo<>(result);
+		}
+		//注册用户
+		AppUser appuser=new AppUser();
+		appuser.setPhone(phone);;
+		appuser.setDicId(idicService.getDicData("用户级别", "F0").getId());// 初始用户等级未定
+		appuser.setState(1);
+		if (iappUserService.insert(appuser)) {
+			Integer userId = iappUserService.selectOne(new EntityWrapper<AppUser>().eq("phone", phone)).getId();
+			AppUserinfo appuserinfo = new AppUserinfo();
+			appuserinfo.setUserId(userId);
+			appuserinfo.setNickname("ID"+RandomUtil.getNumber(6));
+			appuserinfo.setInvitationCode(invitationCode);
+			// 这里增加邀请表信息
+			String invitcode = RandomUtil.generateRandomStr(5);
+			String shareUrl = idicService.getDicData("网站地址", "邀请码登录地址").getValue1()
+					+ "/invite/openshare?invitation_code=" + invitcode;
+			appuserinfo.setCode(invitcode);
+			try {
+				appuserinfo.setCodePath(TwoDimensionCode.getEncode(shareUrl, phone));
+			} catch (Exception e) {
+				logger.error("二维码生成出错");
+			}
+			iappUserinfoService.insert(appuserinfo);
+			//初始化用户累计
+			TbUserExperience entity=new TbUserExperience();
+			entity.setCreateTime(new Date());
+			entity.setExperience(0);
+			entity.setUserId(userId);
+			itbUserExperienceService.insert(entity);
+			//USDT 生成
+			// 添加邀请关系
+			insertInvitaRelationShip(invitationCode, userId);
+			//添加账户信息
+			TbUserAssets userassets = new TbUserAssets();
+			userassets.setUserId(userId);
+			userassets.setStorage(0);
+			userassets.setCoin(0f);
+			userassets.setGiftCoin(0f);
+			userassets.setLimitCoin(0f);
+			itbUserAssetsService.insert(userassets);
+			if(!itbUsdtUserService.insertUsdtData(userId)) {
+				result.put("state", AppConstant.STATUE_1);
+				result.put("msg", "USDT钱包生成失败!");
+				return new AppResultInfo<>(result);
+			} 
+		}
+		logger.info("=======用户注册成功！========");
+		return new AppResultInfo<>(AppConstant.STATUE_200, "注册成功！");
+	}
+
+	/**
+	 * 用户登录
+	 * 
+	 * @api {post} /tbr/login 用户登录
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述： 用户登录
+	 * @apiParam {String} phone 账户
+	 * @apiParam {String} sessionId 回话Id
+	 * @apiParam {String} code 验证码
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/login
+	 */
+	@RequestMapping("/login")
+	public @ResponseBody AppResultInfo<?> loginForUser(String phone ,String sessionId,ServletRequest request, ServletResponse response ,String code){
+		 Map<String, Object> result= this.returnMap();
+		 AppUser appuser=iappUserService.selectOne(new EntityWrapper<AppUser>().eq("phone", phone));
+		 if(appuser==null) {
+			 logger.info("=======用户不存在========");
+			 	result.put("state", AppConstant.STATUE_1);
+				result.put("msg", "用户不存在");;
+			 return new AppResultInfo<>(result); 
+		 }
+//		验证验证码
+		if( verifySession(phone, sessionId, request, response, code,result)!=AppConstant.STATUE_200) {
+			return new AppResultInfo<>(result);
+		}
+		 result.put("token", JWTUtil.createToken(phone)) ;
+		 result.put("data", appuser);
+		 AppLoginLog appLoginLog=new AppLoginLog ();
+		 appLoginLog.setUserId(appuser.getId());
+		 appLoginLog.setPhone(phone);
+		 appLoginLog.setCreateTime(new Date());
+		 iappLoginLogService.insert(appLoginLog);
+		 logger.info("登录成功。。。。。。。。。。。。。");
+		 return new AppResultInfo<>(result); 
+	 }
+
+
+	/**
+	 * 判断验证码
+	 */
+	private int verifySession(String phone, String sessionId, ServletRequest request, ServletResponse response,
+			String code, Map<String, Object> result) {
+		if (ComUtil.isEmpty(sessionId)) {
+			result.put("state", AppConstant.STATUE_2);
+			result.put("msg", "重新发送验证码");
+			return AppConstant.STATUE_2;
+		}
+		SessionKey sessionKey = new WebSessionKey(sessionId, request, response);
+		Session session = SecurityUtils.getSecurityManager().getSession(sessionKey);
+		if (null != session) {
+			if (StringUtils.isEmpty(code)||!code.equals(session.getAttribute(phone))) {
+				result.put("state", AppConstant.STATUE_1);
+				result.put("msg", "验证码错误");
+				return AppConstant.STATUE_1;
+			}
+			session.setAttribute(phone, null);
+			return AppConstant.STATUE_200;
+		} else {
+			result.put("state", AppConstant.STATUE_2);
+			result.put("msg", "重新发送验证码");
+			return AppConstant.STATUE_2;
+		}
+
+	}
+
+	/**
+	 * 验证邀请码
+	 * 
+	 */
+	private Integer verifyInvite(String invitationCode, Map<String, Object> result) {
+
+		if (!ComUtil.isEmpty(invitationCode)) {
+			AppUserinfo invitUserinfo = iappUserinfoService
+					.selectOne(new EntityWrapper<AppUserinfo>().eq("code", invitationCode));
+			if (null == invitUserinfo) {
+				result.put("state", AppConstant.STATUE_1);
+				result.put("msg", "邀请码错误");
+				return -1;
+			}
+		}
+
+		return AppConstant.STATUE_200;
+	}
+
+	/**
+	 * 增加用户邀请关系
+	 * 
+	 */
+	private void insertInvitaRelationShip(String invitation_code, int new_appuser_Id) {
+		if (!ComUtil.isEmpty(invitation_code)) {
+			// 邀请人用户信息
+			AppUserinfo invitUserinfo = iappUserinfoService
+					.selectOne(new EntityWrapper<AppUserinfo>().eq("code", invitation_code));
+			TbInvite tbInvite = new TbInvite();
+			if (invitUserinfo != null) {
+				// 被邀请人
+				tbInvite.setTbIvitee(new_appuser_Id);
+				// 邀请人
+				tbInvite.setTbIviter(invitUserinfo.getUserId());
+				TbInvite main_tbinvite = itbInviteService
+						.selectOne(new EntityWrapper<TbInvite>().eq("tb_ivitee", invitUserinfo.getUserId()));
+				if (null != main_tbinvite) {
+					tbInvite.setParentId(main_tbinvite.getId());
+				} else {
+					tbInvite.setParentId(0);
+				}
+
+			}
+			itbInviteService.insert(tbInvite);
+		}
+
+	}
+	/**
+	 * 	设置支付密码
+	 * 
+	 * @api {post} /tbr/setPaymentCode 设置支付密码
+	 * @apiGroup userBase
+	 * @apiDescription 详细描述：设置支付密码
+	 * @apiParam {String} paymentCode 支付密码
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/setPaymentCode
+	 */
+	@RequestMapping("/setPaymentCode")
+	public @ResponseBody AppResultInfo<?> setPaymentCode(String paymentCode,Integer userId){
+		if(null==userId||null==paymentCode) { 
+			return new AppResultInfo<>(AppConstant.STATUE_1,"参数错误"); 	
+		}
+		AppUser appuser = iappUserService.selectById(userId);
+		String temp_newWord=null;
+		 try {
+			
+			 temp_newWord=SecuritySHA1Utils.shaEncode(paymentCode.trim());
+		 } catch (Exception e) {
+			 logger.info("=======密码解密异常========");
+			 return new AppResultInfo<>(AppConstant.STATUE_1,"请重新输入支付密码！");
+		 }
+		 appuser.setPaymentCode(temp_newWord);
+		 iappUserService.updateById(appuser);
+		 return new AppResultInfo<>("设置成功！");
+	}
+}

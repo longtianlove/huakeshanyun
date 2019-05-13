@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>注册</title>
+<link rel="stylesheet" href="/static/css/regist.css"/>
+<link rel="stylesheet" href="/static/css/bootstrap.css"/>  
+</head>
+<body>
+	<div class="container-fluid">
+	<!-- 	<div class="row" style="margin-top: 1rem;">
+			<div class="col-xs-1"></div>
+			<div class="col-xs-8 headerclass"></div>
+		</div> -->
+		<div class="row" style="margin-top: 4.5rem;">
+			<div class="col-xs-1"></div>
+			<div class="col-xs-8 font02">欢迎注册！</div>
+		</div>
+		<div class="row mainclass">
+			<div class=" col-xs-1"></div>
+			<div class="col-xs-8 font01">使用你的手机号码开始注册</div>
+			<div class=" col-xs-2"></div>
+			<div class="col-xs-12" style="margin-top: 5rem;">
+				<form class="form-horizontal">
+					<div class="form-group">
+						<!--<label for="phone" class=" col-xs-1   control-label"></label>-->
+						<div class=" col-xs-1"></div>
+						<div class=" col-xs-1 phoneclass  "></div>
+						<div class=" col-xs-7">
+							<input type="text" class="form-control border1" id="phoneNo"
+								placeholder="请输入你的手机号码">
+						</div>
+						<div class=" col-xs-3" style="text-align: right;">
+							<img src="../static/imgs/guanbi.png" style="width: 1rem; height: 1rem;"
+								id="closeImg">
+						</div>
+					</div>
+					<div class="col-xs-12" style="background: blue;"></div>
+					<div class="form-group" style="margin-top: 3rem;">
+						<!--<label for="check" class=" col-xs-1 control-label"></label>-->
+						<div class=" col-xs-1"></div>
+						<div class=" col-xs-1 checkclass"></div>
+						<div class=" col-xs-7">
+							<input type="text" class="form-control border1" id="checkNo" 
+								placeholder="请输入验证码">
+						</div>
+						<div class="col-xs-3">
+							 <button style="text-align: center; font-size: 0.625rem; color: #355cff;" id="getCheck">获取验证码</button>
+						</div>
+					</div>
+					<div class="col-xs-12"
+						style="background: rgba(165, 205, 255, 0.87);"></div>
+					<div class="form-group" style="margin-top: 3rem;">
+						<!--<label for="yaoqingma" class="col-xs-1 control-label"></label>-->
+						<div class=" col-xs-1"></div>
+						<div class="col-xs-1 yaoclass"></div>
+						<div class="col-xs-7">
+							<input type="text" class="form-control border1" id="yaoqingmaNo"  readonly="readonly"
+								placeholder="邀请码（必填）">
+						</div>
+						<div class="col-xs-3"></div>
+					</div>
+					<div class="col-xs-12"
+						style="background: rgba(165, 205, 255, 0.87);"></div>
+					<div class="form-group" style="margin-top: 3rem;">
+
+						<div class="col-xs-12">
+							<button type="button" class="btn  form-control font03"
+								style="height: 5rem; background: rgba(85, 90, 255, 0.98); color: white;"
+								id="regist">立即注册</button>
+						</div>
+
+					</div>
+				</form>
+				<div class="col-xs-12"
+					style="height: 12rem; text-align: center; color: #cccccc;">
+					已有账号，请登录！</div>
+			</div>
+		</div>
+	</div>
+	 <div class="modal fade" tabindex="-1" role="dialog" id="myphone">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">信息提示</h4>
+                </div>
+                <div class="modal-body">
+                    <p>输入的电话号码格式不正确，请核实后输入！</p>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-primary">确定</button>-->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="mycheck">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">信息提示</h4>
+                </div>
+                <div class="modal-body">
+                    <p>输入验证码格式不正确，请核实后输入！</p>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-primary">确定</button>-->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="modal fade" tabindex="-1" role="dialog" id="publicModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">信息提示</h4>
+                </div>
+                <div class="modal-body">
+                    <p>服务器响应失败，稍后重试！</p>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-primary">确定</button>-->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" tabindex="-1" role="dialog" id="userModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">信息提示</h4>
+                </div>
+                <div class="modal-body">
+                    <p>该手机号已注册，请更换手机号码！</p>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-primary">确定</button>-->
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<script
+		src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+		crossorigin="anonymous"></script>
+	<script>
+$(function () {
+    //获取使用的对象
+
+   var oPhoneNo=$('#phoneNo');
+   var oCheckNo=$('#checkNo');
+   var oYaoqingmaNo=$('#yaoqingmaNo');
+   var oGetCheck=$('#getCheck');
+   var oRegist=$('#regist');
+   var oCloseImg=$('#closeImg');
+   var iCode=getUrlParam('invitation_code');
+   
+   
+   if(iCode){
+	   oYaoqingmaNo.val(iCode);
+   }
+
+   //关闭按钮清空手机
+    oCloseImg.on('click',function () {
+        oPhoneNo.val("");
+    });
+
+    oPhoneNo.on('blur',function () {
+        phoneFormat(oPhoneNo);
+    });
+    oPhoneNo.on('blur',function () {
+    	if(!phoneFormat($(this)))
+        {
+            $('#myphone').modal('show');
+             oPhoneNo.val("");
+        }else
+        {
+            validUser(obj);
+            if(window.localStorage.getItem('bool')=='1')
+            {
+               $('#userModal').modal('show');
+            }
+        }
+    });
+
+    // oPhoneNo.on('focus',function () {
+    //     oPhoneNo.css('border','0px solid red');
+    // });
+    oPhoneNo.on('focus',function () {
+        oPhoneNo.addClass('inputBack');
+    });
+
+    oCheckNo.on('blur',function () {
+        if(!checkIdFormat($(this)))
+        {
+        	$('#mycheck').modal('show');
+            oCheckNo.val("");
+        }
+    });
+
+    //获取验证码
+    oGetCheck.on('click',function () {
+       getcheckid(oPhoneNo);
+       yanchi();
+    });
+
+    //注册
+    oRegist.on('click',function () {
+        register();
+    });
+
+    //手机号码格式验证
+    function phoneFormat(obj){
+        const number = /^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/;
+        if(obj.val().match(number)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    //验证码格式验证
+    function checkIdFormat(obj){
+        const number = /^\d{4}$/;
+        if(obj.val().match(number)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+ // 验证码延迟效果
+    function yanchi() {
+        var timer=null;
+        let yantime=60;
+        oGetCheck.text(yantime+'秒');
+        oGetCheck.attr('disabled','disabled');
+        timer=setInterval(function () {
+            yantime--;
+            oGetCheck.text(yantime+'秒');
+            oGetCheck.css({'color':'#ffa045'});
+            if(yantime<=0)
+            {   clearInterval(timer);
+                oGetCheck.text('重新获取');
+                oGetCheck.attr('disabled','false');
+            }
+        },1000);
+
+    }
+    //获取验证功能
+    function getcheckid(obj){
+            let phoneNum= obj.val();
+          $.ajax({
+             url : "http://www.beefil.com/tbr/sendMessage?phone="+phoneNum,
+             type : 'get',
+             dataType : 'json',
+             success : function(data) {
+                 // alert(JSON.stringify(data));
+                 window.localStorage.setItem('sessionId',data.data.sessionId);
+                 window.localStorage.setItem('netAddress',data.data.appDownload);
+             },
+             error : function() {
+            	 $('#publicModal').modal('show');
+             }
+          });
+    }
+  //验证用户是否注册过
+    function validUser(obj){
+        let phoneNum= obj.val();
+        $.ajax({
+           url : "http://www.beefil.com/tbr/verifyUser",
+           type : 'POST',
+            data:{
+              phone:phoneNum
+            },
+           dataType : 'json',
+           success : function(data) {
+               if(data.data.phone)
+               {
+                 window.localStorage.setItem("bool",'1');
+               }else
+               {
+                   window.localStorage.setItem("bool",'0');
+               }
+           },
+           error : function() {
+               $('#publicModal').modal('show');
+           }
+        });
+    }
+
+
+    //注册
+    function register() {
+        if(phoneFormat(oPhoneNo) && checkIdFormat(oCheckNo))
+        {
+
+            $.ajax({
+                url : "http://www.beefil.com/tbr/register",
+                type : 'post',
+                data:{
+                    phone:oPhoneNo.val(),
+                    sessionId:window.localStorage.getItem("sessionId"),
+                    invitationCode:oYaoqingmaNo.val(),
+                    code:oCheckNo.val()
+                },
+                dataType : 'json',
+                // contentType:'application/json',
+                success : function(data) {
+                    if(data.state==200)
+                   {
+          
+                    window.open(window.localStorage.getItem('netAddress'));
+                    }
+                },
+                error : function() {
+                	 $('#publicModal').modal('show');
+                }
+            });
+        }
+    }
+
+
+});
+
+function getUrlParam(name){
+var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+if (r!=null)return unescape(r[2]);
+return null; //返回参数值
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+package com.stys.ipfs.util.usdt;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+public class HttpJsonRpc {
+	private static JSONObject jsonPost(String method, Object... params) {
+		String creb = Base64.encodeBase64String((Constants.rpcUser + ":" + Constants.rpcPassword).getBytes());
+		Map<String, String> headers = new HashMap<>(2);
+		headers.put("Authorization", "Basic " + creb);
+
+		JSONObject param = new JSONObject();
+		param.put("id", System.currentTimeMillis());
+		param.put("jsonrpc", "2.0");
+		param.put("method", method);
+		if (params != null) {
+			param.put("params", params);
+		}
+		CloseableHttpResponse httpResponse = null;
+		String result = "";
+		// 创建httpClient实例
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		// 创建httpPost远程连接实例
+		HttpPost httpPost = new HttpPost(Constants.url);
+		// 设置请求头
+		httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(5000).setConnectionRequestTimeout(1000)
+				.setSocketTimeout(5000).build();
+		httpPost.setConfig(requestConfig);
+
+		for (String key : headers.keySet()) {
+			httpPost.addHeader(key, headers.get(key));
+		}
+		// 封装post请求参数
+		StringEntity myEntity = new StringEntity(param.toJSONString(), ContentType.APPLICATION_JSON);
+		httpPost.setEntity(myEntity);
+		try {
+			// httpClient对象执行post请求,并返回响应参数对象
+			httpResponse = httpClient.execute(httpPost);
+
+			if (httpResponse != null) {
+				// 从响应对象中获取响应内容
+				HttpEntity entity = httpResponse.getEntity();
+				result = EntityUtils.toString(entity);
+			}
+		} catch (ClientProtocolException e) {
+			System.out.println("请求btc节点异常");
+			// e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("请求btc节点异常");
+			// e.printStackTrace();
+		} finally {
+			// 关闭资源
+			if (null != httpResponse) {
+				try {
+					httpResponse.close();
+				} catch (IOException e) {
+					// e.printStackTrace();
+				}
+			}
+			if (null != httpClient) {
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// e.printStackTrace();
+				}
+			}
+		}
+		return JSON.parseObject(result);
+	}
+
+	public static JSONObject getBtccom(String url) {
+		// System.out.println("开始查询utxo");
+		CloseableHttpResponse httpResponse = null;
+		String result = "";
+		// 创建httpClient实例
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// 创建httpPost远程连接实例
+		HttpGet httpGet = new HttpGet(url);
+		// 设置请求头
+		httpGet.addHeader("Content-Type", "application/json;charset=UTF-8");
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000).setConnectionRequestTimeout(5000)
+				.setSocketTimeout(10000).build();
+		httpGet.setConfig(requestConfig);
+
+		try {
+			httpResponse = httpClient.execute(httpGet);
+			if (httpResponse != null) {
+				// 从响应对象中获取响应内容
+				HttpEntity entity = httpResponse.getEntity();
+				result = EntityUtils.toString(entity);
+			}
+		} catch (IOException e) {
+			System.out.println("请求btc.com异常");
+			// e.printStackTrace();
+		} finally {
+			// 关闭资源
+			if (null != httpResponse) {
+				try {
+					httpResponse.close();
+				} catch (IOException e) {
+					// e.printStackTrace();
+				}
+			}
+			if (null != httpClient) {
+				try {
+					httpClient.close();
+				} catch (IOException e) {
+					// e.printStackTrace();
+				}
+			}
+		}
+
+		try {
+			JSONObject rs = JSON.parseObject(result);
+			return rs;
+		} catch (Exception e) {
+			System.out.println("查询btccom出错");
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static JSONObject postBtccom(String url, String jsonData) {
+		CloseableHttpResponse httpResponse = null;
+		String result = "";
+		// 创建httpClient实例
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+
+		// 创建httpPost远程连接实例
+		HttpPost httpPost = new HttpPost(url);
+		// 设置请求头
+		httpPost.addHeader("Content-Type", "application/json;charset=UTF-8");
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10000).setConnectionRequestTimeout(5000)
+				.setSocketTimeout(10000).build();
+		httpPost.setConfig(requestConfig);
+		StringEntity entity = new StringEntity(jsonData, ContentType.APPLICATION_JSON);
+		httpPost.setEntity(entity);
+		try {
+			httpResponse = httpClient.execute(httpPost);
+			if (httpResponse.getStatusLine().getStatusCode() == 200) {
+				HttpEntity enti = httpResponse.getEntity();
+				result = EntityUtils.toString(enti, "UTF-8");
+			}
+		} catch (IOException e) {
+			System.out.println("btc请求异常");
+			// e.printStackTrace();
+		} finally {
+
+			try {
+				if (httpResponse != null)
+					httpResponse.close();
+			} catch (IOException e) {
+				// e.printStackTrace();
+			} finally {
+				try {
+					if (httpClient != null) {
+						httpClient.close();
+					}
+				} catch (IOException e) {
+					// e.printStackTrace();
+				}
+			}
+		}
+		try {
+			JSONObject rs = JSON.parseObject(result);
+			return rs;
+		} catch (Exception e) {
+			System.out.println("向BTCCOM提交post出错");
+			// e.printStackTrace();
+		}
+		return null;
+	}
+
+	// 查询BTC手续费
+	public static Long getBtcFee() {
+		String url = Constants.earncom;
+		JSONObject jsonObject = getBtccom(url);
+		Long f = null;
+		if (jsonObject != null) {
+			f = jsonObject.getLong("fastestFee");
+		} else {
+			System.out.println("查询手续费失败");
+		}
+		return f;
+	}
+
+	// 广播交易
+	public static boolean broadRatx(String hex) {
+		String url = Constants.broadRwTxBtc;
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("rawhex", hex);
+		String jsonData = jsonObject.toJSONString();
+		JSONObject reslt = postBtccom(url, jsonData);
+		if (isErrorBtccom(reslt)) {
+			System.out.println("广播交易出错 " + reslt);
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	/**
+	 * 查询余额
+	 */
+	public static Long getBalance(String adress) {
+		String url = Constants.unspentBtc + adress;
+		JSONObject jsonObject = getBtccom(url);
+		if (isErrorBtccom(jsonObject)) {
+			System.out.println("查询btc余额信息出错" + adress + " " + jsonObject.toString());
+			return null;
+		}
+		JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+		if (jsonObject1 == null) {
+			System.out.println("查询btc余额信息出错" + adress + " " + jsonObject.toString());
+			return null;
+		}
+
+		Long b = jsonObject1.getLong("balance");
+		return b;
+	}
+
+	private static boolean isErrorBtccom(JSONObject json) {
+		if (json == null || json.getInteger("err_no") != 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public static List<UnSpentBtc> getUn(String adress) {
+		System.out.println("开始查询utxo 2");
+		String url = Constants.unspentBtc + adress + "/unspent";
+		JSONObject jsonObject = getBtccom(url);
+		if (isErrorBtccom(jsonObject)) {
+			System.out.println("查询btc未花费信息出错" + jsonObject.toString() + " " + adress);
+			return null;
+		}
+		JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+		if (jsonObject1 == null) {
+			System.out.println("查询btc未花费信息出错" + jsonObject.toString() + " " + adress);
+			return null;
+		}
+		JSONArray unbtc = jsonObject1.getJSONArray("list");
+		System.out.println(unbtc.toJSONString() + "  ****************");
+		List<UnSpentBtc> unSpentBtcs = JSON.parseArray(unbtc.toJSONString(), UnSpentBtc.class);
+		return unSpentBtcs;
+	}
+
+	// private static boolean isError(JSONObject json){
+////        if (json==null|| (StringUtils.isNotEmpty(json.getString("error"))&& json.get("error") != "null")){
+////            return true;
+////        }
+////        return false;
+////    }
+
+	// /**
+//     * 查询余额
+//     */
+//    public static BigDecimal queryBalance(){
+//
+//        JSONObject result= jsonPost(getbalance);
+//        if (isError(result)){
+//            System.out.println("调用btc出错"+result.get("error"));
+//            return null;
+//        }
+//        BigDecimal b=result.getBigDecimal("result");
+//        return b;
+//    }
+
+//    /**
+//     * 转账 返回交易hash
+//     */
+//    public static String transfer(){
+//       JSONObject result= jsonPost(sendtoaddress,btcin,0.001,"","",true);
+//       if (isError(result)){
+//           System.out.println("btc转账失败 "+result);
+//           return null;
+//       }else {
+//           return result.getString("result");
+//       }
+//
+//    }
+
+//    /**
+//     * 解锁钱包
+//     */
+//    public static boolean walletpassphase(){
+//        JSONObject result = jsonPost(walletpassphrase,wallpas,10);
+//        if (isError(result)){
+//            System.out.println("btc解锁失败 "+result);
+//            return false;
+//        }else {
+//            return true;
+//        }
+//    }
+
+//    /**
+//     * 获取新入币地址
+//     * @return
+//     */
+//    public static String getNewAdress(){
+//        JSONObject result= jsonPost(getnewaddress);
+//        if (isError(result)){
+//            System.out.println("btc查询节点获取新地址失败 "+result);
+//            return null;
+//        }else {
+//            return result.getString("result");
+//        }
+//    }
+
+	/**
+	 * // * 调用节点查询最新区块hash // * @return //
+	 */
+//    public static String getBlockhashlast(){
+//        JSONObject result= jsonPost(getbestblockhash);
+//        if (isError(result)){
+//            System.out.println("btc查询节点最新区块hash失败 "+result);
+//            return null;
+//        }else {
+//            return result.getString("result");
+//        }
+//    }
+
+//    public static BigInteger getBlockcount(){
+//        JSONObject result=jsonPost(getblockcount);
+//        if (isError(result)){
+//            System.out.println("btc查询节点最高区块错误 "+result);
+//            return null;
+//        }else {
+//            return result.getBigInteger("result");
+//        }
+//    }
+
+//    /**
+//     * 查询区块tx
+//     */
+//    public static JSONArray getBlock(String hash){
+//        JSONObject result=jsonPost(getblock,hash);
+//        if (isError(result)){
+//            System.out.println("btc查询节点区块tx失败"+result);
+//            return null;
+//        }else {
+//            return result.getJSONObject("result").getJSONArray("tx");
+//        }
+//    }
+
+//    public static JSONArray getTransaction(String txid){
+//        JSONObject result = jsonPost(gettransaction,txid);
+//        if (isError(result)){
+//            if (result.toString().contains("-5")){
+//                System.out.println("btc钱包不存在此笔交易");
+//                return null;
+//            }else {
+//                System.out.println("BTC查询节点交易详情失败"+result);
+//                return null;
+//            }
+//        }
+//        return result.getJSONObject("result").getJSONArray("details");
+//    }
+}

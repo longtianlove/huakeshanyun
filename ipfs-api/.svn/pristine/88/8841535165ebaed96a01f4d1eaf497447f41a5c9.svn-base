@@ -1,0 +1,20 @@
+package com.stys.ipfs.service;
+
+import java.util.Map;
+
+import com.baomidou.mybatisplus.service.IService;
+import com.stys.ipfs.entity.TbUserAssets;
+
+/**
+ * <p>
+ *  服务类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-12
+ */
+public interface ITbUserAssetsService extends IService<TbUserAssets> {
+
+	Map<String, Object> buyProduct(Integer userId, Integer productId);
+
+}

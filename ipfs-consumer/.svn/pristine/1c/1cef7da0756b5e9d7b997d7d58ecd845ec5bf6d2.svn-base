@@ -1,0 +1,113 @@
+/*
+*  @author dp
+*  @since 2019-03-12
+*/
+layui.use(['form','layer','table'],function(){
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        table = layui.table;
+    
+    layui.use('laydate', function(){
+    	  var laydate = layui.laydate;
+    	  
+    	  laydate.render({
+    	    elem: '#endTime' //指定元素
+    	  });
+    	  laydate.render({
+    		  elem: '#startTime' //指定元素
+    	  });
+    	});
+    
+    var dicList;
+	    $.post("/dic/selectListData",{
+	    	groupName : '账变类型'
+	    },function(data){
+	        dicList = data.data;
+	        $("#type").append("<option value=''>请选择</option>"); 
+	        dicList.forEach(function(e){ 
+	            $("#dicSelect").append("<option value='"+e.id+"'>"+e.name+"</option>");
+	            $("#type").append("<option value='"+e.id+"'>"+e.name+"</option>");
+	        });
+	        $("#dicSelect").val($("#type").val());//默认选中 
+	        form.render('select');//刷新select选择框渲染
+	    });
+    
+    //列表
+    var tableIns = table.render({
+        elem: '#dicList',
+        url : '/tbAssetsDetail/listData',
+        cellMinWidth : 95,
+        page : true,
+        height : "full-125",
+        limits : [10,20,30],
+        limit : 10,
+        id : "dicListTable",
+        cols : [[
+            {type: "checkbox", fixed:"left", width:50}
+		 	 ,{field: 'userId', title: '用户编号', minWidth:100, align:"center"}
+		 	 ,{field: 'nickname', title: '用户昵称', minWidth:100, align:"center"}
+		 	 ,{field: 'phone', title: '用户账户', minWidth:100, align:"center"}
+		 	 ,{field: 'beforeAmount', title: '账变前金额', minWidth:100, align:"center"}
+		 	 ,{field: 'amount', title: '账变金额', minWidth:100, align:"center"}
+		 	 ,{field: 'afterAmount', title: '账变后金额', minWidth:100, align:"center"}
+		 	 ,{field: 'type', title: '账变类型', minWidth:100, align:"center",
+		 		templet:function(d){
+	                var name = "";
+	                dicList.forEach(function(e){
+	                    if (e.id === d.type){
+	                        name = e.name; 
+	                    }
+	                });
+//	                return name;
+	                return'<span class="layui-green layui-bg-green">'+name+'</span>';
+	            }}
+		 	 ,{field: 'createTime', title: '创建时间', minWidth:100, align:"center"}
+		 	 ,{field: 'inOrOut', title: '收支类型', minWidth:100, align:"center",templet:function(d){
+		 		 if(d.inOrOut=="1"){ 
+		 			 return '<span class="layui-green layui-bg-green">收入</span>';
+		 		 }else{
+			 			 return '<span class="layui-red layui-bg-red">支出 </span>';
+		 		 }}
+		 	 }
+		 	 ,{field: 'sunname', title: '返利用户昵称', minWidth:100, align:"center"}
+        ]] 
+    });
+ 
+    //搜索
+    $(".search_btn").on("click",function(){
+        table.reload("dicListTable",{
+            page: {
+                curr: 1 //重新从 第 1 页开始
+            },
+            where: {
+            	phone: $("#phone").val(),
+            	nickname: $("#nickname").val(),
+            	startTime: $("#startTime").val(),
+            	endTime: $("#endTime").val(),
+            	type: $("#type").val()
+            	
+            } 
+        })
+    });
+
+    $("#export").click(function(){
+     	var title = "选择日期";
+		layer.open({
+			title : title,
+			type : 2,
+			area : [ "550px", "400px"],
+			content : "tbAssetsDetail/chooseTime.html",
+			success : function(layero, index) {
+				layer.setTop(layero);
+				
+				  form.render();
+				 
+			},
+			 end:function(){
+				 tableIns.reload();
+			 }
+		})
+    });
+
+})

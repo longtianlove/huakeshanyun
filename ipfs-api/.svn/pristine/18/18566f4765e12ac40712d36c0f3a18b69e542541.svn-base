@@ -1,0 +1,172 @@
+package com.stys.ipfs.entity;
+
+import com.baomidou.mybatisplus.enums.IdType;
+import java.util.Date;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-13
+ */
+@TableName("tb_withdrawad_log")
+public class TbWithdrawadLog extends Model<TbWithdrawadLog> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 提现金额
+     */
+    @TableField("cash_number")
+	private Float cashNumber;
+    /**
+     * 用户外键
+     */
+    @TableField("user_id")
+	private Integer userId;
+    /**
+     * 用户银行账户
+     */
+    @TableField("user_account")
+	private String userAccount;
+    /**
+     * 审核状态（0、待审核 1、通过 2、不通过）
+     */
+    @TableField("cash_status")
+	private Integer cashStatus;
+    /**
+     * 实际扣除
+     */
+    @TableField("actual_amount")
+	private Float actualAmount;
+    /**
+     * 提现发起时间
+     */
+	@TableField(value = "create_time", fill = FieldFill.INSERT)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime;
+    /**
+     * 用户姓名
+     */
+    @TableField("user_name")
+	private String userName;
+    /**
+     * 审核信息
+     */
+    @TableField("verify_info")
+    private String verifyInfo;
+    /**
+     * 手续费
+     */
+	private Float handfree;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Float getCashNumber() {
+		return cashNumber;
+	}
+
+	public void setCashNumber(Float cashNumber) {
+		this.cashNumber = cashNumber;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getUserAccount() {
+		return userAccount;
+	}
+
+	public void setUserAccount(String userAccount) {
+		this.userAccount = userAccount;
+	}
+
+	public Integer getCashStatus() {
+		return cashStatus;
+	}
+
+	public void setCashStatus(Integer cashStatus) {
+		this.cashStatus = cashStatus;
+	}
+
+	public Float getActualAmount() {
+		return actualAmount;
+	}
+
+	public void setActualAmount(Float actualAmount) {
+		this.actualAmount = actualAmount;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public Float getHandfree() {
+		return handfree;
+	}
+
+	public void setHandfree(Float handfree) {
+		this.handfree = handfree;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "TbWithdrawadLog{" +
+			", id=" + id +
+			", cashNumber=" + cashNumber +
+			", userId=" + userId +
+			", userAccount=" + userAccount +
+			", cashStatus=" + cashStatus +
+			", actualAmount=" + actualAmount +
+			", createTime=" + createTime +
+			", userName=" + userName +
+			", handfree=" + handfree +
+			"}";
+	}
+}

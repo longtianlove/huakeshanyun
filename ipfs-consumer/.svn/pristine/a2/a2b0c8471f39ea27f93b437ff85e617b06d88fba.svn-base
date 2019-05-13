@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html class="loginHtml">
+<head>
+<meta charset="utf-8">
+<title>HKICLOUD System</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<link rel="icon" href="/static/favicon.ico">
+<link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
+<link rel="stylesheet" href="/static/css/public.css" media="all" />
+</head>
+<body class="loginBody">
+	<form class="layui-form"  action="/verifyCode" method="post">
+		<div class="login_face"><img src="/static/images/face.jpg" class="userAvatar"></div>
+		<div class="layui-form-item input-item">
+			<p>验证码已发送到<b th:text="${session.phone}"></b>的手机请注意查收！</p>
+		</div>
+		<div class="layui-form-item input-item" id="phoneCode">
+			<label for="pcode">手机验证码</label> 
+			<input type="text" placeholder="请输入验证码" autocomplete="off" id="pcode" name="pcode" class="layui-input" style="width: 100px" lay-verify="required">
+		</div>
+		<div class="layui-form-item">
+			<button class="layui-btn layui-block" lay-filter="verify" id="vpcode" lay-submit>确定</button>
+		</div>
+	</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/login.js"></script>
+</body>
+</html>

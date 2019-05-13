@@ -1,0 +1,95 @@
+package com.stys.ipfs.web.app;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.util.AppConstant;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppFundsActionController extends AppController {
+
+	/**
+	 * 
+	   *  查询usdt充值消费记录
+	   *  主动查询,被动则认为15分钟查询一次(有短信提醒) 
+	 * @return
+	 */
+	@RequestMapping(value = "/queryUSDTLog", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryUSDTLog() { 
+		
+		
+		
+		
+		
+		
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 互转
+	 * zheng
+	 * @return
+	 */
+	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> transfer() {
+		
+		
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 查询用户资产接口，前台展示
+	 * zheng
+	 * @return
+	 */
+	@RequestMapping(value = "/queryBalance", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryBalance() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 提现
+	 * zheng
+	 * @return
+	 */
+	@RequestMapping(value = "/withdraw_cash", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> withdraw_cash() {
+
+		
+		
+		
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+		
+	}
+
+	/**
+	 * 	升级
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/upgrade", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> upgrade() {
+		
+
+		return new AppResultInfo<>(AppConstant.STATUE_200); 
+	}
+
+	/**
+	 *	 购买,金币
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/buy", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> buy() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+}

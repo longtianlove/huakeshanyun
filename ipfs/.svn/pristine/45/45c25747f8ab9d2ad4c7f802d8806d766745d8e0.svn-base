@@ -1,0 +1,95 @@
+*{
+    margin: 0 ;
+    padding: 0;
+    /*border: 0 !important; */
+}
+input,input:focus{
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 1.5rem;
+}
+
+button[id=getCheck],button[id=checkNo]:focus{
+    border: none !important;
+    box-shadow: none !important;
+    background:rgba(0,0,0,0) !important;
+    outline: none !important;
+    font-size: 1.8rem !important;
+    width: 8.5rem !important;
+    height: 2rem !important;
+    font-weight: bolder !important;
+}
+button[id=ylongin],button[id=ylongin]:focus{
+    border: none !important;
+    box-shadow: none !important;
+    background:rgba(0,0,0,0) !important;
+    outline: none !important;
+    font-size: 1rem !important;
+    width: 10rem !important;
+    height: 2rem !important;
+    font-weight: bolder !important;
+    margin:0 auto !important ;
+}
+
+.phoneclass{
+    width: 2rem;
+    height: 2rem;
+    padding: 1.2em;
+    background: url("../imgs/shouji.png") no-repeat;
+    background-position: left center;
+    background-size: contain;
+}
+.checkclass{
+    padding: 1.2em;
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/mima.png") no-repeat;
+    background-position: left center;
+    background-size: contain;
+}
+.yaoclass{
+    padding: 1.2em;
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/yaoqingma.png") no-repeat ;
+    background-position: left center;
+    background-size: contain;
+.mainclass{
+    background: url("../imgs/dabeijinglanse.png");
+    background-size: contain;
+    height: 100%;
+}
+.font01{
+    font-family: Arial, Arial Black;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+.font02{
+    font-family: Arial, Arial Black;
+    font-size: 3rem;
+    font-weight: 700;
+
+}
+.font03{
+    font-family: Arial, Arial Black;
+    font-size: 2rem;
+    font-weight: 200;
+}
+.headerclass{
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/fanhui.png") no-repeat center center;
+    background-size: contain;
+}
+.border1{
+    border: 0;
+    background: rgba(0,0,0,0);
+}
+.inputBack{
+    border: 0 !important;
+    background: rgba(0,0,0,0) !important;
+}
+
+
+

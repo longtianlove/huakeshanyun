@@ -1,0 +1,131 @@
+package com.stys.ipfs.config;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import com.stys.ipfs.ex.TokenException;
+import com.stys.ipfs.util.ComUtil;
+import com.stys.ipfs.util.JWTUtil;
+
+@Aspect
+@Component
+public class WebLogAspect {
+
+	private Logger logger = Logger.getLogger(getClass());
+
+	ThreadLocal<Long> startTime = new ThreadLocal<>();
+
+	@Pointcut("execution(public * com.stys.ipfs.web..*.*(..))")
+	public void webLog() {
+	}
+
+	@Before("webLog()")
+	public void doBefore(JoinPoint joinPoint) throws TokenException {
+		startTime.set(System.currentTimeMillis());
+		// 接收到请求，记录请求内容
+		ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+		if(null!=attributes) {
+			HttpServletRequest request = attributes.getRequest();
+			String url = request.getRequestURL().toString();
+			logger.info("URL : " +url);
+			Boolean flag = filterTokenDefinedMap(url);
+			throwNoauth(request, flag);
+
+			// 记录下请求内容
+			
+			logger.info("HTTP_METHOD : " + request.getMethod());
+			logger.info("IP : " + request.getRemoteAddr());
+			logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "."
+					+ joinPoint.getSignature().getName());
+			logger.info("ARGS : " + Arrays.toString(joinPoint.getArgs()));
+
+		}
+		
+	}
+
+	private void throwNoauth(HttpServletRequest request, Boolean flag) {
+ 		if (flag) {
+
+			if (ComUtil.isEmpty(request.getHeader("token"))) {
+				System.out.println(request.getHeader("token"));
+				throw new TokenException("-5", "您无权操作！"); 
+			}
+			String token = (String) request.getHeader("token");
+			if (!JWTUtil.verify(token, JWTUtil.getUsername(token))) {
+				throw new TokenException("-4", "您无权操作，请重新登录！");
+			}
+		}
+	}
+
+	private Boolean filterTokenDefinedMap(String url) {
+		Map<String, Boolean> filterTokenMap = new HashMap<>();
+		filterTokenMap.put("/tbr/", true);
+		filterTokenMap.put("/tbr/verifyUser", false);//验证用户是否存在
+		filterTokenMap.put("/tbr/register", false);//注册
+		filterTokenMap.put("/tbr/login", false);//登录
+		filterTokenMap.put("/tbr/sendMessage", false);//发送验证码
+		filterTokenMap.put("/tbr/getProductList", true);//获取商品列表
+		filterTokenMap.put("/tbr/getProductDetail", true);//获取商品详细
+		filterTokenMap.put("/tbr/uploadImg", true);//上传图片
+		filterTokenMap.put("/tbr/changeAvater", true);//修改头像  昵称
+		filterTokenMap.put("/tbr/changePaymentCode", true);//修改支付密码
+		filterTokenMap.put("/tbr/authentication", true);//实名认证
+		filterTokenMap.put("/tbr/getEarningsForUser", true);//推广收益
+		filterTokenMap.put("/tbr/getEarningsDetailForUser", true);//推广收益明细
+		filterTokenMap.put("/tbr/giftCoinTransfer", true);//个人推广礼包划转
+		filterTokenMap.put("/tbr/buyProduct", true);//购买产品
+		filterTokenMap.put("/tbr/reBuy", true);//复购
+		filterTokenMap.put("/tbr/backfill", true);//填写回填单
+		filterTokenMap.put("/tbr/queryUSDTLog", true);//查询usdt充值消费记录
+		filterTokenMap.put("/tbr/transfer", true);//金币划转
+		filterTokenMap.put("/tbr/queryBalance", true);//获取当前用户的账户明细
+		filterTokenMap.put("/tbr/withdrawCash", true);//提现申请
+		filterTokenMap.put("/tbr/getUserInfo", true);//用户基本信息
+		filterTokenMap.put("/tbr/getMyFriend", true);//我的好友
+		filterTokenMap.put("/tbr/bindEmail", true);//绑定邮箱
+		filterTokenMap.put("/tbr/vipgiftCoinTransfer", true);//超级矿工基本信息
+		filterTokenMap.put("/tbr/vipminerInfo", true);//超级矿工推广礼包划转
+		filterTokenMap.put("/tbr/getNotice", true);// 通知功能接口
+		filterTokenMap.put("/tbr/getBanners", true);// 轮播广告
+		filterTokenMap.put("/tbr/setPaymentCode", true);// 设置支付密码
+		filterTokenMap.put("/tbr/offlineRecharge", true);//线下充值申请
+		filterTokenMap.put("/invite", false);
+		Boolean flag = false;
+
+		for (String filterUrl : filterTokenMap.keySet()) {
+			if (url.indexOf("/tbr") != -1) {
+				String newUlr = url.substring(url.indexOf("/tbr"));
+				newUlr=newUlr.replaceAll("/",",");
+				String eqfilterUrl=filterUrl.replaceAll("/",",");
+				if (newUlr.equals(eqfilterUrl) ){ 
+
+					flag = filterTokenMap.get(filterUrl);
+					break;
+				}
+			}
+
+		}
+		return flag;
+	}
+
+	@AfterReturning(returning = "ret", pointcut = "webLog()")
+	public void doAfterReturning(Object ret) throws Throwable {
+		// 处理完请求，返回内容
+		logger.info("RESPONSE : " + ret);
+		logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
+	}
+
+}

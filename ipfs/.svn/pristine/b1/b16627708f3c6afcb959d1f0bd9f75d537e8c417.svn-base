@@ -1,0 +1,196 @@
+package com.stys.ipfs.web;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.aliyun.oss.OSSClient;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.stys.ipfs.dto.ResultInfo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.stys.ipfs.entity.TbBanner;
+import com.stys.ipfs.service.ITbBannerService;
+import com.stys.ipfs.util.AliyunOSSClientUtil;
+import com.stys.ipfs.util.OSSClientConstants;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.UUIdUtils;
+
+import org.springframework.stereotype.Controller;
+
+/**
+ * <p>
+ * 广告信息管理表 前端控制器
+ * </p>
+ *
+ * @author dp
+ * @since 2018-10-29
+ */
+@Controller
+@RequestMapping("/tbAdvert")
+public class TbBannerController extends BaseController {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbBannerService itbBannerService;
+
+	@RequestMapping("/*")
+	public void toHtml() {
+
+	}
+
+	@RequestMapping("/listData")
+	@RequiresPermissions("tbAdvert:view")
+	public @ResponseBody ResultInfo<List<TbBanner>> listData(TbBanner tbAdvert, Integer page, Integer limit) {
+		EntityWrapper<TbBanner> wrapper = new EntityWrapper<>(tbAdvert);
+		Page<TbBanner> pageObj = itbBannerService.selectPage(new Page<TbBanner>(page, limit), wrapper);
+		return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
+	}
+
+	@RequestMapping("/add")
+	@RequiresPermissions("tbAdvert:add")
+	public @ResponseBody ResultInfo<Boolean> add(TbBanner tbAdvert) {
+		boolean b = itbBannerService.insert(tbAdvert);
+		return new ResultInfo<>(b);
+	}
+
+	@RequestMapping("/delBatch")
+	@RequiresPermissions("tbAdvert:del")
+	public @ResponseBody ResultInfo<Boolean> delBatch(Integer[] idArr) {
+		boolean b = itbBannerService.deleteBatchIds(Arrays.asList(idArr));
+		return new ResultInfo<>(b);
+	}
+
+	@RequestMapping("/edit")
+	@RequiresPermissions("tbAdvert:edit")
+	public @ResponseBody ResultInfo<Boolean> edit(TbBanner tbAdvert) {
+		boolean b = itbBannerService.updateById(tbAdvert);
+		return new ResultInfo<>(b);
+	}
+
+//	/**
+//	 * #上传图片添加数据
+//	 * 
+//	 * @param tbGameConfig
+//	 * @return
+//	 * @throws IOException
+//	 * @throws IllegalStateException
+//	 */
+//	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+//	@ResponseBody
+//	public ResultInfo<?> upload(@RequestParam("file") MultipartFile file, HttpServletRequest request)
+//			throws IOException {
+//
+//		if (file.isEmpty()) {
+//			return new ResultInfo<>("-1", "文件为空");
+//		}
+//		String pathRoot = request.getSession().getServletContext().getRealPath("");
+//		System.out.println("当前项目所在路径：" + pathRoot);
+//
+//		// 获取文件名
+//		String fileName = file.getOriginalFilename();
+//		logger.info("上传的文件名为：" + fileName);
+//		// 获取文件的后缀名
+//		String suffixName = fileName.substring(fileName.lastIndexOf("."));
+//		logger.info("上传的后缀名为：" + suffixName);
+//		if (ResourceBundle.getBundle("config/thirdParty").getString("suffix_name")
+//				.indexOf(suffixName.toLowerCase().trim()) == -1) {
+//			return new ResultInfo<>("-2", "文件格式不正确！");
+//		}
+//
+//		String returnPath = uploadImage(file, request);
+//		return new ResultInfo<>(returnPath);
+//	}
+//
+//	private String uploadImage(MultipartFile file, HttpServletRequest request) throws IllegalStateException, IOException {
+//
+//		String fileName, returnPath;
+//		// 文件上传后的路径
+//		fileName = UUIdUtils.getUUID() + ".png";
+//		String fileName_src = UUIdUtils.getUUID() + "_1.png";
+//		String imagePath = ResourceBundle.getBundle("config/thirdParty").getString("uploadimg_path");
+//		returnPath = "static/sys/" + fileName; 
+//		String src_path=imagePath + System.currentTimeMillis()+"" + File.separator + fileName_src; 
+//		File dest = new File(src_path); 
+//		// 检测是否存在目录
+//		if (!dest.getParentFile().exists()) {
+//			dest.getParentFile().mkdirs();
+//		}
+//		file.transferTo(dest);
+//		dest.delete(); 
+//		return returnPath;
+//	}
+
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	@ResponseBody
+	public ResultInfo<?> uploadToedit(@RequestParam("file") MultipartFile file, HttpServletRequest request)
+			throws IOException {
+
+		if (file.isEmpty()) {
+			return new ResultInfo<>("-1", "文件不存在！");
+		}
+		// 获取文件名
+		String fileName = file.getOriginalFilename();
+		logger.info("上传的文件名为：" + fileName);
+		// 获取文件的后缀名
+		String suffixName = fileName.substring(fileName.lastIndexOf("."));
+		logger.info("上传的后缀名为：" + suffixName);
+		if (ResourceBundle.getBundle("config/thirdParty").getString("suffix_name")
+				.indexOf(suffixName.toLowerCase().trim()) == -1) {
+			return new ResultInfo<>("-2", "文件格式不正确！");
+		}
+
+		// 初始化OSSClient
+		String imagePath = ResourceBundle.getBundle("config/thirdParty").getString("uploadimg_path");
+		String src_dest_path = imagePath + "sys" + File.separator + fileName;
+		File dest = new File(src_dest_path);
+		// 检测是否存在目录
+		if (!dest.getParentFile().exists()) {
+			dest.getParentFile().mkdirs();
+		}
+		file.transferTo(dest);
+		OSSClient ossClient = AliyunOSSClientUtil.getOSSClient();
+		String[] s = AliyunOSSClientUtil.uploadObject2OSS(ossClient, dest, OSSClientConstants.BACKET_NAME, "sys");
+		dest.delete();
+		logger.info("文件路径:" + s[1]);
+		String url = AliyunOSSClientUtil.getUrl(ossClient, OSSClientConstants.BACKET_NAME, s[1]);
+		logger.info("访问网址路径:" + url);
+		return new ResultInfo<>(url);
+	}
+	
+//	@RequestMapping(value = "/deleteFile", method = RequestMethod.POST)
+//	@ResponseBody
+//	private ResultInfo<?> deleteFile(String filepath, String imgpath, HttpServletRequest request) {
+//		if(StringUtils.isEmpty(imgpath)) {
+//			
+//			delectFile(imgpath);
+//		}	
+//		if(StringUtils.isEmpty(filepath)) {
+//			delectFile(filepath);
+//		}	
+//		return new ResultInfo<>("删除成功!");
+//	}
+//
+//	/**
+//	 * 删除文件
+//	 * @param imgpath
+//	 */
+//	private void delectFile(String imgpath) {
+//		String s1 = imgpath.replaceAll("http://ipfsuser.oss-cn-beijing.aliyuncs.com/", "").replaceAll("\\[", "")
+//				.replaceAll("\\]", "");
+//		String[] arr = s1.split(",");
+//		for (int i = 0; i < arr.length; i++) {
+//			String realpath = arr[i].split("\\?")[0];
+//			OSSClient ossClient = AliyunOSSClientUtil.getOSSClient();
+//			AliyunOSSClientUtil.deleteFile(ossClient, "ipfsuser", realpath);
+//		}
+//	}
+}

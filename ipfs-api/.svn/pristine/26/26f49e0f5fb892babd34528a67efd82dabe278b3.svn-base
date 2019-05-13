@@ -1,0 +1,103 @@
+package com.stys.ipfs.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.enums.FieldStrategy;
+import com.baomidou.mybatisplus.enums.IdType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-01-18
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("tb_userbank_info")
+public class TbUserbankInfo extends Model<TbUserbankInfo> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * id
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+    /**
+     * 用户id
+     */
+    @TableField("user_id")
+    private Integer userId;
+    /**
+     * 银行卡号
+     */
+    @TableField(value="bank_code" ,strategy = FieldStrategy.IGNORED)
+    private String bankCode;
+    /**
+     * 开户行
+     */
+    @TableField(value="bank" ,strategy = FieldStrategy.IGNORED)
+    private String bank;
+    /**
+     * 身份证号码
+     */
+    @TableField("identity_number")
+    private String identityNumber;
+    /**
+     * 身份证正面
+     */
+    @TableField("identity_img_front")
+    private String identityImgFront;
+    /**
+     * 身份证反面
+     */
+    @TableField("identity_img_reverse")
+    private String identityImgReverse;
+    /**
+     * 审核状态(0正在审核 1审核通过 2审核失败 3未认证 )
+     */
+    @TableField("verify_state")
+    private Integer verifyState;
+    
+    /**
+     * 银行卡主姓名
+     */
+    @TableField(value= "bank_owner_name", strategy = FieldStrategy.IGNORED)
+    private String bankOwnerName;
+    
+    @TableField(exist=false)
+    private String nickname; //用户昵称
+
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return "TbUserbankInfo{" +
+        ", id=" + id +
+        ", userId=" + userId +
+        ", bankCode=" + bankCode +
+        ", bankOwnerName=" + bankOwnerName +
+        ", bank=" + bank +
+        ", identityNumber=" + identityNumber +
+        ", identityImgFront=" + identityImgFront +
+        ", identityImgReverse=" + identityImgReverse +
+        ", verifyState=" + verifyState +
+        "}";
+    }
+}

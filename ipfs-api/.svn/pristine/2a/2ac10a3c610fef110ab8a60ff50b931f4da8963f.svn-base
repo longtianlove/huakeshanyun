@@ -1,0 +1,135 @@
+package com.stys.ipfs.entity;
+
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-12
+ */
+@TableName("tb_personal_info")
+public class TbPersonalInfo extends Model<TbPersonalInfo> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 用户外键
+     */
+    @TableField("user_id")
+	private Integer userId;
+    /**
+     * 银行卡号
+     */
+    @TableField("bank_card")
+	private String bankCard;
+    /**
+     * 身份证号
+     */
+	private String idcard;
+    /**
+     * 手机号
+     */
+	private String phone;
+    /**
+     * 用户真实姓名
+     */
+    @TableField("real_name")
+	private String realName;
+    /**
+     * 认证状态
+     */
+    @TableField("personal_status")
+	private Integer personalStatus;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getBankCard() {
+		return bankCard;
+	}
+
+	public void setBankCard(String bankCard) {
+		this.bankCard = bankCard;
+	}
+
+	public String getIdcard() {
+		return idcard;
+	}
+
+	public void setIdcard(String idcard) {
+		this.idcard = idcard;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public Integer getPersonalStatus() {
+		return personalStatus;
+	}
+
+	public void setPersonalStatus(Integer personalStatus) {
+		this.personalStatus = personalStatus;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "TbPersonalInfo{" +
+			", id=" + id +
+			", userId=" + userId +
+			", bankCard=" + bankCard +
+			", idcard=" + idcard +
+			", phone=" + phone +
+			", realName=" + realName +
+			", personalStatus=" + personalStatus +
+			"}";
+	}
+}

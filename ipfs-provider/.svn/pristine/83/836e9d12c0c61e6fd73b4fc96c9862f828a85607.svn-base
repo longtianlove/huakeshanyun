@@ -1,0 +1,205 @@
+package com.stys.ipfs.config;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.dto.TbUsdtVO;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbTransferUsdt;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbTransferUsdtService;
+import com.stys.ipfs.service.ITbUsdtService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.UUIdUtils;
+import com.stys.ipfs.util.usdt.Account;
+import com.stys.ipfs.util.usdt.CoinUtils;
+import com.stys.ipfs.util.usdt.HttpUtil;
+
+/**
+ * 用户usdt转账到总账户里
+ * 
+ * @author dp
+ *
+ */
+public class UsdtListenThread {
+
+	private Logger logger = Logger.getLogger(getClass()); 
+
+	private ITbUsdtService itbUsdtService;
+
+	private IAppUserService iappUserService;
+
+	private ITbUserAssetsService itbUserAssetsService;
+
+	private ITbTransferUsdtService itbTransferUsdtService;
+
+	private IDicService idicService;
+
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	public UsdtListenThread(ITbUsdtService itbUsdtService, IAppUserService iappUserService,
+			ITbUserAssetsService itbUserAssetsService, ITbTransferUsdtService itbTransferUsdtService,
+			IDicService idicService, ITbAssetsDetailService itbAssetsDetailService) {
+
+		this.itbUsdtService = itbUsdtService;
+
+		this.iappUserService = iappUserService;
+
+		this.itbUserAssetsService = itbUserAssetsService;
+
+		this.itbTransferUsdtService = itbTransferUsdtService;
+
+		this.idicService = idicService;
+
+		this.itbAssetsDetailService = itbAssetsDetailService;
+	}
+
+	/**
+	 * 10分钟运行一次 查询usdt的余额, 把usdt的额度 转到一个总账户 增加日志
+	 */
+	@SuppressWarnings("unchecked")
+	public void run() {
+
+		// 查询有余额的usdt
+		try {
+			if (!HttpUtil.isConnect(Account.url)) {
+				logger.info("USDT  Net  link normal");
+
+				ArrayList<LinkedHashMap<?, ?>> walletaddressbalances = CoinUtils.getInstance()
+						.getwalletaddressbalances();
+				for (LinkedHashMap<?, ?> linkedHashMap : walletaddressbalances) {
+					String address = (String) linkedHashMap.get("address");
+					ArrayList<LinkedHashMap<?, ?>> arr = CoinUtils.getInstance().listtransactions(address);
+					for (LinkedHashMap<?, ?> linkedHashMap2 : arr) {
+
+						String txid = (String) linkedHashMap2.get("txid");
+						String sendingaddress = (String) linkedHashMap2.get("sendingaddress");
+						String referenceaddress = (String) linkedHashMap2.get("referenceaddress");
+						Integer confirmations = (Integer) linkedHashMap2.get("confirmations");
+						String amount = "0";
+						if (!StringUtils.isEmpty(linkedHashMap2.get("amount"))) {
+							amount = (String) linkedHashMap2.get("amount");
+						}
+						if (confirmations > 0) {
+
+							// 充值
+							List<TbTransferUsdt> tbTransferUsdtList = itbTransferUsdtService
+									.selectList(new EntityWrapper<TbTransferUsdt>().eq("toAddress", referenceaddress)
+											.eq("txid", txid));
+							if (tbTransferUsdtList.size() == 0) {
+								logger.info("referenceaddress---->" + referenceaddress);
+								TbUsdtVO tbUsdtVO = iappUserService.selectUserIdByUSDTAddress(referenceaddress);
+
+								// 判断usdt是否被用户使用
+								if (null != tbUsdtVO && null != tbUsdtVO.getUserId()) {
+									// 增加usdt转账日志信息
+									TbTransferUsdt tbTransferUsdt = new TbTransferUsdt();
+									tbTransferUsdt.setFromaddress(sendingaddress);
+									tbTransferUsdt.setToaddress(referenceaddress);
+									tbTransferUsdt.setTxid(txid);
+									tbTransferUsdt.setUserId(tbUsdtVO.getUserId());
+									tbTransferUsdt.setStatus(1);
+									tbTransferUsdt.setConfirmations(confirmations);
+									Float balance = Float.valueOf(amount);
+									tbTransferUsdt.setBalance(balance);
+									itbTransferUsdtService.insert(tbTransferUsdt);
+									// 通过usdt 地址 查询用户账号
+									logger.info("referenceaddress---->" + tbUsdtVO.getUserId());
+									Integer user_id = tbUsdtVO.getUserId();
+									logger.info("user_id---->" + user_id);
+									// 用户资产表
+									TbUserAssets tbUserAssets = itbUserAssetsService
+											.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", user_id));
+									synchronized (tbUserAssets) {
+
+										// 转成人民币
+										String new_balance = BigDecimalUtils.multiply(String.valueOf(balance), "6.72");
+
+										float coin = tbUserAssets.getCoin();
+										// 增加余额
+										String new_coin = BigDecimalUtils.add(String.valueOf(coin), new_balance);
+										tbUserAssets.setCoin(Float.valueOf(new_coin));
+										// 更新个人资产
+										if (itbUserAssetsService.updateById(tbUserAssets)) {
+											logger.info("金额修改成功：-->");
+										}
+										// 增加日志
+										addAssetsDetail(tbTransferUsdt, new_balance, coin, new_coin);
+
+										String mainAddress = "1C1BtSbD8RZfY1Neg6UJ3mvVPSoH55kGcU";
+										// 转账到总账户
+										transferTotalAssets(referenceaddress, tbTransferUsdt, balance, user_id,
+												mainAddress);
+
+										logger.info("归集成功：" + referenceaddress + "-->" + tbTransferUsdt);
+										logger.info("归集balance：" + balance + "--user_id-->" + user_id);
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}
+
+		} catch (Throwable e1) {
+			e1.printStackTrace();
+		}
+
+	}
+
+	private void addAssetsDetail(TbTransferUsdt tbTransferUsdt, String new_balance, float coin, String new_coin) {
+		TbAssetsDetail tbAssetsDetail = new TbAssetsDetail();
+		tbAssetsDetail.setId(UUIdUtils.getUUID());
+		tbAssetsDetail.setAfterAmount(Float.valueOf(new_coin));
+		tbAssetsDetail.setAmount(Float.valueOf(new_balance));
+		tbAssetsDetail.setBeforeAmount(coin);
+		tbAssetsDetail.setInOrOut(IncomeOrOut.income.getCode());
+		tbAssetsDetail.setType(idicService.getDicData("账变类型", "USDT充值").getId());
+		tbAssetsDetail.setUserId(tbTransferUsdt.getUserId());
+		// 插入转账明细
+		itbAssetsDetailService.insert(tbAssetsDetail);
+	}
+
+	/**
+	 * 转账到总账户 并增加日志
+	 * 
+	 * @param referenceaddress
+	 * @param tbTransferUsdt
+	 * @param balance
+	 * @param user_id
+	 * @param mainAddress
+	 * @throws Throwable
+	 */
+	private void transferTotalAssets(String referenceaddress, TbTransferUsdt tbTransferUsdt, Float balance,
+			Integer user_id, String mainAddress) {
+		try {
+			String totle_txid = CoinUtils.getInstance().send(referenceaddress, mainAddress, 31, balance, mainAddress);
+			if (null != totle_txid) {
+
+				TbTransferUsdt tbTransferUsdt2 = new TbTransferUsdt();
+				tbTransferUsdt2.setBalance(balance);
+				tbTransferUsdt2.setConfirmations(0);
+				tbTransferUsdt2.setFromaddress(referenceaddress);
+				tbTransferUsdt2.setToaddress(mainAddress);
+				tbTransferUsdt2.setStatus(0);
+				tbTransferUsdt2.setTxid(totle_txid);
+				tbTransferUsdt2.setUserId(user_id);
+				itbTransferUsdtService.insert(tbTransferUsdt);
+			}
+		} catch (Throwable e) {
+			logger.info("钱包金额 ");
+		}
+	}
+
+}

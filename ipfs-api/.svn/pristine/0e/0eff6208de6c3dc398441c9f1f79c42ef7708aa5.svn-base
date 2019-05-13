@@ -1,0 +1,134 @@
+package com.stys.ipfs.entity;
+
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-11
+ */
+@TableName("sys_app_userinfo")
+public class AppUserinfo extends Model<AppUserinfo> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 昵称
+     */
+	private String nickname;
+    /**
+     * 头像路径
+     */
+	private String avater;
+    /**
+     * 邀请人邀请码
+     */
+    @TableField("invitation_code")
+	private String invitationCode;
+    /**
+     * 外键
+     */
+    @TableField("user_id")
+	private Integer userId;
+    /**
+     * 邀请码
+     */
+	private String code;
+    /**
+     * 邀请码图像路径
+     */
+    @TableField("code_path")
+	private String codePath;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public String getAvater() {
+		return avater;
+	}
+
+	public void setAvater(String avater) {
+		this.avater = avater;
+	}
+
+	public String getInvitationCode() {
+		return invitationCode;
+	}
+
+	public void setInvitationCode(String invitationCode) {
+		this.invitationCode = invitationCode;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getCodePath() {
+		return codePath;
+	}
+
+	public void setCodePath(String codePath) {
+		this.codePath = codePath;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "AppUserinfo{" +
+			", id=" + id +
+			", nickname=" + nickname +
+			", avater=" + avater +
+			", invitationCode=" + invitationCode +
+			", userId=" + userId +
+			", code=" + code +
+			", codePath=" + codePath +
+			"}";
+	}
+}

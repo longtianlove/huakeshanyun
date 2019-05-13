@@ -1,0 +1,161 @@
+package com.stys.ipfs.web;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.util.*;
+
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.dto.AppUserInfoVo;
+import com.stys.ipfs.dto.ResultInfo;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.AppUserinfo;
+import com.stys.ipfs.entity.TbProduct;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbUserExperience;
+import com.stys.ipfs.entity.TbVipminer;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IAppUserinfoService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserExperienceService;
+import com.stys.ipfs.service.ITbVipminerService;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.StringUtils;
+
+import org.springframework.stereotype.Controller;
+
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-11
+ */
+@Controller
+@RequestMapping("/appUserinfo")
+public class AppUserinfoController extends BaseController {
+
+    @Reference(version = "1.0.0", check = false)
+    private IAppUserinfoService iappUserinfoService;
+    
+    @Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+    
+    @Reference(version = "1.0.0", check = false)
+    private ITbProductService itbProductService;
+    
+    @Reference(version = "1.0.0", check = false)
+    private IAppUserService iappUserService;
+    
+    @Reference(version = "1.0.0")
+    private ITbVipminerService itbVipminerService;
+    
+    @Reference(version = "1.0.0", check = false)
+	private ITbUserExperienceService itbUserExperienceService;
+    
+    
+    
+    
+    
+    @RequestMapping("/*")
+    public void toHtml(){
+
+    }
+
+    @RequestMapping("/listData")
+    @RequiresPermissions("appUserinfo:view")
+    public @ResponseBody
+        ResultInfo<List<AppUserInfoVo>> listData(String phone,String nickname, Integer page, Integer limit){
+        Page<AppUserInfoVo> pageObj = iappUserinfoService.selectPageAppUserInfoVo(new Page<AppUserInfoVo>(page,limit), phone, nickname);
+        return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
+    }
+
+    @RequestMapping("/add")
+    @RequiresPermissions("appUserinfo:add")
+    public @ResponseBody
+        ResultInfo<Boolean> add(AppUserinfo appUserinfo){
+        boolean b = iappUserinfoService.insert(appUserinfo);
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/delBatch")
+    @RequiresPermissions("appUserinfo:del")
+    public @ResponseBody
+        ResultInfo<Boolean> delBatch(Integer[] idArr){
+        boolean b = iappUserinfoService.deleteBatchIds(Arrays.asList(idArr));
+        return new ResultInfo<>(b);
+    }
+
+    @RequestMapping("/edit")
+    @RequiresPermissions("appUserinfo:edit")
+    public @ResponseBody
+        ResultInfo<Boolean> edit(AppUserinfo appUserinfo){
+        boolean b = iappUserinfoService.updateById(appUserinfo);
+        return new ResultInfo<>(b);
+    }
+    
+    @RequestMapping("/personBuy")
+	public @ResponseBody ResultInfo<?> personBuy(Integer userId,Integer tbProductId) {
+    	
+    	AppResultInfo<?>  app=	itbProductService.buyProduct(userId, tbProductId);
+    	if(app.getState()!=200) {
+    		return new ResultInfo<>("1",app.getMsg());
+    	}
+		return new ResultInfo<>(true);
+	}
+    @RequestMapping("/upGrade")
+    public @ResponseBody ResultInfo<?> upGrade(Integer userId,Integer dicId) {
+    	AppUser appuser=iappUserService.selectById(userId);
+    	if(StringUtils.isEmpty(appuser)) {
+    		return new ResultInfo<>("1","用户不存在！");
+    	}
+    	appuser.setDicId(dicId);
+    	 boolean b =iappUserService.updateById(appuser);
+    	return new ResultInfo<>(b);
+    }
+    @RequestMapping("/upstorage")
+    public @ResponseBody ResultInfo<?> upStorage(Integer userId,Integer storage) {
+    	TbUserAssets tbuserassets=itbUserAssetsService.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+		synchronized (tbuserassets) {
+			tbuserassets.setStorage(storage);
+			itbUserAssetsService.updateById(tbuserassets);
+			TbUserExperience userexperience=itbUserExperienceService.selectOne(new EntityWrapper<TbUserExperience>().eq("user_id", userId));
+			userexperience.setExperience(storage);
+			itbUserExperienceService.updateById(userexperience);
+		}
+    	return new ResultInfo<>(true);
+    }
+    @RequestMapping("/super")
+    public @ResponseBody ResultInfo<?> superVipminer(Integer userId) {
+    	TbVipminer TbVipminer=itbVipminerService.selectOne(new EntityWrapper<TbVipminer>().eq("user_id", userId));
+    	if(!StringUtils.isEmpty(TbVipminer)) {
+    		return new ResultInfo<>("1","当前用户已经是超级矿工！");
+    	}
+    	int number=itbVipminerService.selectCount(new EntityWrapper<TbVipminer>());
+    	if(number>100) {
+    		return new ResultInfo<>("1","超级矿工人数已满");
+    	}
+    	TbProduct TbProduct=itbProductService.selectOne(new EntityWrapper<TbProduct>().eq("product_type", 333));
+    	AppResultInfo<?>  app=	itbProductService.buyProduct(userId, TbProduct.getId());
+    	if(app.getState()!=200) {
+    		return new ResultInfo<>("1",app.getMsg());
+    	}
+    	//    升级超级矿工
+    	TbVipminer miner=new TbVipminer();
+    	miner.setUserId(userId);
+    	miner.setStatus(1);
+    	miner.setGiftCoin(0d);
+    	Double outNumber = Double.parseDouble(BigDecimalUtils.multiply(TbProduct.getProductPreferentialPrice().toString(),
+    			"4"));
+    	miner.setLimitCoin(outNumber);
+    	 boolean b = itbVipminerService.insert(miner);
+    	 return new ResultInfo<>(b );
+    }
+    
+}
+

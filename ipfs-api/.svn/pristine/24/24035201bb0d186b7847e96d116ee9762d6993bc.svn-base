@@ -1,0 +1,26 @@
+package com.stys.ipfs.service;
+
+
+import org.apache.ibatis.annotations.Param;
+
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.IService;
+import com.stys.ipfs.dto.UserInfoVo;
+import com.stys.ipfs.entity.AppUser;
+
+/**
+ * <p>
+ * APP用户管理 服务类
+ * </p>
+ *
+ * @author dp
+ * @since 2018-11-01
+ */
+public interface IAppUserService extends IService<AppUser> {
+	
+	
+	Page<UserInfoVo> selectPageAppUser(Page<UserInfoVo> page,Wrapper<UserInfoVo> wrapper,@Param("phone") String phone, @Param("nickname") String nickname);
+	
+	Integer getAppUserId(String id);
+}

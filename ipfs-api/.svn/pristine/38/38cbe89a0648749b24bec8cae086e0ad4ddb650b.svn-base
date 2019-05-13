@@ -1,0 +1,94 @@
+package com.stys.ipfs.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * <p>
+ * app用户个人信息表
+ * </p>
+ *
+ * @author dp
+ * @since 2018-10-29
+ */
+@Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@TableName("sys_userinfo")
+public class Userinfo extends Model<Userinfo> {
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 主键ID
+	 */
+	@TableId(value = "id", type = IdType.AUTO)
+	private Integer id;
+	/**
+	 * 真实姓名
+	 */
+	private String name;
+	/**
+	 * 昵称
+	 */
+	private String nickname;
+	/**
+	 * 邮件
+	 */
+	private String email;
+	/**
+	 * 头像图片地址
+	 */
+	private String avater;
+	/**
+	 * 被邀请码
+	 */
+	@TableField("invitation_code")
+	private String invitationCode;
+	/**
+	 * 备注
+	 */
+	private String remark;
+	/**
+	 * 总算力
+	 */
+	@TableField("total_hashrate")
+	private Integer totalHashrate;
+	/**
+	 * 用户id
+	 */
+	@TableField("user_id")
+	private Integer userId;
+	
+	/**
+	 * 	邀请码图片路径
+	 */
+	@TableField("code_path")
+	private String codePath;
+	/**
+	 * 	邀请码
+	 */
+	private String code;
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "Userinfo{" + ", id=" + id + ", name=" + name + ", nickname=" + nickname + ", email=" + email
+				+ ", avater=" + avater + ", invitationCode=" + invitationCode + ", remark=" + remark
+				+ ", totalHashrate=" + totalHashrate + ", code="
+				+ code +  " }";
+	}
+}

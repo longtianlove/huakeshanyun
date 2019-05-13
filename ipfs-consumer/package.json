@@ -1,0 +1,15 @@
+{
+	"name": "IPFS接口文档",
+	"version": "0.1.0",
+	"description": "开发技术接口文档",
+	"title": "API文档",
+	"url": "http://localhost:8080/IPFS",
+	"sampleUrl": "http://localhost:8080/IPFS",
+	"template": {
+		"forceLanguage": "zh-cn"
+	},
+	 "apidoc": {
+    "title": "接口文档",
+    "url" : "https://127.0.0.1"
+	}
+}

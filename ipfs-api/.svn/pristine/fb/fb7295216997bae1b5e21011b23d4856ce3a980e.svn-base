@@ -1,0 +1,43 @@
+package com.stys.ipfs.dto;
+
+
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserAssetDetailVO  implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@TableField("amount")
+	private Float amount; //金额
+	
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime;
+	
+	@TableField("myaccont")
+	private String myaccont;// 自己账户
+	
+	@TableField("in_or_out")
+	private Integer inOrOut; //收支类型(0收入,1支出)
+	
+	@TableField("otheraccont")
+	private String otheraccont; //转账账户
+	
+	@TableField("type")
+	private String type; //交易类型
+	
+}

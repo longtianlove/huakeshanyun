@@ -1,0 +1,65 @@
+package com.stys.ipfs.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * <p>
+ * 邀请表
+ * </p>
+ *
+ * @author dp
+ * @since 2018-10-29
+ */
+@Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@TableName("tb_invite")
+public class TbInvite extends Model<TbInvite> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键ID
+     */
+    @TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 邀请人
+     */
+    @TableField("tb_iviter")
+	private Integer tbIviter;
+    /**
+     * 被邀请人
+     */
+    @TableField("tb_ivitee")
+	private Integer tbIvitee;
+    /**
+     * 父节点
+     */
+    @TableField("parent_id")
+    private Integer parentId;
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "TbInvite{" +
+			", id=" + id +
+			", tbIviter=" + tbIviter +
+			", tbIvitee=" + tbIvitee +
+			"}";
+	}
+}

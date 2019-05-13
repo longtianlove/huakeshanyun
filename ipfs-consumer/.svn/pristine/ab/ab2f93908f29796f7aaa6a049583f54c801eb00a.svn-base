@@ -1,0 +1,25 @@
+/*
+*  @author dp
+*  @since 2019-03-12
+*/
+layui.use(['form','layer'],function(){
+    var form = layui.form
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery;
+ 
+    layui.use('laydate', function(){
+  	  var laydate = layui.laydate;
+  	  
+  	  laydate.render({
+  	    elem: '#endTime' //指定元素
+  	  });
+  	  laydate.render({
+  		  elem: '#startTime' //指定元素
+  	  });
+  	});
+    form.on("submit(export)",function(data){   
+    	  $.post("/tbAssetsDetail/export",data.field,function(res){
+            
+          })
+    })
+})

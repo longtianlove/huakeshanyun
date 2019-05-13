@@ -1,0 +1,108 @@
+spring.profiles.active=prod
+server.port = 443
+server.http.port=80
+server.tomcat.uri-encoding = UTF-8
+#server.tomcat.max-http-header-size=8192
+#server.display-name = ipfs-consumer
+#server.tomcat.remote-ip-header=x-forward-for
+#server.tomcat.max-threads=1000
+
+#\u4f60\u751f\u6210\u7684\u8bc1\u4e66\u540d\u5b57
+server.ssl.key-store=classpath:tomcat.key
+server.ssl.key-store-password=123456
+server.ssl.keyStoreType=JKS
+server.ssl.keyAlias=tomcat
+server.ssl.enabled=true
+
+
+banner.location=config/ipfs.txt
+
+spring.application.name = tbr-consumer
+#thymeleaf\u914d\u7f6e
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.mode=LEGACYHTML5
+spring.thymeleaf.cache=false
+spring.mvc.static-path-pattern=/static/**
+#cbs.imagesPath=D:/ipfs/uploadImg/
+cbs.imagesPath=/usr/local/ipfs/img/
+spring.resources.static-locations=classpath:static/,file:upload/,file:${cbs.imagesPath}
+dubbo.application.port=443
+dubbo.application.name =ipfs-consumer
+dubbo.registry.address=zookeeper://127.0.0.1:2181
+dubbo.scan.base-packages = com.stys.ipfs
+
+#spring.session.store-type=redis
+# REDIS\u914d\u7f6e
+# Redis\u6570\u636e\u5e93\u7d22\u5f15\uff08\u9ed8\u8ba4\u4e3a0\uff09
+spring.redis.database = 0
+# Redis\u670d\u52a1\u5668\u5730\u5740
+spring.redis.host =127.0.0.1
+# Redis\u670d\u52a1\u5668\u8fde\u63a5\u7aef\u53e3
+spring.redis.port = 6379
+# Redis\u670d\u52a1\u5668\u8fde\u63a5\u5bc6\u7801\uff08\u9ed8\u8ba4\u4e3a\u7a7a\uff09
+spring.redis.password =
+# \u8fde\u63a5\u6c60\u6700\u5927\u8fde\u63a5\u6570\uff08\u4f7f\u7528\u8d1f\u503c\u8868\u793a\u6ca1\u6709\u9650\u5236\uff09
+spring.redis.pool.max-active = 8
+# \u8fde\u63a5\u6c60\u6700\u5927\u963b\u585e\u7b49\u5f85\u65f6\u95f4\uff08\u4f7f\u7528\u8d1f\u503c\u8868\u793a\u6ca1\u6709\u9650\u5236\uff09
+spring.redis.pool.max-wait = -1
+# \u8fde\u63a5\u6c60\u4e2d\u7684\u6700\u5927\u7a7a\u95f2\u8fde\u63a5
+spring.redis.pool.max-idle = 8
+# \u8fde\u63a5\u6c60\u4e2d\u7684\u6700\u5c0f\u7a7a\u95f2\u8fde\u63a5
+spring.redis.pool.min-idle = 0
+# \u8fde\u63a5\u8d85\u65f6\u65f6\u95f4\uff08\u6beb\u79d2\uff09
+spring.redis.timeout = 0
+# \u8bbe\u7f6e\u7f13\u5b58\u8fc7\u671f\u65f6\u95f4\uff08\u5355\u4f4d\uff1a\u79d2\uff09
+spring.redis.expire = 1800
+
+spring.messages.basename=i18n/messages
+ticketSecret=123456789
+
+#\u5546\u6237\u7f16\u53f7
+merchantNo = 8002000008
+
+#\u5546\u6237RSA\u516c\u94a5
+publicKey = MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAi0SN5d5HiffEgK5OgM2EA70Qgccb7p+Pch5wI/hpYxfK2oz7ZWxBkCxjxU7p5bn37rKh7ZfZUKpue37fSLGJTj/H4XajGRtTQLM1E9+Ly4ecfuBm3HpOwWpKwcmSqyzK2n3qH71X6aGLdI65wbdztMtlXJVwfxslFbdF8LiOFXHqIKJFiZH8r3UE2JRT9Rd6dTig/AOitTZpOpIMv88YNF2Igg43+3GRTbSVlRusyfWPoJGwfnXCSJDySAnmquK4jiPzHzTigAFGXLQNGWhqEg26IzX32PsZqDGmNY2YdeWqWy+JUSPdq2Tkgj+36rwQqj6qNdy7rhN6hOYYOck7YQIDAQAB
+
+#\u5546\u6237RSA\u79c1\u94a5
+privateKey = MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCLRI3l3keJ98SArk6AzYQDvRCBxxvun49yHnAj+GljF8rajPtlbEGQLGPFTunluffusqHtl9lQqm57ft9IsYlOP8fhdqMZG1NAszUT34vLh5x+4Gbcek7BakrByZKrLMrafeofvVfpoYt0jrnBt3O0y2VclXB/GyUVt0XwuI4VceogokWJkfyvdQTYlFP1F3p1OKD8A6K1Nmk6kgy/zxg0XYiCDjf7cZFNtJWVG6zJ9Y+gkbB+dcJIkPJICeaq4riOI/MfNOKAAUZctA0ZaGoSDbojNffY+xmoMaY1jZh15apbL4lRI92rZOSCP7fqvBCqPqo13LuuE3qE5hg5yTthAgMBAAECggEBAIptILHL58WuHYZeOy9xl3dz1FV6iDv+I0GmGYbXYkEZpArpuPPNz7kzNhQnZPtvho2exq73kQzJ6rkbmWqS9MxvPwjOuDy7WVvlBKv1NemeqKHAAN3DQEallRrbdcpo4lScdTsJI7nYVVoMh3ySERMyXFTTQRdF7u2P1pf3iVqsAVBTcuviEEEGAtwTnhhB92RaDkg2c0g9xTJwkVfqlcktelsCD2FChZ/X1gA2e/1tiMalE5VXfXE08Pxw1Yu3DZIsIHdzbSPra9mrkYp9naQsjjnm/pmSIHoNAqeJgj0Nbdi5egLNgYBUROVkZm7gbZ4JVhzJGckZ0CrvAYFdbCUCgYEAvm9ENKKCw91eblUffghtOKG+xl0Rst3BwQVGbNeLyKfKHJyDPBjTz447DW6ow7Y0wKAD8o3eXAcdP4bLhLBYw93uQ3TRDE4DMXswixVqXWuBF/FvduMF0qBoe8X2YyoiYCAg+mn89XKrNbb0z3kAqeofBLhKoM3wszqdDdP0hNsCgYEAuzd9P8UKv8g+IaULLrvR1DwPx1DjxHvdSDPzyZgZsaInc8U0rFKIiiBJcx3yTnE+icuXK0HYszqFnze3XKjINXTrgZGv09sJWX9LinLyFxDUbJCRi78Izh0Jd/KkQKW3awN8fcp4Ij9sPxZFTPePB8sksiH0iCyUIOrUlUS7t3MCgYBEXd22p8EaYBbOtXCg5pWPh0HeJPt9o28zxJkL6jYcy2Ab9XSH1sHz+bPplpiv6nH11XyVT6lMkKFHdTULZeP4LWykewOxzzAGS5uZ0w5ki3vFBMBnhglJHJ1mEiPqZe4BZIdyXyqZU5lzp0MsWNyMI6kPILpqEIUhUyGfHUDjkQKBgQCJNr0snN0o/LlU7WMJyIyccbzax5V4L5RaVAFsknbac09ZEYNufTsniUxr+9nY1jUQx0+vW55Ylh7TOAHC/s1mKKBnIYDt1E7A8oRKH78BWstmGnsiIkxwzGVhLUxnOU36N97pTxjHeRZ8EnWOWK7S9neZuzs/BvU2Pwa5tFukswKBgDZItf+mE3ZMnoWLX4HDcwOvsVBdczNWume8bdJ5B+pJZ03er4sfhf54/cFoPf2o3KIZXn01xcFsVKJkmxV63hd6yvbt19fEIODS+dcNs7KQJLECFjY2POHf3stJk0KWODzjXjvcKOuDkDFZa1D115YW9J8SSyiMB1kSBCDjhRPS
+
+#\u98de\u9a6cRSA\u516c\u94a5
+feimaPublicKey =MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuXy/XOTfLWMLTUBy+i4SsWMRnn1MYXGvG1pMEXQAC/QNG8K7AZmQACy+8gCA0B5L+QSYTflbzA1JIGChtPUZd8ZMOLkXFdjogbpKMge0rV73j6wl6UjufhCFHupnENyIG0dnVLlTSPfsuTuu2IDIXJwUT2zpsFMU8tj1WBS5XEZSWcFH9b3Gb/j+3ilZjO+0XV1Pzz3a4BREuiraMbSEInVoZzPp/DBG/Dc9V8+TJ0NSkpYVLIn1hBi721jPbGW/Dvg010AV0LtqEOeAuVubk3iBQxEPX5cXiklhpRJyTXZIzCH6DLkCEHPbCKlytnWZvKa2xCjKi58aw9JKVWe2EwIDAQAB
+
+
+feimaNotifyUrl=http://39.100.54.18/tbr/feimaNotifyUrl
+#\u8d26\u6237\u6ce8\u518c\u63a5\u53e3
+#userRegisterRequestURL = https://openapi.fmwallet.com/api/user/register
+userRegisterRequestURL = https://openapi.fm.fmwallet.com/api/user/register
+
+#\u7528\u6237\u8ba4\u8bc1
+userAuthRequestURL=https://openapi.fm.fmwallet.com/api/user/userAuth
+
+#\u8ba2\u5355\u521b\u5efa\u63a5\u53e3
+#orderCreateRequestURL = https://openapi.fmwallet.com/api/pay/createPayOrder
+orderCreateRequestURL = https://openapi.fm.fmwallet.com/api/pay/createPayOrder
+
+#\u8ba2\u5355\u67e5\u8be2\u63a5\u53e3
+#orderQueryRequestURL = https://openapi.fmwallet.com/api/pay/orderquery
+orderQueryRequestURL = https://openapi.fm.fmwallet.com/api/pay/orderquery
+
+#\u8ba2\u5355\u9000\u6b3e\u63a5\u53e3
+#orderRefundRequestURL = https://openapi.fmwallet.com/api/pay/refund
+orderRefundRequestURL = https://openapi.fm.fmwallet.com/api/pay/refund
+
+#\u8ba2\u5355\u9000\u6b3e\u67e5\u8be2\u63a5\u53e3
+#orderRefundQueryRequestURL = https://openapi.fmwallet.com/api/pay/refundquery
+orderRefundQueryRequestURL = https://openapi.fm.fmwallet.com/api/pay/refundquery
+
+#\u5bf9\u8d26\u5355\u4e0b\u8f7d\u63a5\u53e3
+#downloadbillRequestURL = https://openapi.fmwallet.com/api/pay/downloadbill
+#downloadbillRequestURL = https://openapi.fm.fmwallet.com/api/pay/downloadbill
+
+downloadbillPaymentRequestURL = https://openapi.fm.fmwallet.com/api/pay/bill/payment
+downloadbillRefundRequestURL = https://openapi.fm.fmwallet.com/api/pay/bill/refund
+#\u63d0\u73b0
+#withdrawURL=https://openapi.fmwallet.com/api/pay/transfer/single
+withdrawURL=https://openapi.fm.fmwallet.com/api/pay/transfer/single
+#usdt\u6700\u5c0f\u5145\u503c\u6570
+USDT_minValue=100

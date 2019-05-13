@@ -1,0 +1,19 @@
+<?Mapper version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stys.ipfs.mapper.TbPersonalInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.stys.ipfs.entity.TbPersonalInfo">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="bank_card" property="bankCard" />
+        <result column="bank_name" property="bankName" />
+        <result column="idcard" property="idcard" />
+        <result column="phone" property="phone" />
+        <result column="real_name" property="realName" />
+        <result column="personal_status" property="personalStatus" />
+        <result column="identity_img_front" property="identityImgFront" />
+        <result column="identity_img_reverse" property="identityImgReverse" />
+    </resultMap>
+
+</mapper>

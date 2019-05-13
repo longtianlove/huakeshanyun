@@ -1,0 +1,86 @@
+/*
+ *  @author dp
+ *  @since 2018-10-31
+ */
+layui.use([ 'form', 'layer' ], function() {
+	var form = layui.form
+	layer = parent.layer === undefined ? layui.layer : top.layer,
+			$ = layui.jquery;
+
+	form.verify({
+		mobile : function (value, item) {
+			console.info(value);  
+			var msg;
+			$.ajax({
+				type : "POST",
+				url : '/appUser/checkMobile', 
+				async : false, // 使用同步的方法
+				data : {
+					phone : value
+				},
+				dataType : 'json',
+				success : function (result) {
+					var id=$("#id").val();
+					if (id==""&&result.code == "0" && result.data == 1) {
+						msg ="账户已存在"; //return写在最后面，之前我在这里直接return，无法实现验证
+					} 
+				}
+			}); 
+			return msg;
+		}
+	});
+
+	
+	
+	
+	var dicList;
+	$.post("/dic/selectListData", {
+		groupName : '用户级别',
+		name : '名称'
+	}, function(data) {
+		dicList = data.data;
+		dicList.forEach(function(e) {
+			$(".userGradeId").append(
+					"<option value='" + e.id + "'>" + e.value1 + "</option>");
+		});
+		$(".userGradeId").val($("#userGradeId").val());//默认选中 
+		form.render('select');//刷新select选择框渲染
+	});
+
+	$(".state").val($("#state").val());//默认选中 
+	form.on("submit(addAppUser)", function(data) {
+		//弹出loading
+		var index = top.layer.msg('数据保存中，请稍候...', {
+			icon : 16,
+			time : false,
+			shade : 0.8
+		});
+		if ($("#id").val() === "") {
+			$.post("/appUser/add", data.field, function(res) {
+				if (res.data) {
+					layer.close(index);
+					layer.msg("添加成功！");
+					layer.closeAll("iframe");
+					//刷新父页面
+					parent.location.reload();
+				} else {
+					layer.msg(data.msg);
+				}
+			})
+		} else {
+			$.post("/appUser/edit", data.field, function(res) {
+				if (res.data) {
+					layer.close(index);
+					layer.msg("修改成功！");
+					layer.closeAll("iframe");
+					//刷新父页面
+					parent.location.reload();
+				} else {
+					layer.msg(data.msg);
+				}
+			})
+		}
+		return false;
+	})
+
+});

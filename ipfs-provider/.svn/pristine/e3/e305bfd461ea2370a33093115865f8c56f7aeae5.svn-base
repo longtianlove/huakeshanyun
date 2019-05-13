@@ -1,0 +1,214 @@
+package com.stys.ipfs.config;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.Dic;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbInvite;
+import com.stys.ipfs.entity.TbSystemProfit;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbUserBuyLog;
+import com.stys.ipfs.entity.TbVipminer;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.ITbSystemProfitService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserBuyLogService;
+import com.stys.ipfs.service.ITbVipminerService;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.DateUtil;
+import com.stys.ipfs.util.UUIdUtils;
+
+@Component
+@Configurable
+@EnableScheduling
+public class PlatformDividendScheduledTask {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserBuyLogService itbUserBuyLogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbVipminerService itbVipminerService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbInviteService itbInviteService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+	
+	@Reference(version = "1.0.0", check = false)
+    private ITbSystemProfitService itbSystemProfitService;
+
+
+	/**
+	 * 0 0 10 * * ? 每天10点触发一次
+	 * 
+	 * 0 * // 1 * * * ? 每天23点收益处理
+	 */
+	@Scheduled(cron = " 0 0 23 * * ? ")
+	public void reportCurrentByCron() {
+		System.out.println("==========》》》》》超级矿工分红《《《《《《=============");
+		String today = DateUtil.getToday();
+		// 查询今日的收益
+		float total_profit = itbUserBuyLogService.selectTodayBuyProfit("%" + today + "%");
+
+		String percentageStr = idicService.getDicData("平台收益", "分红").getValue1();
+		// 计算百分比
+		String profitStr = BigDecimalUtils.multiply(percentageStr, String.valueOf(total_profit));
+
+		// 这里也需要冻结 统计超级旷工人数
+		int vipcount = itbVipminerService.selectCount(new EntityWrapper<TbVipminer>());
+		if (vipcount != 0) {
+			// 平分收益
+			String average_profitStr = BigDecimalUtils.Divide(profitStr, String.valueOf(vipcount));
+
+			List<TbVipminer> vipMinerList = itbVipminerService
+					.selectList(new EntityWrapper<TbVipminer>().eq("status", 1));
+			// 分红给超级旷工
+			for (TbVipminer tbVipminer : vipMinerList) {
+				// 增加分红
+				float giftcoin = tbVipminer.getGiftCoin();
+				String new_giftcoin = BigDecimalUtils.add(String.valueOf(giftcoin), average_profitStr);
+				Float coin=Float.valueOf(new_giftcoin);
+				Float limit=tbVipminer.getLimitCoin();
+				if(limit>=coin) {
+					tbVipminer.setGiftCoin(coin);
+				}else if(limit<coin) {
+					if(limit>0) {
+						tbVipminer.setGiftCoin(coin-limit);
+					}else if(limit==0) {
+						tbVipminer.setGiftCoin(0f);
+					}
+					tbVipminer.setStatus(0);
+				}
+				
+				itbVipminerService.updateById(tbVipminer);
+
+				TbAssetsDetail tbAssetsDetail = new TbAssetsDetail();
+				tbAssetsDetail.setId(UUIdUtils.getUUID());
+				tbAssetsDetail.setUserId(tbVipminer.getUserId());
+				tbAssetsDetail.setAfterAmount(coin);
+				tbAssetsDetail.setAmount(Float.valueOf(average_profitStr));
+				Dic dic = idicService.getDicData("账变类型", "平台分红");
+				tbAssetsDetail.setType(dic.getId());
+				tbAssetsDetail.setBeforeAmount(Float.valueOf(giftcoin));
+				tbAssetsDetail.setInOrOut(IncomeOrOut.income.getCode());
+				itbAssetsDetailService.insert(tbAssetsDetail);
+			}
+		}
+		//统计平台收入
+		TbSystemProfit systemprofit=new TbSystemProfit();
+		systemprofit.setProfit(total_profit);
+		systemprofit.setCreateTime(new Date());
+		itbSystemProfitService.insert(systemprofit);
+	}
+
+	/**
+	 *
+	 * S3级别帐户享受所在系统内全球分红 2%奖励。每天分红一次
+	 *	每天23点15分钟触发一次
+	 */
+	@Scheduled(cron = " 0 15 23 * * ? ")
+	public void participationInProfit() {
+		System.out.println("==========》》》》》系统S3分红《《《《《《=============");
+		AppUser user=iappUserService.selectList(new EntityWrapper<AppUser>().orderBy("id")).get(0);// 公司账号第一个账号
+		List<TbInvite> list = itbInviteService
+				.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", user.getId())); // 分公司
+		String today = DateUtil.getDay();
+		Dic dic = idicService.getDicData("用户级别", "S3");
+		for (TbInvite tbInvite : list) {
+			List<TbInvite> alist = itbInviteService
+					.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", tbInvite.getTbIvitee())); // 子公司
+			for (TbInvite invite : alist) {
+				Set<Integer> userSet = new HashSet<>();
+				// 计算每个invite
+				Set<Integer> set = getInviter(userSet, invite.getTbIvitee());
+
+				Map<String, Object> map = itbUserBuyLogService
+						.selectMap(new EntityWrapper<TbUserBuyLog>().setSqlSelect("SUM(product_price) as todayEarnings")
+								.in("user_id", set).like("create_time", today));
+				if (map != null && map.size() > 0) {
+					BigDecimal todayEarnings = (BigDecimal) map.get("todayEarnings");
+					// 当前的所有收入 的 2%
+					String share_value = BigDecimalUtils.multiply(todayEarnings.toString(), "0.02");
+					// 平均分给 invite 下的所有S3
+					List<AppUser> applist = iappUserService
+							.selectList(new EntityWrapper<AppUser>().in("id", set).eq("dic_id", dic.getId()));
+					if (applist != null && applist.size() > 0) {
+						int number = applist.size();
+						String average_profitStr = BigDecimalUtils.Divide(share_value, String.valueOf(number));
+						for (AppUser AppUser : applist) {
+							TbUserAssets TbUserAssets = itbUserAssetsService
+									.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", AppUser.getId()));
+							synchronized (TbUserAssets) {
+								
+								Float giftcoin = TbUserAssets.getGiftCoin();
+								String new_giftcoin = BigDecimalUtils.add(String.valueOf(giftcoin), average_profitStr);
+								TbUserAssets.setGiftCoin(Float.valueOf(new_giftcoin));
+								itbUserAssetsService.updateById(TbUserAssets);
+								TbAssetsDetail tbAssetsDetail = new TbAssetsDetail();
+								tbAssetsDetail.setId(UUIdUtils.getUUID());
+								tbAssetsDetail.setUserId(AppUser.getId());
+								tbAssetsDetail.setAfterAmount(Float.valueOf(new_giftcoin));
+								tbAssetsDetail.setAmount(Float.valueOf(average_profitStr));
+								Dic dicd = idicService.getDicData("账变类型", "平台分红");
+								tbAssetsDetail.setType(dicd.getId());
+								tbAssetsDetail.setBeforeAmount(giftcoin);
+								tbAssetsDetail.setInOrOut(IncomeOrOut.income.getCode());
+								itbAssetsDetailService.insert(tbAssetsDetail);
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+	}
+
+	/**
+	 * 查询这个下面的所有邀请人
+	 * 
+	 * @param userSet
+	 * @param userId
+	 * @return
+	 */
+	private Set<Integer> getInviter(Set<Integer> userSet, Integer userId) {
+//		先把自己放进来，set集合不能重复放直接去除重复
+		userSet.add(userId);
+		List<TbInvite> list = itbInviteService.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", userId));
+		if (list.size() > 0 && list != null) {
+			for (TbInvite tbInvite : list) {
+				Set<Integer> set = getInviter(userSet, tbInvite.getTbIvitee());
+				userSet.add(tbInvite.getTbIvitee());
+				userSet.addAll(set);
+			}
+		}
+		return userSet;
+	}
+}

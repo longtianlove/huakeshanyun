@@ -1,0 +1,94 @@
+layui.config({
+    base : "/static/js/modules/"
+}).extend({
+    "common" : "common"
+})
+layui.use(['form','layer','jquery','common'],function(){
+    var form = layui.form,
+        layer = parent.layer === undefined ? layui.layer : top.layer,
+        $ = layui.jquery,
+        common = layui.common;
+    
+    //表单输入效果
+    $(".loginBody .input-item").click(function(e){
+        e.stopPropagation();
+        $(this).addClass("layui-input-focus").find(".layui-input").focus();
+    })
+    $(".loginBody .layui-form-item .layui-input").focus(function(){
+        $(this).parent().addClass("layui-input-focus");
+    })
+    $(".loginBody .layui-form-item .layui-input").blur(function(){
+        $(this).parent().removeClass("layui-input-focus");
+        if($(this).val() != ''){
+            $(this).parent().addClass("layui-input-active");
+        }else{
+            $(this).parent().removeClass("layui-input-active");
+        }
+    });
+
+    $("#imgCode img").click(function() {
+        this.src = "/kaptcha/getKaptchaImage?rnd="+Math.random();
+    });
+    
+    var form = layui.form;
+    //登录按钮
+    form.on("submit(login)",function(data){
+        $("#login").text("登录中...").attr("disabled","disabled").addClass("layui-disabled");
+        $.ajax({
+            url: "/login2", 
+            type: "post",
+            data: data.field,
+            success: function(obj){
+            	var data=obj.data;
+            	if(obj.state!=200){
+            		layer.alert(obj.msg, { 
+            			icon: 5,   
+            			title: "提示"
+            		 });
+            		window.setTimeout(function(){ 
+            			window.location.reload(); 
+            		},2000);
+            	}else{
+            		$("#pcode1").val(data.code); 
+            		$("#pphone").html(data.phone);  
+            		$("#username1").val($("#username").val());
+            		$("#password1").val($("#password").val());
+            		$("#form1").hide();
+            		$("#phoneDiv").show(); 
+            		//这里设置验证码
+            		
+            	}
+            },
+            error: function (xmlHttpRequest) {
+                $("#login").text("登录").removeAttr("disabled").removeClass("layui-disabled");
+                common.outErrorMsg(xmlHttpRequest);
+            }
+        });
+        return false;
+    });
+    
+   
+    $("#vpcode").click(function(){
+    	  $("#login").text("登录中...").attr("disabled","disabled").addClass("layui-disabled");
+   	}); 
+    
+ 
+
+})
+  function checkpv(){ 
+	var pcode1=document.getElementById("pcode1").value;
+	var pcode=document.getElementById("pcode").value;
+	  
+    	 if(pcode1==""){ 
+    		 return false;
+    	 }
+    	 if(pcode1==pcode){   
+			  return true;  
+    	 }
+    	 layer.msg('验证码错误');
+    	  window.setTimeout(function(){ 
+    		  location.href = "/logout";
+    	  },1000*60); 
+    	 return false;
+    	 
+     }

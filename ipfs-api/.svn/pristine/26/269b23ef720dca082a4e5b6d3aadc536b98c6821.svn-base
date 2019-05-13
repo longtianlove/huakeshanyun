@@ -1,0 +1,98 @@
+package com.stys.ipfs.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.FieldFill;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ * <p>
+ * APP用户管理
+ * </p>
+ *
+ * @author dp
+ * @since 2018-11-01
+ */
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@TableName("sys_app_user")
+public class AppUser extends Model<AppUser> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键ID
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 状态(0：禁用，1：启用，2：锁定)
+     */
+	private Integer state;
+    /**
+     * 创建时间
+     */
+	@TableField(value = "create_time", fill = FieldFill.INSERT)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date createTime;
+    /**
+     * 更新时间
+     */
+	@TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
+	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date updateTime;
+    /**
+     * 手机
+     */
+	private String phone;
+	
+	/**
+	 *  微信openID
+	 */
+	 @TableField("openID")
+	private String openID;
+	
+	/**
+	 * 微信昵称
+	 */
+	 @TableField("weixin_name")
+	private String weixinName;
+	
+	
+    /**
+     * 用户等级表主键ID
+     */
+    @TableField("user_grade_id")
+	private Integer userGradeId;
+    
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "AppUser{" +
+			", id=" + id +
+			", state=" + state +
+			", createTime=" + createTime +
+			", updateTime=" + updateTime +
+			", weixinName=" + weixinName +
+			", openID=" + openID +
+			", phone=" + phone +
+			", userGradeId=" + userGradeId +
+			"}";
+	}
+}

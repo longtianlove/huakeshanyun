@@ -1,0 +1,24 @@
+<?Mapper version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stys.ipfs.mapper.TbProductMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.stys.ipfs.entity.TbProduct">
+        <id column="id" property="id" />
+        <result column="product_name" property="productName" />
+        <result column="product_type" property="productType" />
+        <result column="product_sales" property="productSales" />
+        <result column="product_unit_price" property="productUnitPrice" />
+        <result column="product_pictures" property="productPictures" />
+        <result column="product_detail" property="productDetail" />
+        <result column="prodcut_property" property="prodcutProperty" />
+        <result column="home_product_img" property="homeProductImg" />
+        <result column="product_preferential_price" property="productPreferentialPrice" />
+        <result column="after_sale_service" property="afterSaleService" />
+        <result column="status" property="status" />
+        <result column="product_thumbnail" property="productThumbnail" />
+        <result column="hot_sale_product" property="hotSaleProduct" />
+        <result column="out_number" property="outNumber" />
+    </resultMap>
+
+</mapper>

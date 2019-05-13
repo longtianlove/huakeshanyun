@@ -1,0 +1,37 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.stys.ipfs.config.CustomRedisManager",
+      "name": "spring.redis",
+      "type": "com.stys.ipfs.config.CustomRedisManager"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.stys.ipfs.config.CustomRedisManager",
+      "name": "spring.redis.expire",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.stys.ipfs.config.CustomRedisManager",
+      "name": "spring.redis.host",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.stys.ipfs.config.CustomRedisManager",
+      "name": "spring.redis.password",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.stys.ipfs.config.CustomRedisManager",
+      "name": "spring.redis.port",
+      "type": "java.lang.Integer"
+    },
+    {
+      "sourceType": "com.stys.ipfs.config.CustomRedisManager",
+      "name": "spring.redis.timeout",
+      "type": "java.lang.Integer"
+    }
+  ]
+}

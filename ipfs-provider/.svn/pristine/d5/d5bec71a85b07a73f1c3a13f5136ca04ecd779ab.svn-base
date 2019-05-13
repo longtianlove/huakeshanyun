@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stys.ipfs.mapper.UserinfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.stys.ipfs.entity.Userinfo">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="nickname" property="nickname" />
+        <result column="email" property="email" />
+        <result column="avater" property="avater" />
+        <result column="invitation_code" property="invitationCode" />
+        <result column="remark" property="remark" />
+        <result column="total_hashrate" property="totalHashrate" />
+        <result column="user_id" property="userId" />
+        <result column="code" property="code" />
+        <result column="code_path" property="codePath" />
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,1 @@
+apidoc -i  ../ipfs-consumer/ -o ../ipfs-consumer/doc/ --debug

@@ -1,0 +1,18 @@
+package com.stys.ipfs.service;
+
+import com.stys.ipfs.entity.TbUserbankInfo;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.IService;
+
+/**
+ * <p>
+ *  服务类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-01-18
+ */
+public interface ITbUserbankInfoService extends IService<TbUserbankInfo> {
+
+	Page<TbUserbankInfo> selectPageUserbankInfo(Page<TbUserbankInfo> page, String nickname);
+}

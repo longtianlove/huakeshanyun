@@ -1,0 +1,85 @@
+package com.stys.ipfs.web.app;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.util.AppConstant;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppFundsActionController extends AppController {
+
+	/**
+	 * 充值
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/recharge", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> recharge() {
+		
+		
+		
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 互转
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> transfer() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 查询用户资产接口，前台展示
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/queryBalance", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> queryBalance() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 提现
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/withdraw_cash", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> withdraw_cash() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+		
+	}
+
+	/**
+	 * 升级
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/upgrade", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> upgrade() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200); 
+	}
+
+	/**
+	 * 购买,金币
+	 * 
+	 * @return
+	 */
+	@RequestMapping(value = "/buy", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<?> buy() {
+
+		return new AppResultInfo<>(AppConstant.STATUE_200);
+	}
+
+}

@@ -1,0 +1,18 @@
+<?Mapper version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.stys.ipfs.mapper.TbOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.stys.ipfs.entity.TbOrder">
+        <id column="id" property="id" />
+        <result column="order_no" property="orderNo" />
+        <result column="order_price" property="orderPrice" />
+        <result column="user_id" property="userId" />
+        <result column="order_time" property="orderTime" />
+        <result column="product_id" property="productId" />
+        <result column="order_status" property="orderStatus" />
+        <result column="product_num" property="productNum" />
+        <result column="voucher_path" property="voucherPath" />
+    </resultMap>
+
+</mapper>

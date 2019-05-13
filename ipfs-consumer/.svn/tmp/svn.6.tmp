@@ -1,0 +1,66 @@
+package com.stys.ipfs.web.app;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.entity.TbBanner;
+import com.stys.ipfs.entity.TbProduct;
+import com.stys.ipfs.service.ITbBannerService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.util.AppConstant;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppAdvertController extends AppController {
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbBannerService itbBannerService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbProductService itbProductService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbInviteService itbInviteService;
+
+	/**
+	 * @api {post} /tbr/getBanners 轮播广告
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：首页轮播图
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/getBanners
+	 * @return
+	 */
+	@RequestMapping(value = "/getBanners", method = RequestMethod.POST)
+	public @ResponseBody AppResultInfo<List<TbBanner>> getBanners() {
+		EntityWrapper<TbBanner> entity = new EntityWrapper<TbBanner>();
+		entity.eq("state", 1);
+		List<TbBanner> list = itbBannerService.selectList(entity);
+		return new AppResultInfo<>(list, AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 
+	 * @api {post} /tbr/getMerchandise 商品列表
+	 * @apiGroup tbr
+	 * @apiDescription 详细描述：商品列表
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/getMerchandise
+	 * @return
+	 */
+	//@RequestMapping(value = "/getMerchandise", method = RequestMethod.POST)
+	@RequestMapping(value = "/getMerchandise")
+	public @ResponseBody AppResultInfo<List<TbProduct>> getMerchandise() {
+		EntityWrapper<TbProduct> entity = new EntityWrapper<TbProduct>();
+		List<TbProduct> list = itbProductService.selectList(entity);
+		return new AppResultInfo<>(list, AppConstant.STATUE_200);
+	}
+
+}

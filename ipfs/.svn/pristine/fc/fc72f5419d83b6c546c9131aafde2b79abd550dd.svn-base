@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<meta charset="utf-8">
+	<title> </title> 
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form">
+	<blockquote class="layui-elem-quote quoteBox">
+		<form class="layui-form">
+			<div class="layui-inline">
+				<div class="layui-input-inline">
+					<input type="text" id="nickname" class="layui-input" placeholder="请输入用户昵称" />
+				</div>
+				<div class="layui-input-inline">
+					<input type="text" id="phone" class="layui-input name" placeholder="请输入用户账户" />
+				</div>
+				
+				<div class="layui-input-inline">
+					<input type="text" autocomplete="off"  class="layui-input startTime" id="startTime" name="startTime"  placeholder="开始日期">
+				</div>
+				<div class="layui-input-inline">
+					<input type="text" autocomplete="off"  class="layui-input endTime" id="endTime" name="endTime"  placeholder="结束日期">
+				</div>
+				<div class="layui-input-inline">
+					<select name="type" class="type" id="type">
+					</select>
+				</div>
+				<a class="layui-btn search_btn" data-type="reload">搜索</a>
+			</div>
+			<div class="layui-inline">
+				<button class="layui-btn search_btn" style="width: 100%; ">复位</button>
+			</div>
+			<div class="layui-inline" shiro:hasPermission="tbAssetsDetail:add">
+				<a class="layui-btn layui-btn-normal add_btn">添加</a>
+			</div>
+			<div class="layui-inline" shiro:hasPermission="tbAssetsDetail:edit">
+				<a class="layui-btn layui-btn-warm layui-btn-normal edit_btn">编辑</a>
+			</div>
+			<div class="layui-inline" shiro:hasPermission="tbAssetsDetail:del">
+				<a class="layui-btn layui-btn-danger layui-btn-normal delAll_btn">删除</a>
+			</div>
+			<div class="layui-inline">
+				<a class="layui-btn layui-btn-normal layui-btn-normal" id="export">导出</a>
+			</div>
+		</form> 
+	</blockquote>
+	<table id="dicList" lay-filter="dicList"></table>
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/tbAssetsDetail/list.js"></script>
+</body>
+</html>

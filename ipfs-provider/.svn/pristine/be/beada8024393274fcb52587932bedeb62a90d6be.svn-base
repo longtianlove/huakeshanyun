@@ -1,0 +1,20 @@
+package com.stys.ipfs.service.impl;
+
+import com.stys.ipfs.entity.TbFeimaWithdrawadLog;
+import com.stys.ipfs.mapper.TbFeimaWithdrawadLogMapper;
+import com.stys.ipfs.service.ITbFeimaWithdrawadLogService;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.alibaba.dubbo.config.annotation.Service;
+
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-05-05
+ */
+@Service(version = "1.0.0", timeout = 60000)
+public class TbFeimaWithdrawadLogServiceImpl extends ServiceImpl<TbFeimaWithdrawadLogMapper, TbFeimaWithdrawadLog> implements ITbFeimaWithdrawadLogService {
+
+}

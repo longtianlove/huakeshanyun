@@ -1,0 +1,165 @@
+package com.stys.ipfs.entity;
+
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-09
+ */
+@TableName("tb_product")
+public class TbProduct extends Model<TbProduct> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 名称
+     */
+    @TableField("product_name")
+	private String productName;
+    /**
+     * 类型
+     */
+    @TableField("product_type")
+	private Integer productType;
+    /**
+     * 销量
+     */
+    @TableField("product_sales")
+	private Integer productSales;
+    /**
+     * 单价
+     */
+    @TableField("product_unit_price")
+	private Float productUnitPrice;
+    /**
+     * 产品图片
+     */
+    @TableField("product_pictures")
+	private String productPictures;
+    /**
+     * 产品详细介绍
+     */
+    @TableField("product_detail")
+	private String productDetail;
+    /**
+     * 产品属性
+     */
+    @TableField("prodcut_property")
+	private String prodcutProperty;
+    /**
+     * 首页展示图片
+     */
+    @TableField("home_product_img")
+	private String homeProductImg;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public Integer getProductType() {
+		return productType;
+	}
+
+	public void setProductType(Integer productType) {
+		this.productType = productType;
+	}
+
+	public Integer getProductSales() {
+		return productSales;
+	}
+
+	public void setProductSales(Integer productSales) {
+		this.productSales = productSales;
+	}
+
+	public Float getProductUnitPrice() {
+		return productUnitPrice;
+	}
+
+	public void setProductUnitPrice(Float productUnitPrice) {
+		this.productUnitPrice = productUnitPrice;
+	}
+
+	public String getProductPictures() {
+		return productPictures;
+	}
+
+	public void setProductPictures(String productPictures) {
+		this.productPictures = productPictures;
+	}
+
+	public String getProductDetail() {
+		return productDetail;
+	}
+
+	public void setProductDetail(String productDetail) {
+		this.productDetail = productDetail;
+	}
+
+	public String getProdcutProperty() {
+		return prodcutProperty;
+	}
+
+	public void setProdcutProperty(String prodcutProperty) {
+		this.prodcutProperty = prodcutProperty;
+	}
+
+	public String getHomeProductImg() {
+		return homeProductImg;
+	}
+
+	public void setHomeProductImg(String homeProductImg) {
+		this.homeProductImg = homeProductImg;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+	@Override
+	public String toString() {
+		return "TbProduct{" +
+			", id=" + id +
+			", productName=" + productName +
+			", productType=" + productType +
+			", productSales=" + productSales +
+			", productUnitPrice=" + productUnitPrice +
+			", productPictures=" + productPictures +
+			", productDetail=" + productDetail +
+			", prodcutProperty=" + prodcutProperty +
+			", homeProductImg=" + homeProductImg +
+			"}";
+	}
+}

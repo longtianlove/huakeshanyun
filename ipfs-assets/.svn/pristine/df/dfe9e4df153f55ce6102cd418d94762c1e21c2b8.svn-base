@@ -1,0 +1,15 @@
+package com.stys.ipfs.util;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IArticleService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.IUserinfoService;
+
+public class ServiceUtils {
+	public static IUserinfoService iUserinfoService= SpringContextHolder.getBean(IUserinfoService.class);
+	public static IAppUserService iAppUserService= SpringContextHolder.getBean(IAppUserService.class);
+	public static IDicService idicService =SpringContextHolder.getBean(IDicService.class);
+	public static ITbInviteService itbInviteService= SpringContextHolder.getBean(ITbInviteService.class);
+	public static IArticleService iarticleService= SpringContextHolder.getBean(IArticleService.class);
+
+}

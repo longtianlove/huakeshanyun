@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>手机登陆</title>
+<style type="text/css">
+html {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  font-family: "Microsoft YaHei", "Regular Arial", Arial, Helvetica, sans-serif, "\5B8B\4F53";
+  font-size: 13.333vw;
+  color: #333;
+}
+html,
+body {
+  margin: 0;
+	padding: 0;
+}
+.cube-input-field {
+  display: block;
+  flex: 1;
+  width: 100%;
+  padding: .2rem;
+  box-sizing: border-box;
+  color: #666;
+  line-height: inherit;
+  background-color: inherit;
+  outline: none;
+  border: 0;
+}
+.cube-input-field::-webkit-input-placeholder {
+  color: #ccc;
+  text-overflow: ellipsis;
+}
+.height {
+  width: 100%;
+  height: 100vh;
+}
+.bgw {
+  background-color: white;
+}
+.white {
+  color: white;
+}
+.fontl {
+  font-size: .36rem;
+}
+.fontm {
+  font-size: .32rem;
+}
+.fonts {
+  font-size: .28rem;
+}
+.mt-s {
+  margin-top: .20rem;
+}
+.mt-lg {
+  margin-top: .50rem;
+}
+.login-bg{
+  background: url(/static/imgs/login-bg.png) no-repeat;
+  background-size: 100%;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.login-head {
+  width: 100%;
+  height: 7.08rem; 
+  /* background: url(./imgs/login-head.png) no-repeat; */
+  /* background-size: 100%; */
+}
+
+.login-head .logo {
+  /* width: 100%; */
+  /* height: 7.08rem; */
+  margin: .8rem;
+  margin-left: .9rem;
+  font-size: .50rem;
+  /* background: url(./imgs/login-logo.png) no-repeat; */
+  /* background-size: 100%; */
+}
+.login-head .logo .h1 {
+  width: 1.12rem;
+  height: 0.89rem;
+  background: url(/static/imgs/login-logo.png) no-repeat top left;
+  background-size: 100%;
+  margin-bottom: .1rem;
+  /* text-indent: -999em; */
+}
+.login-head .title {
+  width: 100%;
+  height: .88rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.login-head .txt {
+  display: flex;
+  flex-flow: column nowrap;
+  margin: .8rem 0 0 .6rem;
+}
+.login-head .h {
+  font-size: .48rem;
+}
+.login-body {
+  /* wh(346px, 333px) */
+  width: 5.6rem;
+  height: 6.66rem;
+  /* width: 6.92rem; */
+  /* height: 6.66rem; */
+  /* background: url(./imgs/login-bg.png) no-repeat; */
+  /* background-size: 100%; */
+  margin: -3.8rem auto 0;
+  /* padding: .63rem .4rem; */
+  padding: .6rem;
+  /* box-shadow: #ccc 0 0 .2rem; */
+}
+.btn {
+  width: 100%;
+  height: .68rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: #f96046;
+  /* border-radius: .1rem; */
+}
+.form .item {
+  height: .8rem;
+  display: flex;
+  flex-flow: row nowrap;
+  /* justify-content: center; */
+  align-items: center;
+  border-bottom: #f5f5f5 1px solid;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+/* .form .item .label {
+  width: 1.6rem;
+  padding-left: 0;
+} */
+.form .item input {
+  /* width: 5rem; */
+  padding-left: 0;
+  color: #fff;
+}
+.form .item .captcha-input {
+  width: 3.76rem;
+}
+.form .item .captcha {
+  width: 2rem;
+  height: .6rem;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.login-bottom {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 1.24rem;
+  /* wh(100%, 62px); */
+  /* background: url(./imgs/login-bottom.png) no-repeat; */
+  /* background-size: 100%; */
+}
+.toast {
+  background-color: rgba(40, 40, 40, 0.8);
+  border-radius: 0.1rem;
+  width: 3.77rem;
+  padding: 0.2rem;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  color: #f5f5f5;
+  font-size: 0.3rem;
+  line-height: 0.4rem;
+  text-align: center;
+  margin-left: -1.88rem;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+  <div class="height login-bg" id="app">
+    <!-- <Head title="登录"></Head> -->
+    <div class="login-head fontl white">
+      <div class="title">登录</div>
+      <div class="logo">
+        <div class="h1"></div>
+        欢迎来到华科闪云！</div>
+    </div>
+    <div class="login-body fonts">
+      <!-- <div class="fontl mt-s">欢迎登陆</div> -->
+      <div class="form">
+        <div class="item mt-s">
+          <div class="input">
+            <input type="number" id="phone" placeholder="请输入电话号码" v-model="value" oninput="if(value.length>11)value=value.slice(0,11)" class="cube-input-field">
+          </div>
+        </div>
+        <div class="item mt-s white">
+          <div class="input captcha-input">
+            <input type="number" id="code" placeholder="请输入验证码" oninput="if(value.length>4)value=value.slice(0,4)" class="cube-input-field">
+          </div>
+          <!-- <div class="captcha">获取验证码</div> -->
+          <div class="captcha" id="send_btn">获取验证码</div>
+          <div class="captcha" id="timer_btn" style="display: none;">60s</div>
+        </div>
+        <div class="item mt-s">
+          <div class="input">
+            <input type="text" id="inviter" placeholder="请输入邀请码" maxlength="5" class="cube-input-field" readonly="readonly">
+          </div>
+        </div>
+      </div>
+      <div class="mt-lg">
+        <div class="btn" id="submit_btn">登录</div>
+        <div class="btn" id="submit_btn_loading" style="display:none;">登录中...</div>
+      </div>
+    </div>
+    <div class="login-bottom"></div>
+    <div id="toast" class="toast toast-show center-align"></div>
+  </div>
+  <script type="text/javascript">
+    window.onload = function () {
+      main.init();
+    }
+    var main = {
+      phone: null,
+      code: null,
+      invite_code: null,
+      search: null,
+      loading: false,
+      // sliderCallback: false,
+      timerInterval: null,
+      timerDom: null,
+      btnDom: null,
+      timer: 60,
+      tokenId: null,
+      appDownload: null,
+      submitBtn: null,
+      submitLoadingBtn: null,
+      checkPhone(str) { //手机号码1开头的11位数字
+        var reg = /^1[0-9]{10}$/gi;
+        return !!reg.test(str);
+      },
+      checkCode(str) { //4位数字
+        var reg = /^[0-9]{4}$/gi;
+        return !!reg.test(str);
+      },
+      init() {
+        main.phone = document.getElementById("phone");
+        main.code = document.getElementById("code");
+        main.invite_code = document.getElementById("inviter");
+        main.search = main.getUrlParams();
+        main.invite_code.value = main.search.invitation_code;
+        main.btnDom = document.getElementById("send_btn");
+        main.timerDom = document.getElementById("timer_btn");
+        main.submitBtn = document.getElementById("submit_btn");
+        main.submitLoadingBtn = document.getElementById("submit_btn_loading");
+        main.btnDom.addEventListener('click', main.sendMsg, false);
+        main.submitBtn.addEventListener('click', main.login, false);
+      },
+      toast(txt) {
+        var toast = document.getElementById("toast");
+        toast.innerHTML = txt;
+        toast.style.display = 'block';
+        setTimeout(function () {
+          toast.style.display = 'none';
+        }, 3000)
+      },
+      login() {
+        console.log(main.loading);
+        if (main.loading) return;
+        console.log(main);
+        let phoneval = main.phone.value;
+        console.log(phoneval);
+        let codeval = main.code.value;
+        let inviteCode = main.invite_code.value;
+        if (!phoneval) {
+          main.toast("请填写手机号码！");
+          return;
+        }
+        if (!main.checkPhone(phoneval)) {
+          main.toast("手机号码格式错误！");
+          return;
+        }
+        if (!codeval) {
+          main.toast("请填写手机验证码！");
+          return;
+        }
+        if (!main.checkCode(codeval)) {
+          main.toast("验证码格式错误！");
+          return;
+        }
+        // if (!main.sliderCallback) {
+        //   main.toast("请拖动滑块验证！");
+        //   return;
+        // }
+        main.loading = true;
+        main.submitLoadingBtn.style.display = 'flex';
+        main.submitBtn.style.display = 'none';
+        let data = {
+          "phone": phoneval,
+          "code": codeval,
+          "invitation_code": inviteCode,
+          tokenid: main.tokenId
+        }; //参数
+        main.ajax({
+          url: "http://www.beefil.com/tbr/login",
+          dataType: "json",
+          time: 5000,
+          method: "post",
+          data: data,
+          success: (res) => {
+            main.loading = false;
+            main.submitLoadingBtn.style.display = 'none';
+            main.submitBtn.style.display = 'flex';
+            if (res.state == 200) {
+              window.location.href = main.appDownload;
+            } else {
+              main.$toast(res.msg);
+            }
+          },
+          error: () => {
+            main.loading = false;
+            main.submitLoadingBtn.style.display = 'none';
+            main.submitBtn.style.display = 'flex';
+            main.$toast("登陆失败");
+          },
+          timeout: () => {
+            main.loading = false;
+          }
+        });
+      },
+      sendMsg() {
+        if (main.loading) return;
+        let phoneval = main.phone.value;
+        if (!phoneval) {
+          main.toast("请填写手机号码！");
+          return;
+        }
+        if (!main.checkPhone(phoneval)) {
+          main.toast("手机号码格式错误！");
+          return;
+        }
+        main.loading = true;
+        main.ajax({
+          url: "http://www.beefil.com/tbr/sendMsg",
+          dataType: "json",
+          time: 5000,
+          method: "post",
+          data: {
+            "phone": phoneval
+          },
+          success: (res) => {
+            main.loading = false;
+            if (res.state == 200) {
+              main.tokenId = res.data.tokenId;
+              main.appDownload = res.data.appDownload;
+              main.sendSuccess();
+            } else {
+              main.toast(res.msg);
+            }
+          },
+          error: () => {
+            main.loading = false;
+            main.toast("发送失败");
+          },
+          timeout: () => {
+            main.loading = false;
+          }
+        });
+      },
+      sendSuccess() {
+        main.btnDom.style.display = "none";
+        main.timerDom.style.display = "flex";
+        main.timer = 60;
+        main.timerInterval = setInterval(() => {
+          if (main.timer == 1) {
+            clearInterval(main.timerInterval);
+            main.timerInterval = null;
+            main.timer = 60;
+            main.btnDom.style.display = "flex";
+            main.timerDom.style.display = "none";
+          }
+          main.timer--;
+          main.timerDom.innerHTML = main.timer + "s";
+        }, 1000);
+      },
+      getUrlParams: function (str) {
+        var urlParams = {};
+        var urlSearch = location.search;
+        if (str) {
+          urlSearch = str;
+        }
+        if (urlSearch.indexOf("?") == 0 && urlSearch.indexOf("=") > 1) {
+          var arrSource = urlSearch.substring(1, urlSearch.length).split("&");
+          for (var i = 0; i < arrSource.length; i++) {
+            var arrName = arrSource[i].split("=");
+            urlParams[arrName[0]] = arrName[1];
+          }
+        }
+        return urlParams;
+      },
+      //发送ajax请求
+      ajax: function (_options) {
+        var createXMLHttpRequest = function () {
+          if (window.ActiveXObject) {
+            var aVersions = ["MSXML2.XMLHttp.5.0", "MSXML2.XMLHttp.4.0", "MSXML2.XMLHttp.3.0", "MSXML2.XMLHttp",
+              "Microsoft.XMLHttp"
+            ];
+            for (var i = 0; i < aVersions.length; i++) {
+              try {
+                return new ActiveXObject(aVersions[i]);
+              } catch (oError) {
+                continue;
+              }
+            }
+          } else if (window.XMLHttpRequest) {
+            return new XMLHttpRequest();
+          }
+          throw new Error("XMLHttp object could not be created.");
+        };
+        var timeRequest = function (timeout, timeoutCall) {
+          this.timer = null;
+          this.timeout = timeout || 5000;
+          this.timeoutFlag = false;
+          this.destroyFlag = false;
+          var that = this;
+          clearTimeout(this.timer);
+          this.timer = setTimeout(function () {
+            that.timeoutFlag = true;
+            if (!that.destroyFlag) {
+              timeoutCall && timeoutCall();
+            } else {
+              that.destroy();
+            }
+          }, this.timeout);
+          this.destroy = function () {
+            that.destroyFlag = true;
+            clearTimeout(that.timer);
+            that.timer = null;
+          }
+        };
+        var timer = null;
+        if (_options.dataType && _options.dataType.toLowerCase() == 'jsonp') {
+          if (_options.time) {
+            timer = new timeRequest(_options.time, _options.timeout);
+          }
+          var jsonp_str = 'jsonp_' + (+new Date());
+          window[jsonp_str] = function (res) {
+            if (timer) {
+              if (!timer.timeoutFlag) {
+                _options.success(res);
+                timer.destroy();
+              }
+            } else {
+              _options.success(res);
+            }
+          };
+          //eval(jsonp_str + ' = ' + _options.success + ';');
+          if (_options.url.indexOf('?') != -1) {
+            _options.url += '&callback=' + jsonp_str;
+          } else {
+            _options.url += '?callback=' + jsonp_str;
+          }
+          for (var i in _options.data) {
+            _options.url += '&' + i + '=' + _options.data[i];
+          }
+          var doc_head = document.getElementsByTagName("head")[0];
+          var script = document.createElement("script");
+          script.setAttribute("type", "text/javascript");
+          script.setAttribute("language", "javascript");
+          script.setAttribute("src", _options.url);
+          script.onload = script.onreadystatechange = function () {
+            if (typeof main.readyState == 'undefined') { // for chrome,firefox
+              doc_head.removeChild(script);
+              script = null;
+              window[jsonp_str] = undefined;
+            } else if (main.readyState == 'loaded' || main.readyState == 'complete') { // for ie
+              doc_head.removeChild(script);
+              script = null;
+              window[jsonp_str] = undefined;
+            }
+          };
+          doc_head.appendChild(script);
+        } else {
+          if (_options.time) {
+            timer = new timeRequest(_options.time, _options.timeout);
+          }
+          var _xmlHttp = createXMLHttpRequest();
+          _xmlHttp.open(_options.method, _options.url, true);
+          if (_options.method.toUpperCase() == "POST") {
+            _xmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          } else {
+            _xmlHttp.setRequestHeader("cache-control", "no-cache");
+          }
+          _xmlHttp.onreadystatechange = function () {
+            if (_xmlHttp.readyState == 4 && _xmlHttp.status == 200) {
+              var response = null;
+              switch (_options.dataType.toLowerCase()) {
+                case "json":
+                  response = JSON.parse(_xmlHttp.responseText);
+                  break;
+                case "xml":
+                  response = _xmlHttp.responseXML;
+                  break;
+                case "html":
+                  response = _xmlHttp.responseText;
+                  break;
+                default:
+                  response = _xmlHttp.responseText;
+                  break;
+              }
+              if (typeof (_options.success) != 'undefined') {
+                if (timer) {
+                  if (!timer.timeoutFlag) {
+                    _options.success(response);
+                    timer.destroy();
+                  }
+                } else {
+                  _options.success(response);
+                }
+              }
+            } else if (_xmlHttp.readyState == 4) {
+              var codes = ['500', '501', '502', '503', '504', '505', '404'];
+              if (codes.join(',').indexOf(_xmlHttp.status.toString()) >= 0 && typeof (_options.error) !=
+                'undefined') {
+                _options.error(_xmlHttp.status, _xmlHttp.responseText);
+                if (timer) {
+                  if (!timer.timeoutFlag) {
+                    _options.error(_xmlHttp.status, _xmlHttp.responseText);
+                    timer.destroy();
+                  }
+                } else {
+                  _options.error(_xmlHttp.status, _xmlHttp.responseText);
+                }
+              }
+            }
+          };
+          var query = [],
+            data;
+          for (var key in _options.data) {
+            query[query.length] = encodeURI(key) + "=" + encodeURIComponent(_options.data[key]);
+          }
+          data = query.join('&');
+          //开始发送数据
+          _xmlHttp.send(data);
+        }
+      },
+
+    }
+  </script>
+</body>
+
+</html>

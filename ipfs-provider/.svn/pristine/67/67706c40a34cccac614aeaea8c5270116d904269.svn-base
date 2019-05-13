@@ -1,0 +1,193 @@
+package com.stys.ipfs.service.impl;
+
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.Dic;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbCoCreator;
+import com.stys.ipfs.entity.TbInvite;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbUserBuyLog;
+import com.stys.ipfs.mapper.TbCoCreatorMapper;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbCoCreatorService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserBuyLogService;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.DateUtil;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.UUIdUtils;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
+
+/**
+ * <p>
+ *  服务实现类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-04-26
+ */
+@Service(version = "1.0.0", timeout = 60000)
+public class TbCoCreatorServiceImpl extends ServiceImpl<TbCoCreatorMapper, TbCoCreator> implements ITbCoCreatorService {
+	
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbInviteService itbInviteService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+	
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserBuyLogService itbUserBuyLogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+	
+	private Logger logger = Logger.getLogger(getClass());
+	
+	@Override
+	public void Co_CreatorProfitshare() {
+		logger.info("查询联合创始人");
+		//1.查出所有联合创始人
+		List<TbCoCreator> cocreatorList=this.selectList(new EntityWrapper<TbCoCreator>());
+		Set<Integer> cocreatorSet = new HashSet<>();
+		if(cocreatorList!=null&&cocreatorList.size()>0) {
+			for (TbCoCreator tbCoCreator : cocreatorList) {
+				cocreatorSet.add(tbCoCreator.getUserId());
+			}
+		}
+		
+		logger.info("==========》》》》》系统联合创始人分红《《《《《《=============");
+		AppUser user=iappUserService.selectList(new EntityWrapper<AppUser>().orderBy("id")).get(0);// 公司账号第一个账号
+		List<TbInvite> list = itbInviteService
+				.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", user.getId())); // 分公司
+		String today = DateUtil.getDay();
+		Dic dic = idicService.getDicData("账变类型", "联合创始人分红");//联合创世人分红比例
+		logger.info("查询联合创始人分红比例："+dic.getValue1());
+		for (TbInvite tbInvite : list) {
+			List<TbInvite> alist = itbInviteService
+					.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", tbInvite.getTbIvitee())); // 子公司
+			for (TbInvite invite : alist) {
+				//系统
+				Set<Integer> userSet = new HashSet<>();
+				// 查询这个系统所有人
+				Set<Integer> set = getInviter(userSet, invite.getTbIvitee());
+				//当前系统的营业额
+				Map<String, Object> map = itbUserBuyLogService
+						.selectMap(new EntityWrapper<TbUserBuyLog>().setSqlSelect("SUM(product_price) as todayEarnings")
+								.in("user_id", set).like("create_time", today));
+				if (map != null && map.size() > 0) {
+					// 当前的所有收入 
+					BigDecimal todayEarnings = (BigDecimal) map.get("todayEarnings");
+					logger.info(today+ "当天总收益："+todayEarnings);
+					// 当前收入的10% 分给当前系统联合创始人 
+					String share_value = BigDecimalUtils.multiply(todayEarnings.toString(), dic.getValue1());
+					// 平均分给当前系统的联合创始人
+					Set<Integer> sysSet=intersection(cocreatorSet,set);
+					logger.info("系统的联合创始人有几个："+sysSet.size());
+					if(sysSet!=null&&sysSet.size()>0) {
+						//给系统中每一人分的金额
+						String value = BigDecimalUtils.Divide(share_value,String.valueOf(sysSet.size()));
+						logger.info("系统中每一人分的金额："+value);
+						for (Integer userId : sysSet) {  
+							// 查询余额
+							TbUserAssets newtbUserAssets = itbUserAssetsService
+									.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id",userId));
+							//添加明细
+							synchronized(newtbUserAssets) {
+								
+								Float coin=	newtbUserAssets.getCoin();
+								Float t_value = Float.parseFloat(BigDecimalUtils.add(value, coin.toString()));
+								
+								TbAssetsDetail entity = new TbAssetsDetail();
+								entity.setId(UUIdUtils.getUUID());
+								entity.setUserId(userId);
+								entity.setBeforeAmount(coin);
+								entity.setAmount(Float.valueOf(value));
+								entity.setAfterAmount(t_value);
+								entity.setType(dic.getId());
+								entity.setInOrOut(IncomeOrOut.income.getCode());
+								entity.setAccountType(1);
+								itbAssetsDetailService.insert(entity);
+								
+								//修改用户金额	
+								newtbUserAssets.setCoin(t_value);
+								itbUserAssetsService.updateById(newtbUserAssets);
+							}
+						
+						}  
+					}
+					 
+				}
+
+			}
+		}
+		logger.info("=====>>>>>>>>>>联合创始人分红结束<<<<<<<<<<<<======");
+	}
+	/**
+	 * 查询这个下面的所有邀请人
+	 * 
+	 * @param userSet
+	 * @param userId
+	 * @return
+	 */
+	private Set<Integer> getInviter(Set<Integer> userSet, Integer userId) {
+//		先把自己放进来，set集合不能重复放直接去除重复
+		userSet.add(userId);
+		List<TbInvite> list = itbInviteService.selectList(new EntityWrapper<TbInvite>().eq("tb_iviter", userId));
+		if (list.size() > 0 && list != null) {
+			for (TbInvite tbInvite : list) {
+				Set<Integer> set = getInviter(userSet, tbInvite.getTbIvitee());
+				userSet.add(tbInvite.getTbIvitee());
+				userSet.addAll(set);
+			}
+		}
+		return userSet;
+	}
+	
+	/**
+	 * 	求交集
+	 * @param set1
+	 * @param set2
+	 * @return
+	 */
+	public static Set<Integer>  intersection(Set<Integer> set1, Set<Integer> set2) {
+		Set<Integer> result = new HashSet<Integer>();
+		result.clear();
+        result.addAll(set1);
+        result.retainAll(set2);
+	    return result;
+	}
+	public static void main(String[] args) {
+	}
+	@Override
+	public Page<TbCoCreator> selectPageTbCoCreator(Page<TbCoCreator> page, String realName, String phone) {
+		if(!StringUtils.isEmpty(realName)) {
+			realName="%"+realName+"%";
+		}
+		page.setRecords(this.baseMapper.selectPageTbCoCreator(page, realName, phone));
+		return page;
+	}
+}

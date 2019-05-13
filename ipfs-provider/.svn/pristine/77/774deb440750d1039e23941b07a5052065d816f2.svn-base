@@ -1,0 +1,305 @@
+package com.stys.ipfs.service.impl;
+
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.Article;
+import com.stys.ipfs.entity.Dic;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbInvite;
+import com.stys.ipfs.entity.TbProduct;
+import com.stys.ipfs.entity.TbUpgradeRule;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbUserBuyLog;
+import com.stys.ipfs.entity.TbUserExperience;
+import com.stys.ipfs.mapper.TbProductMapper;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IAppUserinfoService;
+import com.stys.ipfs.service.IArticleService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbInviteService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.service.ITbUpgradeRuleService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbUserBuyLogService;
+import com.stys.ipfs.service.ITbUserExperienceService;
+import com.stys.ipfs.util.AppConstant;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.DateUtil;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.UUIdUtils;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
+
+/**
+ * <p>
+ * 服务实现类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-09
+ */
+@Service(version = "1.0.0", timeout = 60000)
+public class TbProductServiceImpl extends ServiceImpl<TbProductMapper, TbProduct> implements ITbProductService {
+
+	protected static Logger logger = LoggerFactory.getLogger(TbProductServiceImpl.class);
+	@Reference(version = "1.0.0")
+	private ITbUserAssetsService itbUserAssetsService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbProductService itbProductService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserBuyLogService itbUserBuyLogService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserinfoService iappUserinfoService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbInviteService itbInviteService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserExperienceService itbUserExperienceService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUpgradeRuleService itbUpgradeRuleService;
+	
+	@Reference(version = "1.0.0", check = false)
+	private IArticleService iarticleService;
+
+
+	@Override
+	public AppResultInfo<?> buyProduct(Integer userId, Integer productId) {
+		AppResultInfo<?> result = new AppResultInfo<>();
+		result.setState(AppConstant.STATUE_200);
+		result.setMsg("购买成功");
+		// 当前用户信息
+		AppUser user = iappUserService.selectById(userId);
+		int i = 0;
+		int s3 = idicService.getDicData("用户级别", "S3").getId();
+		// 查询余额
+		TbUserAssets newtbUserAssets = itbUserAssetsService
+				.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+		synchronized (newtbUserAssets) {
+			// 查询价格
+			TbProduct tbProduct = itbProductService.selectOne(new EntityWrapper<TbProduct>().eq("id", productId));
+			if (newtbUserAssets.getCoin() < tbProduct.getProductPreferentialPrice()) {
+				logger.info("余额不足");
+				result.setState(AppConstant.STATUE_1);
+				result.setMsg("余额不足");
+				return result;
+			}
+			// 处理购买逻辑
+			addUserAssetsAndBuyLog(userId, newtbUserAssets, tbProduct);
+			
+			
+			// 处理业务逻辑
+			// 1.直接给与推荐人 给推荐人等级对应的分红比例进行分红
+			
+			AppUser appuser = getInviter(userId);
+			if (!StringUtils.isEmpty(appuser)) {
+				// 添加累积信息
+				TbUserExperience userExperience = itbUserExperienceService
+						.selectOne(new EntityWrapper<TbUserExperience>().eq("user_id", appuser.getId()));
+				Integer experience = userExperience.getExperience() + tbProduct.getProductType();
+				userExperience.setExperience(experience);
+				itbUserExperienceService.updateById(userExperience);
+				// 获取当前用户等级对应的分红比例
+				TbUpgradeRule rule = itbUpgradeRuleService
+						.selectOne(new EntityWrapper<TbUpgradeRule>().eq("dic_id", appuser.getDicId()));
+				Float pre = rule.getPercent();
+				addProfit(userId, appuser.getId(), tbProduct.getProductPreferentialPrice(), pre);
+				if(appuser.getDicId().intValue()==s3) {
+					i++;
+				}
+				// 2.进行极差分红
+				getInviterAndAddExperience(appuser, tbProduct.getProductPreferentialPrice(), tbProduct.getProductType(),
+						pre, i,appuser.getDicId());
+			}
+			int f = idicService.getDicData("用户级别", "F").getId();
+			if(user.getDicId()==f) {
+				user.setDicId(idicService.getDicData("用户级别", "F0").getId());
+				iappUserService.updateById(user);
+			}
+			tbProduct.setProductSales(tbProduct.getProductSales()+1);
+			itbProductService.updateById(tbProduct);
+			//添加头条展示信息
+//			Article article=new Article();
+//			article.setTitle("用户购买记录");
+//			article.setCreateTime(new Date());
+//			article.setEndTime(DateUtil.addDay(new Date(), 3));
+//			article.setDicId(idicService.getDicData("图文管理", "购买信息").getId());
+//			article.setState(1);
+//			article.setContent("恭喜！平台账号为"+ user.getPhone().substring(0, 3) + "****" + user.getPhone().substring(9, user.getPhone().length()) +"的用户认购"+tbProduct.getProductType()+"T！！！");
+//			iarticleService.insert(article);
+		}
+		return result;
+	}
+
+	private void addUserAssetsAndBuyLog(Integer userId, TbUserAssets newtbUserAssets, TbProduct tbProduct) {
+		// 用户余额
+		Float balance = Float.parseFloat(BigDecimalUtils.subtract(newtbUserAssets.getCoin().toString(),
+				tbProduct.getProductPreferentialPrice().toString()));
+
+		TbAssetsDetail tbAssetsDetail = new TbAssetsDetail();
+		tbAssetsDetail.setId(UUIdUtils.getUUID());
+		tbAssetsDetail.setAfterAmount(balance);
+		tbAssetsDetail.setAmount(tbProduct.getProductPreferentialPrice());
+		tbAssetsDetail.setBeforeAmount(newtbUserAssets.getCoin());
+		tbAssetsDetail.setInOrOut(IncomeOrOut.expend.getCode());
+		Dic dic = idicService.getDicData("账变类型", "金币购买");
+		tbAssetsDetail.setType(dic.getId());
+		tbAssetsDetail.setUserId(newtbUserAssets.getUserId());
+
+		itbAssetsDetailService.insert(tbAssetsDetail);
+		newtbUserAssets.setCoin(balance);
+		Float outNumber = Float.parseFloat(BigDecimalUtils.multiply(tbProduct.getProductPreferentialPrice().toString(),
+				tbProduct.getOutNumber().toString()));
+		
+		newtbUserAssets.setLimitCoin(Float.parseFloat(BigDecimalUtils.add(outNumber.toString(),
+				newtbUserAssets.getLimitCoin().toString())));
+		newtbUserAssets.setStorage(newtbUserAssets.getStorage() + tbProduct.getProductType());
+		itbUserAssetsService.updateById(newtbUserAssets);
+		//添加购买记录
+		TbUserBuyLog buylog =new TbUserBuyLog();
+		buylog.setProductPrice(tbProduct.getProductPreferentialPrice());
+		buylog.setProductType(tbProduct.getProductType());
+		buylog.setUserId(userId);
+		buylog.setCreateTime(new Date());
+		buylog.setStatus(1);
+		itbUserBuyLogService.insert(buylog);
+	}
+
+	/**
+	 * 根据返利百分比给用户添加返利
+	 * 
+	 * @param rebateUser 购买人
+	 * @param userId     返利给当前用户
+	 * @param price      价格
+	 * @param percent    返利点
+	 */
+	private void addProfit(Integer rebateUser, Integer userId, Float price, Float percent) {
+		BigDecimal t_price = new BigDecimal(price);
+		BigDecimal t_percent = new BigDecimal(percent);
+		BigDecimal value = t_price.multiply(t_percent).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+		TbUserAssets tbuserassets = itbUserAssetsService
+				.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+		synchronized (tbuserassets) {
+			TbAssetsDetail entity = new TbAssetsDetail();
+			entity.setId(UUIdUtils.getUUID());
+			entity.setUserId(userId);
+			entity.setBeforeAmount(tbuserassets.getGiftCoin());
+			entity.setAmount(value.floatValue());
+			Float t_value = Float.parseFloat(BigDecimalUtils.add(tbuserassets.getGiftCoin().toString(),
+					value.toString()));
+			entity.setAfterAmount(t_value);
+			entity.setType(idicService.getDicData("账变类型", "推广奖励").getId());
+			entity.setInOrOut(IncomeOrOut.income.getCode());
+			entity.setSunUserId(rebateUser);
+			
+			itbAssetsDetailService.insert(entity);
+			
+			// 给用户增加返利
+			tbuserassets.setGiftCoin(t_value);
+			itbUserAssetsService.updateById(tbuserassets);
+		}
+	}
+
+	/**
+	 * 根据用户id查询当前用户的邀请人
+	 * 
+	 * @param userId
+	 * @return 没有邀请人返回null
+	 */
+	private AppUser getInviter(Integer userId) {
+		TbInvite tbinvite = itbInviteService.selectOne(new EntityWrapper<TbInvite>().eq("tb_ivitee", userId));
+		if (!StringUtils.isEmpty(tbinvite)) {
+			return iappUserService.selectById(tbinvite.getTbIviter());
+		}
+		return null;
+	}
+
+	/**
+	 * 根据用户id查询当前用户的邀请人 并给用户添加累积
+	 * 
+	 * @param user 用户
+	 * @param type 购买类型
+	 * @param pre  用户分红比例
+	 * @param grade  目前用户的最高等级
+	 * @return
+	 */
+	private AppUser getInviterAndAddExperience(AppUser user, Float price, Integer type, Float percent, int first,int grade) {
+		TbInvite tbinvite = itbInviteService.selectOne(new EntityWrapper<TbInvite>().eq("tb_ivitee", user.getId()));
+		if (!StringUtils.isEmpty(tbinvite)) {
+			// 给用户添加累积信息
+			AppUser appuser = iappUserService.selectById(tbinvite.getTbIviter());
+
+			TbUserExperience userExperience = itbUserExperienceService
+					.selectOne(new EntityWrapper<TbUserExperience>().eq("user_id", appuser.getId()));
+			Integer experience = userExperience.getExperience() + type;
+			userExperience.setExperience(experience);
+			itbUserExperienceService.updateById(userExperience);
+			// 查看用户等级决定是否给与返利
+
+			// 获取当前用户等级对应的分红比例
+			TbUpgradeRule rule = itbUpgradeRuleService
+					.selectOne(new EntityWrapper<TbUpgradeRule>().eq("dic_id", appuser.getDicId()));
+			Float pre = rule.getPercent();
+			/**
+			 * 1.首先当前用户不是S3 满足 user.getDicId().intValue()<appuser.getDicId().intValue()
+			 * 规则进行返利 2.当前用户是S3是 判断前面用户是否是S3之后的S3不返利 ，如果是则返利1% &&
+			 */
+			int s3 = idicService.getDicData("用户级别", "S3").getId();
+			int j=appuser.getDicId().intValue();
+			logger.info("当前最高等级为："+grade);
+			
+			if (appuser.getDicId().intValue() != s3) {
+				// 当前用户没有达到S3 只要存在等级差就无限返利
+				logger.info("当前用户等级等级为："+grade);
+				if (grade <appuser.getDicId().intValue()&&grade!=s3) {
+					if(j>grade) {
+						grade=j;
+					}
+					addProfit(user.getId(), appuser.getId(), price, pre - percent);
+				}
+			} else if (appuser.getDicId().intValue() == s3) {
+				logger.info("当前用户等级等级为S3");
+				first++;
+				// 当前用户达到S3 ,并且他的下级也没有达到S3 ,并且目前最高等级要小于当前用户等级
+				if (user.getDicId().intValue() != s3&&grade <appuser.getDicId().intValue()) {
+					grade=s3;
+					addProfit(user.getId(), appuser.getId(), price, pre - percent);
+				} else if (first == 2) {
+					// 给当前连上的第二个S3上分1%
+					addProfit(user.getId(), appuser.getId(), price, 0.01f);
+					grade=s3;
+					
+				}
+			}
+
+			return getInviterAndAddExperience(appuser, price, type, pre, first,grade);
+		}
+		return null;
+	}
+	
+
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> </title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<link rel="stylesheet" href="/static/layui/css/layui.css" media="all" />
+	<link rel="stylesheet" href="/static/css/public.css" media="all" />
+</head>
+<body class="childrenBody">
+<form class="layui-form linksAdd">
+	<input type="hidden" value="" id="id" name="id">
+	<input type="hidden" value="" id="permissionIds">
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 主键</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input id" name="id" lay-verify="required" placeholder="请输入主键">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 用户外键</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input userId" name="userId" lay-verify="required" placeholder="请输入用户外键">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 银行卡号</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input bankCard" name="bankCard" lay-verify="required" placeholder="请输入银行卡号">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 身份证号</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input idcard" name="idcard" lay-verify="required" placeholder="请输入身份证号">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 手机号</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input phone" name="phone" lay-verify="required" placeholder="请输入手机号">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 用户真实姓名</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input realName" name="realName" lay-verify="required" placeholder="请输入用户真实姓名">
+		</div>
+	</div>
+ 	 <div class="layui-form-item">
+		<label class="layui-form-label"> 认证状态</label>
+		<div class="layui-input-block">
+			<input type="text" class="layui-input personalStatus" name="personalStatus" lay-verify="required" placeholder="请输入认证状态">
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<button class="layui-btn layui-block" lay-filter="addTbPersonalInfo" lay-submit>保存</button>
+	</div>
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/tbPersonalInfo/info.js"></script>
+</body>
+</html>

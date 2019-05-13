@@ -1,0 +1,96 @@
+package com.stys.ipfs.entity;
+
+import java.io.Serializable;
+
+import com.baomidou.mybatisplus.enums.IdType;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+
+/**
+ * <p>
+ * 
+ * </p>
+ *
+ * @author dp
+ * @since 2019-01-12
+ */
+@Data
+@AllArgsConstructor
+@RequiredArgsConstructor
+@TableName("tb_product")
+public class TbProduct extends Model<TbProduct> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * id
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+    /**
+     * 商品名称
+     */
+    @TableField("merchandise_name")
+    private String merchandiseName;
+    /**
+     * 商品类型
+     */
+    @TableField("merchandise_type")
+    private Integer merchandiseType;
+    /**
+     * 销量
+     */
+    @TableField("merchandise_number")
+    private Integer merchandiseNumber;
+    /**
+     * 价格
+     */
+    @TableField("merchandise_price")
+    private Float merchandisePrice;
+    /**
+     * 商品封面
+     */
+    @TableField("merchandise_cover")
+    private String merchandiseCover;
+    /**
+     * 商品图片
+     */
+    @TableField("merchandise_img")
+    private String merchandiseImg;
+    /**
+     * 商品详情图片
+     */
+    @TableField("merchandise_detail")
+    private String merchandiseDetail;
+    /**
+     * 商品属性图片
+     */
+    @TableField("merchandise_property")
+    private String merchandiseProperty;
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return "TbMerchandise{" +
+        ", id=" + id +
+        ", merchandiseName=" + merchandiseName +
+        ", merchandiseType=" + merchandiseType +
+        ", merchandiseNumber=" + merchandiseNumber +
+        ", merchandisePrice=" + merchandisePrice +
+        ", merchandiseImg=" + merchandiseImg +
+        ", merchandiseDetail=" + merchandiseDetail +
+        ", merchandiseProperty=" + merchandiseProperty +
+        "}";
+    }
+}

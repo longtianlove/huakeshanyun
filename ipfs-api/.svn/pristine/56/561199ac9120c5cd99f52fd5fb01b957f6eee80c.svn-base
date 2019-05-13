@@ -1,0 +1,24 @@
+package com.stys.ipfs.service;
+
+import com.stys.ipfs.entity.TbOfflinePayment;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.service.IService;
+
+/**
+ * <p>
+ *  服务类
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-21
+ */
+public interface ITbOfflinePaymentService extends IService<TbOfflinePayment> {
+	/**
+	 *  分页线下充值
+	 * @param page
+	 * @param phone
+	 * @param nickname
+	 * @return
+	 */
+	Page<TbOfflinePayment> getPageTbOfflinePayment(Page<TbOfflinePayment> page, String phone, String realName);
+}

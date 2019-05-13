@@ -1,0 +1,76 @@
+*{
+    margin: 0 ;
+    padding: 0;
+    /*border: 0 !important;*/
+}
+input,input:focus{
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+input[id=yaoqingmaNo]{
+	background:rgba(0,0,0,0) !important;
+}
+button[id=getCheck],button[id=getCheck]:focus{
+	border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    background:rgba(0,0,0,0) !important;
+}
+
+.phoneclass{
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/shouji.png") no-repeat center center;
+    background-size: contain;
+}
+.checkclass{
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/mima.png") no-repeat center center;
+    background-size: contain;
+}
+.yaoclass{
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/yaoqingma.png") no-repeat center center;
+    background-size: contain;
+}
+.mainclass{
+    background: url("../imgs/dabeijinglanse.png");
+    background-size: contain;
+    height: 100%;
+}
+.font01{
+    font-family: Arial, Arial Black;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+.font02{
+    font-family: Arial, Arial Black;
+    font-size: 3rem;
+    font-weight: 700;
+
+}
+.font03{
+    font-family: Arial, Arial Black;
+    font-size: 2rem;
+    font-weight: 200;
+}
+.headerclass{
+    width: 2rem;
+    height: 2rem;
+    background: url("../imgs/fanhui.png") no-repeat center center;
+    background-size: contain;
+}
+.border1{
+    border: 0;
+    background: rgba(0,0,0,0);
+}
+.inputBack{
+    border: 0 !important;
+    background: rgba(0,0,0,0) !important;
+}
+
+
+

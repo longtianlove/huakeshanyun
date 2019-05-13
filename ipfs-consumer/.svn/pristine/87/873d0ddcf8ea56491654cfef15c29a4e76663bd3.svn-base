@@ -1,0 +1,226 @@
+package com.stys.ipfs.web.app;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.stys.ipfs.code.IncomeOrOut;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.entity.AppUser;
+import com.stys.ipfs.entity.Dic;
+import com.stys.ipfs.entity.TbAssetsDetail;
+import com.stys.ipfs.entity.TbProduct;
+import com.stys.ipfs.entity.TbUserAssets;
+import com.stys.ipfs.entity.TbVipminer;
+import com.stys.ipfs.service.IAppUserService;
+import com.stys.ipfs.service.IDicService;
+import com.stys.ipfs.service.ITbAssetsDetailService;
+import com.stys.ipfs.service.ITbProductService;
+import com.stys.ipfs.service.ITbUserAssetsService;
+import com.stys.ipfs.service.ITbVipminerService;
+import com.stys.ipfs.util.AppConstant;
+import com.stys.ipfs.util.BigDecimalUtils;
+import com.stys.ipfs.util.DateUtil;
+import com.stys.ipfs.util.StringUtils;
+import com.stys.ipfs.util.UUIdUtils;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppVipMinnerController extends AppController {
+	@Reference(version = "1.0.0", check = false)
+	private ITbVipminerService itbVipminerService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IDicService idicService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbAssetsDetailService itbAssetsDetailService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbUserAssetsService itbUserAssetsService;
+
+	@Reference(version = "1.0.0", check = false)
+	private ITbProductService itbProductService;
+
+	@Reference(version = "1.0.0", check = false)
+	private IAppUserService iappUserService;
+
+	/**
+	 * 
+	 * @api {post} /tbr/becomeVipMiner 成为超级旷工
+	 * @apiGroup vipminer
+	 * @apiDescription 详细描述：超级矿工基本信息
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/becomeVipMiner
+	 */
+	@RequestMapping("/becomeVipMiner")
+	public @ResponseBody AppResultInfo<?> becomeVipMiner(Integer userId) {
+
+		TbVipminer TbVipminer = itbVipminerService.selectOne(new EntityWrapper<TbVipminer>().eq("user_id", userId));
+		if (!StringUtils.isEmpty(TbVipminer)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "当前用户已经是超级矿工！");
+		}
+		int number = itbVipminerService.selectCount(new EntityWrapper<TbVipminer>());
+		if (number > 100) {
+			return new AppResultInfo<>(AppConstant.STATUE_2, "超级矿工人数已满");
+		}
+		TbProduct TbProduct = itbProductService.selectOne(new EntityWrapper<TbProduct>().eq("product_type", 333));
+		AppResultInfo<?> app = itbProductService.buyProduct(userId, TbProduct.getId());
+		if (app.getState() != 200) {
+			return app;
+		}
+		// 升级超级矿工
+		TbVipminer miner = new TbVipminer();
+		miner.setUserId(userId);
+		miner.setStatus(1);
+		miner.setGiftCoin(0f);
+		Float outNumber = Float
+				.parseFloat(BigDecimalUtils.multiply(TbProduct.getProductPreferentialPrice().toString(), "4"));
+		miner.setLimitCoin(outNumber);
+		if (itbVipminerService.insert(miner)) {
+
+			return new AppResultInfo<>("操作成功");
+
+		}
+
+		return new AppResultInfo<>(AppConstant.STATUE_1, "请重新操作");
+	}
+
+	/**
+	 * 
+	 * @api {post} /tbr/s3privilege s3特权明细
+	 * @apiGroup vipminer
+	 * @apiDescription 详细描述：超级矿工基本信息
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/s3privilege
+	 */
+	@RequestMapping("/s3privilege")
+	public @ResponseBody AppResultInfo<?> s3privilege(Integer userId, Integer page, Integer limit) {
+		Dic dic = idicService.getDicData("账变类型", "平台分红");
+
+		AppUser appuser = iappUserService.selectById(userId);
+		Page<TbAssetsDetail> pageObj = itbAssetsDetailService.getPageTbAssetsDetail(
+				new Page<TbAssetsDetail>(page, limit), appuser.getPhone(), null, null, null, dic.getId(), 2);
+
+		return new AppResultInfo<>(pageObj);
+	}
+
+	/**
+	 * 超级矿工基本信息
+	 * 
+	 * @api {post} /tbr/vipminerInfo 超级矿工基本信息
+	 * @apiGroup vipminer
+	 * @apiDescription 详细描述：超级矿工基本信息
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiParam {Integer} page 当前页
+	 * @apiParam {Integer} limit 每页多少条
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/vipminerInfo
+	 */
+	@RequestMapping("/vipminerInfo")
+	public @ResponseBody AppResultInfo<?> getVipMinerInfo(Integer userId, Integer page, Integer limit) {
+		Map<String, Object> map = new HashMap<>();
+		TbVipminer tbvipminer = itbVipminerService.selectOne(new EntityWrapper<TbVipminer>().eq("user_id", userId));
+		map.put("totalCoin", tbvipminer.getGiftCoin());
+		map.put("limitCoin", tbvipminer.getLimitCoin());
+		Dic dic = idicService.getDicData("账变类型", "平台分红");
+		// 昨天
+		String yesterday = DateUtil.getYesterday();
+
+		Map<String, Object> map2 = itbAssetsDetailService
+				.selectMap((new EntityWrapper<TbAssetsDetail>().setSqlSelect("SUM(amount) as yesterdayEarnings")
+						.eq("type", dic.getId()).eq("user_id", userId).like("create_time", yesterday)));
+		if (map2 != null && map2.size() > 0) {
+			BigDecimal yesterdayEarnings = (BigDecimal) map2.get("yesterdayEarnings");
+			map.put("yesterdayEarnings", yesterdayEarnings);
+		} else {
+			map.put("yesterdayEarnings", 0.00f);
+		}
+		Page<TbAssetsDetail> pageObj = itbAssetsDetailService.selectPage(new Page<TbAssetsDetail>(page, limit),
+				new EntityWrapper<TbAssetsDetail>().eq("type", dic.getId()).eq("user_id", userId).orderBy(false,
+						"create_time"));
+		map.put("pageObj", pageObj);
+		return new AppResultInfo<>(map, AppConstant.STATUE_200);
+	}
+
+	/**
+	 * 超级矿工推广礼包划转
+	 * 
+	 * @api {post} /tbr/vipgiftCoinTransfer 超级矿工推广礼包划转
+	 * @apiGroup vipminer
+	 * @apiDescription 详细描述：超级矿工推广礼包划转
+	 * @apiParam {Integer} userId 用户Id
+	 * @apiParam {Float} balance 划转金额
+	 * @apiVersion 0.1.0
+	 * @apiSampleRequest http://127.0.0.1/tbr/vipgiftCoinTransfer
+	 */
+
+	@RequestMapping("/vipgiftCoinTransfer")
+	public @ResponseBody AppResultInfo<?> getVipGiftCoinTransfer(Integer userId, Float balance) {
+		TbVipminer tbvipminer = itbVipminerService.selectOne(new EntityWrapper<TbVipminer>().eq("user_id", userId));
+		Float giftCoin = tbvipminer.getGiftCoin();
+		Float limitCoin = tbvipminer.getLimitCoin();
+		if (giftCoin < balance) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "推广礼包金额不足");
+		}
+		if (limitCoin < balance) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "已超过剩余转出额度");
+		}
+		// 超级矿工礼包划转
+		TbUserAssets userassets = itbUserAssetsService
+				.selectOne(new EntityWrapper<TbUserAssets>().eq("user_id", userId));
+
+		Float coin = userassets.getCoin();
+		String newCoin = BigDecimalUtils.add(coin.toString(), balance.toString());
+		String newgiftCoin = BigDecimalUtils.subtract(giftCoin.toString(), balance.toString());//
+		String newlimitCoin = BigDecimalUtils.subtract(limitCoin.toString(), balance.toString());//
+
+		Dic dic = idicService.getDicData("账变类型", "收益划转");
+
+		TbAssetsDetail entity = new TbAssetsDetail();
+		entity.setId(UUIdUtils.getUUID());
+		entity.setUserId(userId);
+		entity.setBeforeAmount(giftCoin);
+		entity.setAmount(balance);
+		entity.setAfterAmount(Float.parseFloat(newgiftCoin));
+		entity.setInOrOut(IncomeOrOut.expend.getCode());
+		entity.setType(dic.getId());
+		entity.setAccountType(3);// 超级矿工
+		if (!itbAssetsDetailService.insert(entity)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "划转失败！");
+		}
+		// 金币明细
+		TbAssetsDetail assetsdetail = new TbAssetsDetail();
+		assetsdetail.setId(UUIdUtils.getUUID());
+		assetsdetail.setUserId(userId);
+		assetsdetail.setBeforeAmount(coin);
+		assetsdetail.setAmount(balance);
+		assetsdetail.setAfterAmount(Float.parseFloat(newCoin));
+		assetsdetail.setInOrOut(IncomeOrOut.income.getCode());
+		assetsdetail.setType(dic.getId());
+		assetsdetail.setAccountType(1);// 金币账户
+		if (!itbAssetsDetailService.insert(assetsdetail)) {
+			return new AppResultInfo<>(AppConstant.STATUE_1, "划转失败！");
+		}
+
+		userassets.setCoin(Float.parseFloat(newCoin));
+		if (itbUserAssetsService.updateById(userassets)) {
+			tbvipminer.setGiftCoin(Float.parseFloat(newgiftCoin));
+			tbvipminer.setLimitCoin(Float.parseFloat(newlimitCoin));
+			itbVipminerService.updateById(tbvipminer);
+			return new AppResultInfo<>("划转成功！");
+		}
+
+		return new AppResultInfo<>(AppConstant.STATUE_1, "划转失败！");
+	}
+
+}

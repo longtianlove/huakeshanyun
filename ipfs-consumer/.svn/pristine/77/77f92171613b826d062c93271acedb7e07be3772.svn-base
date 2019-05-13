@@ -1,0 +1,39 @@
+package com.stys.ipfs.web.app;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.stys.ipfs.dto.AppResultInfo;
+import com.stys.ipfs.entity.TbContract;
+import com.stys.ipfs.entity.TbUserBuyLog;
+import com.stys.ipfs.service.ITbContractService;
+import com.stys.ipfs.service.ITbUserBuyLogService;
+import com.stys.ipfs.util.DateUtil;
+
+@RestController
+@RequestMapping("/tbr")
+public class AppContractConroller extends AppController {
+	
+    @Reference(version = "1.0.0")
+    private ITbContractService itbContractService;
+    
+    @Reference(version = "1.0.0", check = false)
+    private ITbUserBuyLogService itbUserBuyLogService;
+    
+    public @ResponseBody AppResultInfo<?> getContract(Integer userId){
+    	List<TbUserBuyLog> list=itbUserBuyLogService.selectList(new EntityWrapper<TbUserBuyLog>().eq("user_id", userId).eq("status", 1));//未生成合同的
+    	String date= DateUtil.getDays();
+    	for (TbUserBuyLog userbuylog : list) {
+    		itbContractService.selectList(new EntityWrapper<TbContract>().like("create_date", date).orderBy(false,
+					"create_date"));
+		}
+    	return null;
+    }
+    
+    
+}

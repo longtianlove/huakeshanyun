@@ -1,0 +1,1013 @@
+[ERROR] 2019-05-06 09:30:13,934 method:com.alibaba.dubbo.rpc.filter.ExceptionFilter.invoke(ExceptionFilter.java:84)
+ [DUBBO] Got unchecked and undeclared exception which called by 192.168.151.190. service: com.stys.ipfs.service.ITaskScheduleService, method: runOnceJob, exception: java.lang.IllegalArgumentException: Job class must implement the Job interface., dubbo version: 2.0.1, current host: 192.168.151.190
+java.lang.IllegalArgumentException: Job class must implement the Job interface.
+	at org.quartz.impl.JobDetailImpl.setJobClass(JobDetailImpl.java:311)
+	at org.quartz.JobBuilder.build(JobBuilder.java:103)
+	at com.stys.ipfs.service.impl.TaskScheduleServiceImpl.runOnceJob(TaskScheduleServiceImpl.java:100)
+	at com.stys.ipfs.service.impl.TaskScheduleServiceImpl$$FastClassBySpringCGLIB$$cbfde4d8.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:738)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:157)
+	at org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor.invoke(MethodBeforeAdviceInterceptor.java:52)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.adapter.AfterReturningAdviceInterceptor.invoke(AfterReturningAdviceInterceptor.java:52)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:92)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:673)
+	at com.stys.ipfs.service.impl.TaskScheduleServiceImpl$$EnhancerBySpringCGLIB$$4a06f616.runOnceJob(<generated>)
+	at com.alibaba.dubbo.common.bytecode.Wrapper1.invokeMethod(Wrapper1.java)
+	at com.alibaba.dubbo.rpc.proxy.javassist.JavassistProxyFactory$1.doInvoke(JavassistProxyFactory.java:45)
+	at com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker.invoke(AbstractProxyInvoker.java:71)
+	at com.alibaba.dubbo.config.invoker.DelegateProviderMetaDataInvoker.invoke(DelegateProviderMetaDataInvoker.java:48)
+	at com.alibaba.dubbo.rpc.protocol.InvokerWrapper.invoke(InvokerWrapper.java:52)
+	at com.alibaba.dubbo.rpc.filter.ExceptionFilter.invoke(ExceptionFilter.java:61)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.monitor.support.MonitorFilter.invoke(MonitorFilter.java:74)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.TimeoutFilter.invoke(TimeoutFilter.java:41)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.protocol.dubbo.filter.TraceFilter.invoke(TraceFilter.java:77)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.ContextFilter.invoke(ContextFilter.java:60)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.GenericFilter.invoke(GenericFilter.java:131)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.ClassLoaderFilter.invoke(ClassLoaderFilter.java:37)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.EchoFilter.invoke(EchoFilter.java:37)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol$1.reply(DubboProtocol.java:95)
+	at com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler.handleRequest(HeaderExchangeHandler.java:96)
+	at com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler.received(HeaderExchangeHandler.java:168)
+	at com.alibaba.dubbo.remoting.transport.DecodeHandler.received(DecodeHandler.java:50)
+	at com.alibaba.dubbo.remoting.transport.dispatcher.ChannelEventRunnable.run(ChannelEventRunnable.java:79)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+[ERROR] 2019-05-09 14:20:00,190 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:25:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:30:00,208 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:35:00,192 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:40:00,209 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:45:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:50:00,196 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 14:55:00,194 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:00:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:06:00,149 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:07:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:08:00,200 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:09:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:10:00,182 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:11:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:12:00,149 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:13:00,151 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:14:00,182 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:15:00,151 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:16:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:17:00,150 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:18:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:19:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:20:00,119 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:21:00,136 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:22:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:23:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:24:00,182 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:25:00,136 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:26:00,170 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:27:00,152 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:28:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:29:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:30:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:31:00,137 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:32:00,320 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:33:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:34:00,138 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:35:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:36:00,217 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:37:00,184 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:38:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:39:00,185 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:40:00,185 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:41:00,216 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:42:00,138 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:43:00,123 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:44:00,139 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:45:00,201 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:46:00,204 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:47:00,140 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:48:00,125 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:49:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:50:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:51:00,124 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:52:00,140 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:53:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:54:00,140 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:55:00,186 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:56:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:57:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:58:00,157 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 15:59:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:00:00,140 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:01:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:02:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:03:00,141 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:04:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:05:00,222 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:06:00,130 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:07:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:08:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:09:00,193 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:10:00,193 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:11:00,193 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:12:00,207 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:13:00,191 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:14:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:15:00,159 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:16:00,146 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:17:00,176 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:18:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:19:00,194 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:20:00,176 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:21:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:22:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:23:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:24:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:25:00,200 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:26:00,114 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:27:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:28:00,164 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:29:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:30:00,227 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:31:00,165 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:32:00,162 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:32:16,558 method:com.alibaba.dubbo.rpc.filter.ExceptionFilter.invoke(ExceptionFilter.java:84)
+ [DUBBO] Got unchecked and undeclared exception which called by 192.168.151.190. service: com.stys.ipfs.service.ITbUsdtService, method: rechargeUSDTServer, exception: java.lang.IllegalArgumentException: Illegal character in query at index 94: http://api.smsbao.com/sms?u=xastys&p=77a1af8f27ef9cc3682e7cb17bdf08a8&m=15802912094&c=USDT余额不足 ！, dubbo version: 2.0.1, current host: 192.168.151.190
+java.lang.IllegalArgumentException: Illegal character in query at index 94: http://api.smsbao.com/sms?u=xastys&p=77a1af8f27ef9cc3682e7cb17bdf08a8&m=15802912094&c=USDT余额不足 ！
+	at java.net.URI.create(URI.java:852)
+	at org.apache.http.client.methods.HttpGet.<init>(HttpGet.java:66)
+	at com.stys.ipfs.util.SMSUtil.doGetStr(SMSUtil.java:41)
+	at com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:179)
+	at com.stys.ipfs.service.impl.TbUsdtServiceImpl$$FastClassBySpringCGLIB$$b48e5018.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:204)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:738)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:157)
+	at org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor.invoke(MethodBeforeAdviceInterceptor.java:52)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.adapter.AfterReturningAdviceInterceptor.invoke(AfterReturningAdviceInterceptor.java:52)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:92)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:179)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:673)
+	at com.stys.ipfs.service.impl.TbUsdtServiceImpl$$EnhancerBySpringCGLIB$$15b569c9.rechargeUSDTServer(<generated>)
+	at com.alibaba.dubbo.common.bytecode.Wrapper14.invokeMethod(Wrapper14.java)
+	at com.alibaba.dubbo.rpc.proxy.javassist.JavassistProxyFactory$1.doInvoke(JavassistProxyFactory.java:45)
+	at com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker.invoke(AbstractProxyInvoker.java:71)
+	at com.alibaba.dubbo.config.invoker.DelegateProviderMetaDataInvoker.invoke(DelegateProviderMetaDataInvoker.java:48)
+	at com.alibaba.dubbo.rpc.protocol.InvokerWrapper.invoke(InvokerWrapper.java:52)
+	at com.alibaba.dubbo.rpc.filter.ExceptionFilter.invoke(ExceptionFilter.java:61)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.monitor.support.MonitorFilter.invoke(MonitorFilter.java:74)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.TimeoutFilter.invoke(TimeoutFilter.java:41)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.protocol.dubbo.filter.TraceFilter.invoke(TraceFilter.java:77)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.ContextFilter.invoke(ContextFilter.java:60)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.GenericFilter.invoke(GenericFilter.java:131)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.ClassLoaderFilter.invoke(ClassLoaderFilter.java:37)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.filter.EchoFilter.invoke(EchoFilter.java:37)
+	at com.alibaba.dubbo.rpc.protocol.ProtocolFilterWrapper$1.invoke(ProtocolFilterWrapper.java:68)
+	at com.alibaba.dubbo.rpc.protocol.dubbo.DubboProtocol$1.reply(DubboProtocol.java:95)
+	at com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler.handleRequest(HeaderExchangeHandler.java:96)
+	at com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchangeHandler.received(HeaderExchangeHandler.java:168)
+	at com.alibaba.dubbo.remoting.transport.DecodeHandler.received(DecodeHandler.java:50)
+	at com.alibaba.dubbo.remoting.transport.dispatcher.ChannelEventRunnable.run(ChannelEventRunnable.java:79)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.net.URISyntaxException: Illegal character in query at index 94: http://api.smsbao.com/sms?u=xastys&p=77a1af8f27ef9cc3682e7cb17bdf08a8&m=15802912094&c=USDT余额不足 ！
+	at java.net.URI$Parser.fail(URI.java:2848)
+	at java.net.URI$Parser.checkChars(URI.java:3021)
+	at java.net.URI$Parser.parseHierarchical(URI.java:3111)
+	at java.net.URI$Parser.parse(URI.java:3053)
+	at java.net.URI.<init>(URI.java:588)
+	at java.net.URI.create(URI.java:850)
+	... 44 more
+[ERROR] 2019-05-09 16:32:16,646 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:33:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:34:00,227 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:35:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:36:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:37:00,177 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:38:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:39:00,162 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:40:00,115 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:41:00,162 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:42:00,277 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:43:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:44:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:45:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:46:00,133 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:47:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:48:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:49:00,165 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:50:00,195 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:51:00,193 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:52:00,133 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:53:00,148 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:54:00,182 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:55:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:56:00,210 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:57:00,211 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:58:05,806 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 16:59:00,165 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:00:00,150 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:01:00,214 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:02:00,197 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:03:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:04:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:05:00,694 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:06:00,260 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:07:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:08:00,119 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:09:00,199 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:10:00,134 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:11:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:12:00,199 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:13:00,133 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:14:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:15:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:16:00,124 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:17:00,188 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:18:00,203 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:19:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:20:00,150 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:21:00,137 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:22:00,151 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:23:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:24:00,184 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:25:00,194 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:26:00,200 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:27:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:28:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:29:00,187 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:30:00,187 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:31:00,151 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:32:00,120 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:33:00,122 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:34:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:35:00,148 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:36:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:37:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:38:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:39:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:40:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:41:00,201 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:42:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:43:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:44:00,193 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:45:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:46:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:47:00,177 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:48:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:49:00,125 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:50:00,191 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:51:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:52:00,203 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:53:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:54:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:55:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:56:00,138 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:57:00,110 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:58:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 17:59:00,141 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:00:00,174 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:01:00,132 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:02:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:03:00,139 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:04:00,143 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:05:00,111 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:06:00,159 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:07:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:08:00,177 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:09:00,170 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:10:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:11:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:12:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:13:00,157 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:14:00,150 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:15:00,146 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:16:00,143 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:17:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:18:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:19:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:20:00,188 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:21:00,126 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:22:00,202 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:23:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:24:00,171 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:25:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:26:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:27:00,157 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:28:00,197 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:29:00,129 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:30:00,111 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:31:00,141 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:32:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:33:00,171 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:34:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:35:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:36:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:37:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:38:00,176 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:39:00,146 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:40:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:41:00,143 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:42:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:43:00,124 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:44:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:45:00,144 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:46:00,192 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:47:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:48:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:49:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:50:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:51:00,174 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:52:00,151 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:53:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:54:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:55:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:56:00,191 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:57:00,143 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:58:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 18:59:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:00:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:01:00,197 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:02:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:03:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:04:00,190 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:05:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:06:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:07:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:08:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:09:00,219 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:10:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:11:00,219 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:12:00,109 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:13:00,171 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:14:00,114 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:15:00,164 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:16:00,171 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:17:00,113 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:18:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:19:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:20:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:21:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:22:00,111 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:23:00,177 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:24:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:25:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:26:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:27:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:28:00,192 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:29:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:30:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:31:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:32:00,207 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:32:00,344 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:33:00,176 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:34:00,130 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:35:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:36:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:37:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:38:00,192 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:39:00,131 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:40:00,361 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:41:00,144 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:42:00,116 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:43:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:44:00,131 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:45:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:46:00,144 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:47:00,198 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:48:00,159 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:49:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:50:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:51:00,165 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:52:00,143 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:53:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:54:00,146 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:55:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:56:00,184 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:57:00,130 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:58:00,133 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 19:59:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 20:00:00,181 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 20:01:00,176 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 20:02:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 20:03:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 20:04:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-09 20:05:00,162 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:06:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:09:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:12:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:15:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:18:00,169 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:21:00,123 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:24:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:27:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:30:00,149 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:33:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:36:00,193 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:39:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:42:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:45:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:48:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:51:00,134 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:54:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 10:57:00,202 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:00:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:03:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:06:00,178 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:09:00,150 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:12:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:15:00,151 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:18:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:21:00,170 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:24:00,182 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:27:00,152 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:30:00,154 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:33:00,157 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:36:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:39:00,138 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:42:00,183 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:45:00,157 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:48:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:51:00,216 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:54:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 11:57:00,123 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:00:00,125 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:03:00,192 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:06:00,124 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:09:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:12:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:15:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:18:00,111 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:21:00,112 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:24:00,139 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:27:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:30:00,139 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:33:00,219 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:36:00,170 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:39:00,179 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:42:00,187 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:45:00,140 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:48:00,152 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:51:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:54:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 12:57:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:00:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:03:00,203 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:06:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:09:00,161 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:12:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:15:00,176 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:18:00,175 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:21:00,148 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:24:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:27:00,148 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:30:02,670 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:33:00,145 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:36:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:39:00,212 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:42:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:45:00,162 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:48:00,201 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:51:00,120 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:54:00,203 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 13:57:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:00:00,127 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:03:00,153 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:06:00,121 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:09:05,677 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:12:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:15:00,122 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:18:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:21:00,113 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:24:00,188 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:27:00,155 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:30:00,170 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:33:00,125 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:36:00,214 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:39:00,152 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:42:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:45:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:48:00,200 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:51:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:54:00,173 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 14:57:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:00:00,128 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:03:00,128 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:06:00,158 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:09:00,128 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:12:00,160 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:15:00,125 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:18:00,172 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:21:00,156 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 15:24:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:18:00,133 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:21:00,180 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:24:00,166 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:27:00,210 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:30:00,186 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:33:00,147 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:36:00,149 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:39:00,139 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:42:00,202 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:45:00,163 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:48:00,135 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:51:00,132 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:54:00,136 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 16:57:00,186 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:00:00,142 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:03:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:06:00,130 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:09:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:12:00,201 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:15:00,136 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:18:00,144 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:21:00,167 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:24:00,140 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:27:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:30:00,137 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:33:00,138 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:36:00,138 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:39:00,121 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:42:00,215 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:45:00,121 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:48:00,171 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:51:00,170 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:54:00,171 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 17:57:00,168 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 18:00:00,187 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 18:03:00,157 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true
+[ERROR] 2019-05-10 18:06:00,189 method:com.stys.ipfs.service.impl.TbUsdtServiceImpl.rechargeUSDTServer(TbUsdtServiceImpl.java:107)
+-----------错误 -------true

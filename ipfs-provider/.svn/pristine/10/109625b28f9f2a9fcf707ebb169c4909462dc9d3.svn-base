@@ -1,0 +1,31 @@
+package com.stys.ipfs.mapper;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Select;
+
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.stys.ipfs.dto.TbUsdtVO;
+import com.stys.ipfs.entity.TbUsdtUser;
+
+/**
+ * <p>
+ * Mapper 接口
+ * </p>
+ *
+ * @author dp
+ * @since 2019-03-12
+ */
+public interface TbUsdtUserMapper extends BaseMapper<TbUsdtUser> {
+
+	@Select("<script> SELECT \n" + "	d.nickname,\r\n" + "	a.user_id, \n" + "	c.phone, \n"
+			+ "	b.usdt_privatekey, \n" + "	b.address_imgpath, \n" + "	b.usdt_addr ,\n  a.usdt_id  " + "FROM \n"
+			+ "	tb_usdt_user a \n" + "	LEFT JOIN tb_usdt b ON a.usdt_id = b.id \n"
+			+ "	LEFT JOIN sys_app_user c ON c.id = a.user_id \n"
+			+ "	LEFT JOIN sys_app_userinfo d ON d.user_id = a.user_id  \n" + "WHERE\r\n" + "	1 = 1 \r\n"
+			+ "<if test='phone != null and phone != \"\" ' > and  c.phone like #{phone} </if>" + "</script>")
+	List<TbUsdtVO> selectPageTbUsdtVO(Page<TbUsdtVO> page, EntityWrapper<TbUsdtVO> wrapper, String phone);
+
+}
